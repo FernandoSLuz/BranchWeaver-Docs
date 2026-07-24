@@ -1,6 +1,6 @@
 # API reference
 
-Every public type in BranchWeaver, grouped by what it is for rather than by namespace. **245 types.**
+Every public type in BranchWeaver, grouped by what it is for rather than by namespace. **246 types.**
 
 !!! tip "Filter as you type"
     Start typing in the box below to narrow the table. Use the search icon in the header to search the whole site instead.
@@ -46,6 +46,7 @@ Every public type in BranchWeaver, grouped by what it is for rather than by name
 | [`MapBlueprintCompilation`](authoring-assets.md#mapblueprintcompilation) | class | Authoring assets | _Undocumented._ |
 | [`MapConstraintAsset`](authoring-assets.md#mapconstraintasset) | class | Authoring assets | _Undocumented._ |
 | [`MapEdgeGeometryKind`](authoring-assets.md#mapedgegeometrykind) | enum | Authoring assets | _Undocumented._ |
+| [`MapFlowDirection`](authoring-assets.md#mapflowdirection) | enum | Authoring assets | Which screen direction the map's progress runs in. |
 | [`MapLayoutOrientation`](authoring-assets.md#maplayoutorientation) | enum | Authoring assets | _Undocumented._ |
 | [`MapNodeTypeAsset`](authoring-assets.md#mapnodetypeasset) | class | Authoring assets | _Undocumented._ |
 | [`MapNodeTypeCompilation`](authoring-assets.md#mapnodetypecompilation) | class | Authoring assets | _Undocumented._ |

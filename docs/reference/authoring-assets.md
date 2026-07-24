@@ -1,9 +1,9 @@
 # Authoring assets
 
-27 types in this area.
+28 types in this area.
 
 !!! abstract "On this page"
-    [AuthoringDiagnosticCodes](#authoringdiagnosticcodes) &middot; [BlueprintEdgeAuthoring](#blueprintedgeauthoring) &middot; [BlueprintEdgeOverrideAuthoring](#blueprintedgeoverrideauthoring) &middot; [BlueprintNodeAuthoring](#blueprintnodeauthoring) &middot; [CompiledMapNodeType](#compiledmapnodetype) &middot; [CompiledMapTheme](#compiledmaptheme) &middot; [ForbiddenAdjacencyAuthoring](#forbiddenadjacencyauthoring) &middot; [ForcedNodeAuthoring](#forcednodeauthoring) &middot; [LayerRangeAuthoring](#layerrangeauthoring) &middot; [MapAuthoringCompiler](#mapauthoringcompiler) &middot; [MapBlueprintAsset](#mapblueprintasset) &middot; [MapBlueprintCompilation](#mapblueprintcompilation) &middot; [MapConstraintAsset](#mapconstraintasset) &middot; [MapEdgeGeometryKind](#mapedgegeometrykind) &middot; [MapLayoutOrientation](#maplayoutorientation) &middot; [MapNodeTypeAsset](#mapnodetypeasset) &middot; [MapNodeTypeCompilation](#mapnodetypecompilation) &middot; [MapPropertyAuthoring](#mappropertyauthoring) &middot; [MapRulesAsset](#maprulesasset) &middot; [MapRulesCompilation](#maprulescompilation) &middot; [MapThemeAsset](#mapthemeasset) &middot; [MapThemeCompilation](#mapthemecompilation) &middot; [MapThemeLimits](#mapthemelimits) &middot; [NodeTypeWeightAuthoring](#nodetypeweightauthoring) &middot; [NodeTypeWeightOverrideAuthoring](#nodetypeweightoverrideauthoring) &middot; [QuotaAuthoring](#quotaauthoring) &middot; [ZoneAuthoring](#zoneauthoring)
+    [AuthoringDiagnosticCodes](#authoringdiagnosticcodes) &middot; [BlueprintEdgeAuthoring](#blueprintedgeauthoring) &middot; [BlueprintEdgeOverrideAuthoring](#blueprintedgeoverrideauthoring) &middot; [BlueprintNodeAuthoring](#blueprintnodeauthoring) &middot; [CompiledMapNodeType](#compiledmapnodetype) &middot; [CompiledMapTheme](#compiledmaptheme) &middot; [ForbiddenAdjacencyAuthoring](#forbiddenadjacencyauthoring) &middot; [ForcedNodeAuthoring](#forcednodeauthoring) &middot; [LayerRangeAuthoring](#layerrangeauthoring) &middot; [MapAuthoringCompiler](#mapauthoringcompiler) &middot; [MapBlueprintAsset](#mapblueprintasset) &middot; [MapBlueprintCompilation](#mapblueprintcompilation) &middot; [MapConstraintAsset](#mapconstraintasset) &middot; [MapEdgeGeometryKind](#mapedgegeometrykind) &middot; [MapFlowDirection](#mapflowdirection) &middot; [MapLayoutOrientation](#maplayoutorientation) &middot; [MapNodeTypeAsset](#mapnodetypeasset) &middot; [MapNodeTypeCompilation](#mapnodetypecompilation) &middot; [MapPropertyAuthoring](#mappropertyauthoring) &middot; [MapRulesAsset](#maprulesasset) &middot; [MapRulesCompilation](#maprulescompilation) &middot; [MapThemeAsset](#mapthemeasset) &middot; [MapThemeCompilation](#mapthemecompilation) &middot; [MapThemeLimits](#mapthemelimits) &middot; [NodeTypeWeightAuthoring](#nodetypeweightauthoring) &middot; [NodeTypeWeightOverrideAuthoring](#nodetypeweightoverrideauthoring) &middot; [QuotaAuthoring](#quotaauthoring) &middot; [ZoneAuthoring](#zoneauthoring)
 
 ## AuthoringDiagnosticCodes
 
@@ -660,6 +660,31 @@ public enum MapEdgeGeometryKind
 
 !!! warning "Not yet documented"
     This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
+
+---
+
+## MapFlowDirection
+
+```csharp
+public enum MapFlowDirection
+```
+
+`BranchWeaver.Authoring` &middot; <small>Runtime/Authoring/MapStyleTokens.cs</small>
+
+Which screen direction the map's progress runs in.
+
+The theme decides which axis layers advance along; this decides which
+way along that axis, and is applied when normalized positions are converted
+for display. It is presentation-only, so flipping a map cannot change the
+generated graph, a save, or a fingerprint -- a saved run reopened after a
+direction change is still the same run, drawn the other way round.
+
+| Value | Meaning |
+| --- | --- |
+| `BottomToTop` | Progress runs upward. |
+| `TopToBottom` | Progress runs downward, as in a descent. |
+| `LeftToRight` | Progress runs rightward. |
+| `RightToLeft` | Progress runs leftward, for right-to-left reading orders. |
 
 ---
 

@@ -126,6 +126,7 @@ This is how you make the map adjustable on screen:
 
 | Token | Effect |
 | --- | --- |
+| `FlowDirection` | `BottomToTop`, `TopToBottom`, `LeftToRight`, `RightToLeft` |
 | `FitMode` | `Fit`, `Fill`, `FixedScale`, `Stretch` |
 | `MarginLeft/Right/Top/Bottom` | Fractions of the area reserved for **your** interface |
 | `RespectSafeArea` | Inset into the device safe area, for notches and home indicators |
@@ -135,6 +136,42 @@ This is how you make the map adjustable on screen:
 | `PanOverscroll` | How far past the edge panning may rubber-band |
 
 Margins are fractions, so one style works across resolutions.
+
+#### Which way the map runs
+
+`FlowDirection` gives all four:
+
+| Direction | Reads as |
+| --- | --- |
+| `BottomToTop` | Climbing. The classic run-map direction, and the default. |
+| `TopToBottom` | Descending. |
+| `LeftToRight` | A journey across, western reading order. |
+| `RightToLeft` | A journey across, right-to-left reading order. |
+
+The **theme** picks which axis layers advance along; the **style** picks which way along
+it. Direction is applied when normalized positions are converted for display, so it is
+presentation-only: flipping a map cannot change the generated graph, a save, or a
+fingerprint. A run saved climbing and reopened descending is still the same run, drawn
+the other way round.
+
+#### Offsets and padding
+
+Three separate controls, easy to confuse:
+
+| Control | Units | What it does |
+| --- | --- | --- |
+| `MarginLeft/Right/Top/Bottom` | Fraction of the area | Reserves screen space for **your** interface. The map never draws there. |
+| `ContentPadding` | Presentation pixels | Breathing room **around the map content** when fitting, so nodes at the edge are not flush against it. |
+| `MapViewportFrame.Pan` | Pixels | An explicit offset of the map inside its area, clamped by the pan limits. |
+
+So: margins push the *area* in, padding pushes the *content* in, and pan slides the
+content within what is left.
+
+```csharp
+var framing = style.Framing;          // read the resolved values
+frame.Pan = new Vector2(-120f, 40f);  // nudge, clamped automatically
+frame.FrameAll();                     // reset pan and zoom, refit
+```
 
 Add **BranchWeaver > Map Viewport Frame** to the map hierarchy to apply them, then:
 

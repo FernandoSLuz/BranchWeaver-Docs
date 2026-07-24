@@ -4,8 +4,8 @@ Generated from source alongside the reference itself, so it cannot quietly drift
 
 | Scope | Documented | Total | Coverage |
 | --- | --- | --- | --- |
-| Public types | 62 | 245 | 25% |
-| Public members | 117 | 1386 | 8% |
+| Public types | 63 | 246 | 26% |
+| Public members | 119 | 1389 | 9% |
 
 ## By area
 
@@ -13,7 +13,7 @@ Generated from source alongside the reference itself, so it cannot quietly drift
 | --- | --- | --- | --- |
 | [Getting a map](getting-a-map.md) | 12 | 1 | 8% |
 | [Traversal and progression](traversal-and-progression.md) | 8 | 3 | 38% |
-| [Authoring assets](authoring-assets.md) | 27 | 0 | 0% |
+| [Authoring assets](authoring-assets.md) | 28 | 1 | 4% |
 | [Styling and appearance](styling-and-appearance.md) | 28 | 28 | 100% |
 | [Presentation and views](presentation-and-views.md) | 64 | 6 | 9% |
 | [Framing, input and navigation](framing-input-and-navigation.md) | 9 | 4 | 44% |

@@ -373,6 +373,12 @@ This is the surface behind making a map adjustable on screen: reserve space
 for your own interface with the margins, choose how the map fits, and clamp
 the camera so a player cannot lose the map off-screen.
 
+**Properties**
+
+`public bool IsHorizontalFlow`
+
+:   True when this direction lays progress out horizontally.
+
 **Fields**
 
 `public bool AllowPan`
@@ -396,6 +402,10 @@ the camera so a player cannot lose the map off-screen.
 :   &mdash;
 
 `public float FixedScale`
+
+:   &mdash;
+
+`public MapFlowDirection FlowDirection`
 
 :   &mdash;
 
@@ -424,6 +434,10 @@ the camera so a player cannot lose the map off-screen.
 :   &mdash;
 
 **Methods**
+
+`public Vector2 Orient(Vector2 normalized, bool progressIsVertical)`
+
+:   Transforms a normalized position for display in this flow direction. `progressIsVertical` comes from the theme's orientation: it says which axis the layout advanced layers along. The result is a normalized position in screen terms, where y increases upward.
 
 `public MapFramingTokens Sanitized()`
 
