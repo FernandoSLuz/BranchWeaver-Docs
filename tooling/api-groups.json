@@ -1,0 +1,48 @@
+{
+  "order": [
+    "Getting a map",
+    "Traversal and progression",
+    "Authoring assets",
+    "Styling and appearance",
+    "Presentation and views",
+    "Framing, input and navigation",
+    "Rules and constraints",
+    "Graph, layout and geometry",
+    "Saving and migration",
+    "Editor tools",
+    "Determinism and diagnostics",
+    "Other"
+  ],
+  "fallback": "Other",
+  "exclude_namespaces": [],
+  "rules": [
+    { "group": "Getting a map",                 "path": "Core/Generation/" },
+    { "group": "Getting a map",                 "name": "^(LayeredMapGenerator|GenerationContracts|MapGenerationRequest|MapGenerationResult|MapGenerationMode|MapGenerationStatistics|MapGenerationFailureKind)$" },
+
+    { "group": "Traversal and progression",     "path": "Core/Traversal/" },
+
+    { "group": "Saving and migration",          "path": "Core/Persistence/" },
+
+    { "group": "Rules and constraints",         "path": "Core/Constraints/" },
+    { "group": "Rules and constraints",         "name": "^(MapRules|MapRulesValidator|MapValidator|ValidationReport)$" },
+
+    { "group": "Graph, layout and geometry",    "path": "Core/Layout/" },
+    { "group": "Graph, layout and geometry",    "name": "^(MapGraph|MapGeometry|MapNode|MapEdge|MapLayout|NormalizedMapPosition|MapEdgeGeometry|MapNodeSlot)$" },
+
+    { "group": "Determinism and diagnostics",   "name": "^(DeterministicRandom|DeterministicStreamFactory|StableId|Fingerprint|Fingerprinting|Diagnostics|MapDiagnostic|CanonicalJson)$" },
+    { "group": "Determinism and diagnostics",   "namespace": "^BranchWeaver\\.DevTools$" },
+
+    { "group": "Styling and appearance",        "name": "^(MapStyle|MapStylePreset|MapStyleDefaults|MapStyleRuntime|CompiledMapStyle|CompiledMapNodeStates|MapPaletteTokens|MapSurfaceTokens|MapNodeStyleTokens|MapNodeStateStyle|MapEdgeStyleTokens|MapBackdropTokens|MapTypographyTokens|MapMotionTokens|MapFramingTokens|MapNodeShape|MapFillMode|MapEdgeCap|MapEasing|MapFitMode|MapSurfaceRequest|MapSurfaceMode|MapMaterialPool|MapSurfaceGraphic|CanvasMapNodeStyling)$" },
+    { "group": "Styling and appearance",        "name": "MapStyle" },
+
+    { "group": "Framing, input and navigation", "name": "^(MapViewport|MapViewportUtility|MapViewportResult|MapViewportFrame|MapFrameResult|MapFrameUtility|MapSafeAreaController|MapAspectClass|MapInput|MapNavigation|MapWorldViewportUtility)$" },
+    { "group": "Framing, input and navigation", "namespace": "Integrations" },
+
+    { "group": "Authoring assets",              "namespace": "^BranchWeaver\\.Authoring$" },
+
+    { "group": "Editor tools",                  "namespace": "^BranchWeaver\\.Editor" },
+
+    { "group": "Presentation and views",        "namespace": "^BranchWeaver\\.Presentation" },
+    { "group": "Presentation and views",        "namespace": "^BranchWeaver\\.Runtime$" }
+  ]
+}
