@@ -1,6 +1,6 @@
 # API reference
 
-Every public type in BranchWeaver, grouped by what it is for rather than by namespace. **244 types.**
+Every public type in BranchWeaver, grouped by what it is for rather than by namespace. **245 types.**
 
 !!! tip "Filter as you type"
     Start typing in the box below to narrow the table. Use the search icon in the header to search the whole site instead.
@@ -121,6 +121,7 @@ Every public type in BranchWeaver, grouped by what it is for rather than by name
 | [`MapDevelopmentCommandResult`](presentation-and-views.md#mapdevelopmentcommandresult) | class | Presentation and views | _Undocumented._ |
 | [`MapDevelopmentFailureKind`](presentation-and-views.md#mapdevelopmentfailurekind) | enum | Presentation and views | _Undocumented._ |
 | [`MapEdgeViewData`](presentation-and-views.md#mapedgeviewdata) | struct | Presentation and views | _Undocumented._ |
+| [`MapFogSettings`](presentation-and-views.md#mapfogsettings) | struct | Presentation and views | How far ahead of the traveller the map is revealed. |
 | [`MapFogState`](presentation-and-views.md#mapfogstate) | enum | Presentation and views | _Undocumented._ |
 | [`MapInputController`](presentation-and-views.md#mapinputcontroller) | class | Presentation and views | _Undocumented._ |
 | [`MapInputFrame`](presentation-and-views.md#mapinputframe) | struct | Presentation and views | _Undocumented._ |

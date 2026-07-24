@@ -1,9 +1,9 @@
 # Presentation and views
 
-63 types in this area.
+64 types in this area.
 
 !!! abstract "On this page"
-    [CanvasMapCoordinateUtility](#canvasmapcoordinateutility) &middot; [CanvasMapEdgeFactory](#canvasmapedgefactory) &middot; [CanvasMapEdgeView](#canvasmapedgeview) &middot; [CanvasMapNodeFactory](#canvasmapnodefactory) &middot; [CanvasMapNodeView](#canvasmapnodeview) &middot; [CanvasMapPresenter](#canvasmappresenter) &middot; [DefaultMapNodeHitTester](#defaultmapnodehittester) &middot; [IMapAudioCueAdapter](#imapaudiocueadapter) &middot; [IMapBackgroundPresenter](#imapbackgroundpresenter) &middot; [IMapDevelopmentHost](#imapdevelopmenthost) &middot; [IMapEdgeAvailabilityView](#imapedgeavailabilityview) &middot; [IMapEdgeTransitionView](#imapedgetransitionview) &middot; [IMapEdgeView](#imapedgeview) &middot; [IMapEdgeViewFactory](#imapedgeviewfactory) &middot; [IMapFocusIndicatorPresenter](#imapfocusindicatorpresenter) &middot; [IMapFocusView](#imapfocusview) &middot; [IMapInputSource](#imapinputsource) &middot; [IMapLocalizationAdapter](#imaplocalizationadapter) &middot; [IMapNodeHitState](#imapnodehitstate) &middot; [IMapNodeHitTester](#imapnodehittester) &middot; [IMapNodeTransitionView](#imapnodetransitionview) &middot; [IMapNodeView](#imapnodeview) &middot; [IMapNodeViewFactory](#imapnodeviewfactory) &middot; [IMapPresentationHost](#imappresentationhost) &middot; [IMapPresentationTransitionAdapter](#imappresentationtransitionadapter) &middot; [IMapViewFactoryLifetime](#imapviewfactorylifetime) &middot; [IPlayerPawnPresenter](#iplayerpawnpresenter) &middot; [IRouteMarkerPresenter](#iroutemarkerpresenter) &middot; [InputSystemSignalAdapter](#inputsystemsignaladapter) &middot; [LegacyMapInputSource](#legacymapinputsource) &middot; [MapCameraResolver](#mapcameraresolver) &middot; [MapDevelopmentCommandResult](#mapdevelopmentcommandresult) &middot; [MapDevelopmentFailureKind](#mapdevelopmentfailurekind) &middot; [MapEdgeViewData](#mapedgeviewdata) &middot; [MapFogState](#mapfogstate) &middot; [MapInputController](#mapinputcontroller) &middot; [MapInputFrame](#mapinputframe) &middot; [MapNavigationDirection](#mapnavigationdirection) &middot; [MapNavigationModel](#mapnavigationmodel) &middot; [MapNodeRuntimeState](#mapnoderuntimestate) &middot; [MapNodeViewData](#mapnodeviewdata) &middot; [MapNodeVisualState](#mapnodevisualstate) &middot; [MapPresentationMetrics](#mappresentationmetrics) &middot; [MapPresenterBase](#mappresenterbase) &middot; [MapRuntimeContent](#mapruntimecontent) &middot; [MapRuntimeDiagnosticCodes](#mapruntimediagnosticcodes) &middot; [MapRuntimeStateDeriver](#mapruntimestatederiver) &middot; [MapRuntimeStateSnapshot](#mapruntimestatesnapshot) &middot; [MapSelectionResult](#mapselectionresult) &middot; [MapSerializedEventBridge](#mapserializedeventbridge) &middot; [MapSetupHierarchyBinding](#mapsetuphierarchybinding) &middot; [MapTouchGestureInterpreter](#maptouchgestureinterpreter) &middot; [MapTouchPhase](#maptouchphase) &middot; [MapTouchSample](#maptouchsample) &middot; [MapTraversalController](#maptraversalcontroller) &middot; [NullMapAudioCueAdapter](#nullmapaudiocueadapter) &middot; [PassthroughLocalizationAdapter](#passthroughlocalizationadapter) &middot; [ProceduralNodeSprite](#proceduralnodesprite) &middot; [WorldMapEdgeFactory](#worldmapedgefactory) &middot; [WorldMapEdgeView](#worldmapedgeview) &middot; [WorldMapNodeFactory](#worldmapnodefactory) &middot; [WorldMapNodeView](#worldmapnodeview) &middot; [WorldMapPresenter](#worldmappresenter)
+    [CanvasMapCoordinateUtility](#canvasmapcoordinateutility) &middot; [CanvasMapEdgeFactory](#canvasmapedgefactory) &middot; [CanvasMapEdgeView](#canvasmapedgeview) &middot; [CanvasMapNodeFactory](#canvasmapnodefactory) &middot; [CanvasMapNodeView](#canvasmapnodeview) &middot; [CanvasMapPresenter](#canvasmappresenter) &middot; [DefaultMapNodeHitTester](#defaultmapnodehittester) &middot; [IMapAudioCueAdapter](#imapaudiocueadapter) &middot; [IMapBackgroundPresenter](#imapbackgroundpresenter) &middot; [IMapDevelopmentHost](#imapdevelopmenthost) &middot; [IMapEdgeAvailabilityView](#imapedgeavailabilityview) &middot; [IMapEdgeTransitionView](#imapedgetransitionview) &middot; [IMapEdgeView](#imapedgeview) &middot; [IMapEdgeViewFactory](#imapedgeviewfactory) &middot; [IMapFocusIndicatorPresenter](#imapfocusindicatorpresenter) &middot; [IMapFocusView](#imapfocusview) &middot; [IMapInputSource](#imapinputsource) &middot; [IMapLocalizationAdapter](#imaplocalizationadapter) &middot; [IMapNodeHitState](#imapnodehitstate) &middot; [IMapNodeHitTester](#imapnodehittester) &middot; [IMapNodeTransitionView](#imapnodetransitionview) &middot; [IMapNodeView](#imapnodeview) &middot; [IMapNodeViewFactory](#imapnodeviewfactory) &middot; [IMapPresentationHost](#imappresentationhost) &middot; [IMapPresentationTransitionAdapter](#imappresentationtransitionadapter) &middot; [IMapViewFactoryLifetime](#imapviewfactorylifetime) &middot; [IPlayerPawnPresenter](#iplayerpawnpresenter) &middot; [IRouteMarkerPresenter](#iroutemarkerpresenter) &middot; [InputSystemSignalAdapter](#inputsystemsignaladapter) &middot; [LegacyMapInputSource](#legacymapinputsource) &middot; [MapCameraResolver](#mapcameraresolver) &middot; [MapDevelopmentCommandResult](#mapdevelopmentcommandresult) &middot; [MapDevelopmentFailureKind](#mapdevelopmentfailurekind) &middot; [MapEdgeViewData](#mapedgeviewdata) &middot; [MapFogSettings](#mapfogsettings) &middot; [MapFogState](#mapfogstate) &middot; [MapInputController](#mapinputcontroller) &middot; [MapInputFrame](#mapinputframe) &middot; [MapNavigationDirection](#mapnavigationdirection) &middot; [MapNavigationModel](#mapnavigationmodel) &middot; [MapNodeRuntimeState](#mapnoderuntimestate) &middot; [MapNodeViewData](#mapnodeviewdata) &middot; [MapNodeVisualState](#mapnodevisualstate) &middot; [MapPresentationMetrics](#mappresentationmetrics) &middot; [MapPresenterBase](#mappresenterbase) &middot; [MapRuntimeContent](#mapruntimecontent) &middot; [MapRuntimeDiagnosticCodes](#mapruntimediagnosticcodes) &middot; [MapRuntimeStateDeriver](#mapruntimestatederiver) &middot; [MapRuntimeStateSnapshot](#mapruntimestatesnapshot) &middot; [MapSelectionResult](#mapselectionresult) &middot; [MapSerializedEventBridge](#mapserializedeventbridge) &middot; [MapSetupHierarchyBinding](#mapsetuphierarchybinding) &middot; [MapTouchGestureInterpreter](#maptouchgestureinterpreter) &middot; [MapTouchPhase](#maptouchphase) &middot; [MapTouchSample](#maptouchsample) &middot; [MapTraversalController](#maptraversalcontroller) &middot; [NullMapAudioCueAdapter](#nullmapaudiocueadapter) &middot; [PassthroughLocalizationAdapter](#passthroughlocalizationadapter) &middot; [ProceduralNodeSprite](#proceduralnodesprite) &middot; [WorldMapEdgeFactory](#worldmapedgefactory) &middot; [WorldMapEdgeView](#worldmapedgeview) &middot; [WorldMapNodeFactory](#worldmapnodefactory) &middot; [WorldMapNodeView](#worldmapnodeview) &middot; [WorldMapPresenter](#worldmappresenter)
 
 ## CanvasMapCoordinateUtility
 
@@ -790,6 +790,51 @@ public readonly struct MapEdgeViewData
 
 ---
 
+## MapFogSettings
+
+```csharp
+public struct MapFogSettings
+```
+
+`BranchWeaver.Runtime` &middot; <small>Runtime/Runtime/MapRuntimeState.cs</small>
+
+How far ahead of the traveller the map is revealed.
+
+Fog is derived, never stored, so changing these values re-reveals an existing
+save correctly instead of needing a migration.
+
+**Properties**
+
+`public static MapFogSettings Default`
+
+:   The classic behaviour: one step of look-ahead, forwards only.
+
+`public static MapFogSettings Revealed`
+
+:   Every node visible.
+
+**Fields**
+
+`public bool RevealAll`
+
+:   Reveal every node regardless of progress.
+
+`public int RevealDepth`
+
+:   How many edges ahead of a reached node stay visible, as dimmed "locked" nodes. 0 shows only what the traveller has reached and what is immediately available. 1 also shows the next choices, which is the classic run-based-map behaviour and the default. 2 shows the choice after that, and so on. A value at or above the layer count effectively reveals the whole map.
+
+`public bool RevealIncoming`
+
+:   Also reveal nodes that lead INTO a reached node, not just out of it. Useful for maps a traveller can move back through.
+
+**Methods**
+
+`public MapFogSettings Sanitized()`
+
+:   Clamps the settings into their supported range.
+
+---
+
 ## MapFogState
 
 ```csharp
@@ -1359,7 +1404,11 @@ public static class MapRuntimeStateDeriver
 
 `public static MapRuntimeStateSnapshot Derive()`
 
-:   &mdash;
+:   Derives fog and visual state with the default one-step look-ahead. Kept so existing callers and saves behave exactly as before.
+
+`public static MapRuntimeStateSnapshot Derive()`
+
+:   Derives fog and visual state with explicit fog settings, so a project can choose how far ahead the map is revealed.
 
 ---
 
@@ -1627,6 +1676,10 @@ public sealed class MapTraversalController : MonoBehaviour, IMapDevelopmentHost
 `public MapRuntimeContent Content`
 
 :   &mdash;
+
+`public MapFogSettings FogSettings`
+
+:   How far ahead of the traveller the map is revealed. Fog is derived rather than stored, so changing this re-reveals an existing save correctly with no migration.
 
 `public MapGraph Graph`
 

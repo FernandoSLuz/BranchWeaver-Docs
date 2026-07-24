@@ -883,7 +883,7 @@ The Style Browser turns any of these into an editable
 
 `public static MapPaletteTokens MinimalMonoPalette()`
 
-:   Light, flat, glowless. The neutral base to customize from.
+:   Light, flat, glowless. The neutral base to customize from. The accent is a saturated blue rather than the near-black used for text and borders. On a light backdrop an almost-black accent makes a reachable node darker than a locked one, which inverts the reading order: the node the player can actually use must be the most prominent, not the least.
 
 `public static CompiledMapStyle NeonCircuit()`
 

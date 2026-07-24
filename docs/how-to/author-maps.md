@@ -118,6 +118,49 @@ route, a boss approach) with no generation at runtime.
 **Copy JSON** and **Export JSON** produce a readable dump of the current graph. Useful
 for diffing two seeds, for external tooling, and for attaching to a bug report.
 
+## Control how much of the map is revealed
+
+Fog is **derived, never stored**, so changing these settings re-reveals an existing save
+correctly with no migration.
+
+On the `MapTraversalController`, under **Fog of war**:
+
+| Setting | Effect |
+| --- | --- |
+| **Reveal Depth** | How many edges ahead of a reached node stay visible as dimmed nodes |
+| **Reveal Incoming** | Also reveal backwards, for maps that allow backtracking |
+| **Reveal All** | Show the whole map, ignoring depth |
+
+`Reveal Depth` is the one you want:
+
+- **0** &mdash; only what the traveller has reached plus what is immediately available.
+  Nothing ahead. Maximum mystery.
+- **1** &mdash; the next choices show as dimmed nodes. This is the classic run-based-map
+  behaviour and the **default**.
+- **2 or more** &mdash; look further ahead, one layer at a time.
+- At or above the layer count, effectively the whole map.
+
+```csharp
+// Wider look-ahead, for a map where planning several steps matters.
+controller.FogSettings = new MapFogSettings
+{
+    RevealDepth = 3,
+    RevealIncoming = false,
+    RevealAll = false
+};
+
+// Or reveal everything, for example after buying a map item.
+controller.FogSettings = MapFogSettings.Revealed;
+```
+
+Assigning `FogSettings` invalidates the cached runtime state, so the change is visible on
+the next presenter refresh.
+
+!!! tip "Per-node overrides"
+    For "this one node is revealed by an item", pass explicit unlocked node IDs rather
+    than widening the depth for the whole map. Depth is a global rule; unlocked IDs are
+    per-node exceptions.
+
 ## Validation
 
 **Tools > BranchWeaver > Map Studio > Validate**, or `MapValidator` in code.
