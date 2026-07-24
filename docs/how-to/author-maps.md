@@ -72,6 +72,29 @@ Field-by-field detail is in the package's own
 `Assets/BranchWeaver/Documentation/Authoring-Field-Reference.md`, which ships with the
 product and stays in sync with it.
 
+### Can routes cross each other?
+
+That is your choice, on the rules asset:
+
+| `Crossing Policy` | Meaning |
+| --- | --- |
+| **`Forbid`** | Routes may **merge** into a node but never intersect mid-air. **The default.** |
+| `Allow` | Routes may cross freely, giving denser, more tangled maps. |
+
+`Forbid` is enforced during generation, not cleaned up afterwards: the generator
+rejects any candidate edge that would cross an already-selected one, so a map that
+comes back is crossing-free by construction rather than by luck. The preflight also
+uses it, so an unsatisfiable combination of `Forbid` plus very dense connection rules
+is reported before the search starts instead of failing seed by seed.
+
+!!! warning "It is part of the fingerprint"
+    The crossing policy is included in the rules fingerprint, so changing it changes
+    which maps a seed produces. Treat it as a compatibility contract: flipping it after
+    shipping means existing seeds no longer reproduce their old maps.
+
+Every screenshot in this documentation uses `Forbid`, which is why routes in the
+examples converge but never intersect.
+
 ### Start small
 
 A rule set that is too tight is unsatisfiable, and a rule set that is too loose
