@@ -9,7 +9,7 @@ Three asset types, created from **Assets > Create > BranchWeaver**:
 | **Map Blueprint** | This exact map, authored or captured by hand |
 
 Plus **Map Theme** (layout and zoom) and **Map Style Preset** (appearance, covered in
-[guide 4](04-styles-and-presets.md)).
+[guide 4](../tutorials/styling-your-map.md)).
 
 ---
 
@@ -21,7 +21,7 @@ A node type is a *kind of place*: Rest, Combat, Gateway, Landmark.
 
 | Field | Notes |
 | --- | --- |
-| **Stable Id** | Required and unique. A compatibility contract -- see [core concepts](02-core-concepts.md#stable-ids-are-a-compatibility-contract) |
+| **Stable Id** | Required and unique. A compatibility contract -- see [core concepts](../explanation/architecture.md#stable-ids-are-a-compatibility-contract) |
 | **Display Label** | Fallback label when no localization is available |
 | **Localization Key** | Optional key passed to your localization adapter |
 | **Icon** | Optional sprite, drawn inset inside the node shape |
@@ -129,5 +129,5 @@ the offender when you click it.
 
 ## Next
 
-- **[Styles and presets](04-styles-and-presets.md)** -- make it look right.
-- **[Runtime integration](05-runtime-integration.md)** -- drive it from code.
+- **[Styles and presets](../tutorials/styling-your-map.md)** -- make it look right.
+- **[Runtime integration](../how-to/runtime-integration.md)** -- drive it from code.

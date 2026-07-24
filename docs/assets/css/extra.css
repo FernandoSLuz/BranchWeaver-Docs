@@ -1,0 +1,155 @@
+/* BranchWeaver documentation styling.
+ *
+ * Layered on Material rather than replacing it, so theme updates keep working and
+ * both colour schemes stay correct.
+ */
+
+/* ---------------------------------------------------------------- API filter */
+
+.api-filter {
+  width: 100%;
+  padding: 0.7rem 0.9rem;
+  margin: 0.4rem 0 0.2rem;
+  font-size: 0.85rem;
+  font-family: var(--md-text-font-family);
+  color: var(--md-default-fg-color);
+  background-color: var(--md-default-bg-color);
+  border: 1px solid var(--md-default-fg-color--lighter);
+  border-radius: 0.3rem;
+  box-sizing: border-box;
+  transition: border-color 120ms, box-shadow 120ms;
+}
+
+.api-filter:focus {
+  outline: none;
+  border-color: var(--md-accent-fg-color);
+  box-shadow: 0 0 0 2px var(--md-accent-fg-color--transparent);
+}
+
+.api-filter::placeholder {
+  color: var(--md-default-fg-color--light);
+}
+
+.api-filter-count {
+  margin: 0.15rem 0 0.9rem;
+  font-size: 0.72rem;
+  color: var(--md-default-fg-color--light);
+}
+
+/* The type table is wide; let it scroll on its own rather than the page. */
+.api-table {
+  overflow-x: auto;
+}
+
+.api-table table {
+  width: 100%;
+  font-size: 0.76rem;
+}
+
+.api-table table td:first-child,
+.api-table table th:first-child {
+  white-space: nowrap;
+}
+
+/* Kind column reads as a quiet label, not as body text. */
+.api-table table td:nth-child(2) {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--md-default-fg-color--light);
+  white-space: nowrap;
+}
+
+.api-table table td:nth-child(3) {
+  font-size: 0.7rem;
+  color: var(--md-default-fg-color--light);
+  white-space: nowrap;
+}
+
+/* ------------------------------------------------------- member definitions */
+
+/* Definition lists carry the member signatures; indent the descriptions so a
+   long member list stays scannable. */
+.md-typeset dl dt > code {
+  font-size: 0.78em;
+}
+
+.md-typeset dl dd {
+  margin-left: 1.1rem;
+  color: var(--md-default-fg-color--light);
+}
+
+/* ------------------------------------------------------------- screenshots */
+
+/* Shots of the editor and of running scenes both benefit from a border, because
+   many of them are dark-on-dark and would otherwise bleed into the page. */
+.md-typeset img.shot,
+.md-typeset .shot img {
+  border: 1px solid var(--md-default-fg-color--lighter);
+  border-radius: 0.35rem;
+  display: block;
+  margin: 0.6rem auto;
+  max-width: 100%;
+}
+
+/* A caption directly under a figure. */
+.md-typeset figure {
+  margin: 1rem auto;
+  text-align: center;
+}
+
+.md-typeset figcaption {
+  font-size: 0.72rem;
+  color: var(--md-default-fg-color--light);
+  margin-top: 0.35rem;
+}
+
+/* Side-by-side comparison, collapsing on narrow screens. */
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: 0.8rem;
+  margin: 1rem 0;
+}
+
+.grid-2 figure {
+  margin: 0;
+}
+
+/* ------------------------------------------------------------- home landing */
+
+.hero {
+  padding: 1.2rem 0 0.4rem;
+}
+
+.hero h1 {
+  margin-bottom: 0.2rem;
+}
+
+.hero .tagline {
+  font-size: 1rem;
+  color: var(--md-default-fg-color--light);
+}
+
+/* Card grid for the landing page paths. */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: 0.7rem;
+  margin: 1.2rem 0;
+}
+
+.cards > div {
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--md-default-fg-color--lighter);
+  border-radius: 0.4rem;
+  background-color: var(--md-code-bg-color);
+}
+
+.cards > div > :first-child {
+  margin-top: 0;
+}
+
+.cards > div > :last-child {
+  margin-bottom: 0;
+}

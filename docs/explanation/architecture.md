@@ -133,9 +133,9 @@ Treat stable IDs the way you treat a database column name.
 envelopes on load. `FileMapSaveAdapter` provides file-backed slots with a fail-closed
 unsafe-path guard, and `MemoryMapSaveAdapter` is the in-memory equivalent for tests.
 
-Details in [guide 5](05-runtime-integration.md#saving-and-loading).
+Details in [guide 5](../how-to/runtime-integration.md#saving-and-loading).
 
 ## Next
 
-- **[Authoring maps](03-authoring-maps.md)** -- create the assets.
-- **[API reference](api-reference.md)** -- exact signatures.
+- **[Authoring maps](../how-to/author-maps.md)** -- create the assets.
+- **[API reference](../reference/index.md)** -- exact signatures.

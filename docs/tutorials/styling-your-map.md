@@ -189,8 +189,8 @@ with the map rather than surviving a scene unload.
 
 ## If the map looks flat
 
-See [Troubleshooting](06-troubleshooting.md#the-map-looks-flat).
+See [Troubleshooting](../how-to/troubleshooting.md#the-map-looks-flat).
 
 ## Next
 
-- **[Runtime integration](05-runtime-integration.md)** -- drive traversal from code.
+- **[Runtime integration](../how-to/runtime-integration.md)** -- drive traversal from code.

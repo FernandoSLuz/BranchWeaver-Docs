@@ -1,0 +1,127 @@
+site_name: BranchWeaver
+site_description: >-
+  Deterministic branching maps for Unity. Generate route maps, overworld webs, and
+  chapter gates from rules, traverse and save them, and present them without writing
+  rendering code.
+site_url: https://fernandosluz.github.io/BranchWeaver-Docs/
+repo_url: https://github.com/FernandoSLuz/BranchWeaver-Docs
+repo_name: BranchWeaver-Docs
+edit_uri: edit/main/docs/
+copyright: Copyright &copy; Fernando Silva da Luz
+
+theme:
+  name: material
+  language: en
+  features:
+    - navigation.instant
+    - navigation.instant.progress
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.top
+    - navigation.footer
+    - navigation.indexes
+    - toc.follow
+    - search.suggest
+    - search.highlight
+    - search.share
+    - content.code.copy
+    - content.code.annotate
+    - content.tabs.link
+    - content.tooltips
+  palette:
+    # Slate Nocturne is the shipped default style, so the docs default to dark too.
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: black
+      accent: cyan
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+  icon:
+    repo: fontawesome/brands/github
+    admonition:
+      tip: material/rocket-launch
+      warning: material/alert-outline
+
+plugins:
+  - search:
+      separator: '[\s\-\.\_]+'
+  - glightbox:
+      touchNavigation: true
+      loop: false
+      zoomable: true
+      draggable: true
+
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+      toc_depth: 3
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.smartsymbols
+
+extra_css:
+  - assets/css/extra.css
+
+extra_javascript:
+  - assets/js/api-filter.js
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/FernandoSLuz/BranchWeaver-Docs
+      name: BranchWeaver docs on GitHub
+
+nav:
+  - Home: index.md
+  - Tutorials:
+      - Your first map: tutorials/first-map.md
+      - Styling your map: tutorials/styling-your-map.md
+  - How-to:
+      - Author maps: how-to/author-maps.md
+      - Integrate at runtime: how-to/runtime-integration.md
+      - Troubleshooting: how-to/troubleshooting.md
+  - Explanation:
+      - Architecture: explanation/architecture.md
+  - API reference:
+      - Overview: reference/index.md
+      - Getting a map: reference/getting-a-map.md
+      - Traversal and progression: reference/traversal-and-progression.md
+      - Authoring assets: reference/authoring-assets.md
+      - Styling and appearance: reference/styling-and-appearance.md
+      - Presentation and views: reference/presentation-and-views.md
+      - Framing, input and navigation: reference/framing-input-and-navigation.md
+      - Rules and constraints: reference/rules-and-constraints.md
+      - Graph, layout and geometry: reference/graph-layout-and-geometry.md
+      - Saving and migration: reference/saving-and-migration.md
+      - Editor tools: reference/editor-tools.md
+      - Determinism and diagnostics: reference/determinism-and-diagnostics.md
+      - Other: reference/other.md
+      - Documentation coverage: reference/coverage.md

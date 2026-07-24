@@ -4,7 +4,7 @@ Goal: a generated map on screen that you can walk, then the same map reproduced
 exactly. About fifteen minutes.
 
 Everything here is done from menus and the inspector. No code until
-[guide 5](05-runtime-integration.md).
+[guide 5](../how-to/runtime-integration.md).
 
 ---
 
@@ -30,7 +30,7 @@ same map in both presenters (screen-space uGUI and in-scene World2D), vertical a
 horizontal orientations, and a traveller walking between nodes.
 
 If nodes render as flat rectangles with no shading, see
-[Troubleshooting > the map looks flat](06-troubleshooting.md#the-map-looks-flat).
+[Troubleshooting > the map looks flat](../how-to/troubleshooting.md#the-map-looks-flat).
 
 ## Generate your own map, no code
 
@@ -56,7 +56,7 @@ The generator searches for a graph satisfying all of it.
 
 If it cannot find one, you get a **preflight failure** naming the unsatisfiable
 constraint, rather than a hang or a silently broken map. Widening one bound usually
-resolves it -- see [guide 3](03-authoring-maps.md#when-generation-fails).
+resolves it -- see [guide 3](../how-to/author-maps.md#when-generation-fails).
 
 ## Run a seed audit
 
@@ -82,11 +82,11 @@ You now have a functioning map in your own scene, with no code written.
 **Tools > BranchWeaver > Style Browser**. Pick a shipped style, press **Create editable
 copy**, and edit the resulting asset. The inspector previews changes live.
 
-Full detail in [guide 4](04-styles-and-presets.md).
+Full detail in [guide 4](../tutorials/styling-your-map.md).
 
 ## Next
 
-- **[Core concepts](02-core-concepts.md)** -- what the pieces are and why they are split
+- **[Core concepts](../explanation/architecture.md)** -- what the pieces are and why they are split
   the way they are. Read this before writing code against the package.
-- **[Authoring maps](03-authoring-maps.md)** -- node types, rules, and hand-authored
+- **[Authoring maps](../how-to/author-maps.md)** -- node types, rules, and hand-authored
   blueprints.
