@@ -139,7 +139,32 @@ Margins are fractions, so one style works across resolutions.
 
 #### Which way the map runs
 
-`FlowDirection` gives all four:
+`FlowDirection` gives all four. The same map, the same style, the same seed &mdash; only
+the direction token differs. Green nodes are the start, `Summit` is the single boss:
+
+<div class="grid-2" markdown>
+
+<figure markdown>
+  ![Bottom to top](../assets/images/direction-bottom-to-top.png){ .shot }
+  <figcaption><code>BottomToTop</code> &mdash; climbing. The default.</figcaption>
+</figure>
+
+<figure markdown>
+  ![Top to bottom](../assets/images/direction-top-to-bottom.png){ .shot }
+  <figcaption><code>TopToBottom</code> &mdash; a descent.</figcaption>
+</figure>
+
+<figure markdown>
+  ![Left to right](../assets/images/direction-left-to-right.png){ .shot }
+  <figcaption><code>LeftToRight</code> &mdash; a journey across.</figcaption>
+</figure>
+
+<figure markdown>
+  ![Right to left](../assets/images/direction-right-to-left.png){ .shot }
+  <figcaption><code>RightToLeft</code> &mdash; right-to-left reading order.</figcaption>
+</figure>
+
+</div>
 
 | Direction | Reads as |
 | --- | --- |
@@ -147,6 +172,11 @@ Margins are fractions, so one style works across resolutions.
 | `TopToBottom` | Descending. |
 | `LeftToRight` | A journey across, western reading order. |
 | `RightToLeft` | A journey across, right-to-left reading order. |
+
+```csharp
+var framing = style.Framing;
+framing.FlowDirection = MapFlowDirection.TopToBottom;
+```
 
 The **theme** picks which axis layers advance along; the **style** picks which way along
 it. Direction is applied when normalized positions are converted for display, so it is
