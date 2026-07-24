@@ -60,9 +60,40 @@ than any other setting here.
 
 ### Nodes
 
-Shape (`RoundedRect`, `Circle`, `Hexagon`, `Diamond`, `Capsule`), size, corner radius,
-and a surface with fill mode, gradient spread and angle, stroke width and colour, glow
-radius and intensity, and drop shadow.
+`Node.Shape` picks the silhouette. Every one of these is the same shader evaluating a
+different distance field, so they stay crisp at any zoom:
+
+<div class="grid-2" markdown>
+
+<figure markdown>
+  ![Rounded rect](../assets/images/node-shape-rounded-rect.png){ .shot }
+  <figcaption><code>RoundedRect</code> &mdash; honours <code>CornerRadius</code>.</figcaption>
+</figure>
+
+<figure markdown>
+  ![Circle](../assets/images/node-shape-circle.png){ .shot }
+  <figcaption><code>Circle</code></figcaption>
+</figure>
+
+<figure markdown>
+  ![Hexagon](../assets/images/node-shape-hexagon.png){ .shot }
+  <figcaption><code>Hexagon</code></figcaption>
+</figure>
+
+<figure markdown>
+  ![Diamond](../assets/images/node-shape-diamond.png){ .shot }
+  <figcaption><code>Diamond</code></figcaption>
+</figure>
+
+<figure markdown>
+  ![Capsule](../assets/images/node-shape-capsule.png){ .shot }
+  <figcaption><code>Capsule</code> &mdash; fully rounded on the shorter axis.</figcaption>
+</figure>
+
+</div>
+
+Plus size, corner radius, and a surface with fill mode, gradient spread and angle, stroke
+width and colour, glow radius and intensity, and drop shadow.
 
 **Stroke colour with zero alpha means "derive it from the node's own state colour".**
 That is the default, and it is why every node type stays coherent without the style
@@ -77,14 +108,25 @@ existing volumes or renderer features.
 Six states, each with brightness, opacity, scale, glow multiplier, ring toggle and
 width, and label visibility:
 
-| State | Shipped default |
-| --- | --- |
-| Hidden | Fully transparent, slightly shrunk |
-| Locked | Dimmed to 72%, slightly shrunk |
-| Available | Full brightness, soft glow |
-| Current | Brightest, 1.16x scale, ringed, strongest glow |
-| Visited | Slightly receded |
-| Completed | Settled, no glow |
+This is what the shipped defaults look like. The node type supplies the colour; the
+state style decides how it is presented:
+
+| | State | Shipped default |
+| --- | --- | --- |
+| ![Locked](../assets/images/node-state-locked.png){ width="80" } | **Locked** | Dimmed to 72%, slightly shrunk |
+| ![Available](../assets/images/node-state-available.png){ width="80" } | **Available** | Full brightness, soft glow |
+| ![Current](../assets/images/node-state-current.png){ width="80" } | **Current** | Brightest, 1.16x scale, ringed, strongest glow |
+| ![Visited](../assets/images/node-state-visited.png){ width="80" } | **Visited** | Slightly receded |
+| ![Completed](../assets/images/node-state-completed.png){ width="80" } | **Completed** | Settled, no glow |
+
+`Hidden` is fully transparent, so there is nothing to show. Note it keeps its label
+object at zero opacity rather than destroying it, so revealing a node rebuilds nothing.
+
+!!! tip "Read the hierarchy, not the colours"
+    Scanning that column top to bottom is the test that matters: the node the player can
+    act on must be the most prominent. If `Available` is not pulling your eye first, the
+    palette is fighting the state styles &mdash; that exact fault is why the shipped
+    Minimal Mono accent is a saturated blue rather than the near-black used for text.
 
 Hidden nodes keep their label object at zero opacity rather than destroying it, so
 revealing a node does not rebuild anything.
@@ -94,10 +136,18 @@ revealing a node does not rebuild anything.
 Width, cap (`Butt`, `Round`, `Arrow`), arrow length, node clearance, dash length and
 gap, flow speed, glow, and a width multiplier for routes leading to reachable nodes.
 
+| | Setting | Effect |
+| --- | --- | --- |
+| ![Round cap](../assets/images/edge-solid-round.png){ width="150" } | `Cap = Round` | **The default.** Hides the joints between segments on a curve. |
+| ![Butt cap](../assets/images/edge-butt.png){ width="150" } | `Cap = Butt` | Flat cut. Cheapest, but shows seams where segments meet. |
+| ![Arrow cap](../assets/images/edge-arrow.png){ width="150" } | `Cap = Arrow` | Points at the destination. Good for one-way routes. |
+| ![Dashed](../assets/images/edge-dashed.png){ width="150" } | `DashLength` + `DashGap` | Breaks the line into dashes. |
+
 `Round` caps are the default because they hide the joints between segments on a curve.
-Set `FlowSpeed` above zero and give the dashes a length to make available routes animate
-toward their destination -- the single most effective way to show a player where they
-can go next.
+Set `FlowSpeed` above zero **and** give the dashes a length to make available routes
+animate toward their destination -- the single most effective way to show a player where
+they can go next. Flow with no dash length does nothing visible, because there are no
+dashes to move.
 
 ### Backdrop
 
