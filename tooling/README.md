@@ -110,6 +110,29 @@ tiers file separates that plumbing from the API:
 | `hidden` | Left out of the reference; carries `[EditorBrowsable(Never)]` in source |
 | `internal` | No longer public at all |
 
+### Three things about the `hidden` stamping
+
+**It is complete in both directions.** Every `hidden` type carries the attribute and no
+published type does. That is worth re-checking after any tier change, because the two halves
+drift independently: a type promoted out of `hidden` keeps its attribute unless someone removes
+it, and the reference will happily publish a type it has told the compiler to hide.
+
+**Do not put `TempoForge.InternalTools` types in the tiers at all.** `extract_docs.py` excludes
+that directory by path, so those types are never extracted, never published, and stamping them
+achieves nothing. Four had accumulated in `hidden` and were removed.
+
+**Use the fully qualified attribute where `Component` is in scope.** Adding
+`using System.ComponentModel;` to a file that also uses `UnityEngine.Component` makes the name
+ambiguous and fails the build (CS0104). Those files carry
+`[System.ComponentModel.EditorBrowsable(...)]` instead. The same hazard applies to `Container`,
+`IContainer`, `ISite`, `License` and `TypeConverter`.
+
+Worth remembering what this buys, which is less than it looks: Roslyn ignores `EditorBrowsable`
+for source in the same solution, and an Asset Store package normally ships as source. So the
+attribute documents intent and would work if the package ever shipped as DLLs, but the thing
+actually keeping the surface small for a buyer is the reference exclusion, driven by the tiers
+file.
+
 The index states how many types are excluded and why, and coverage is measured over the
 **published** surface. A reference that hides its own omissions is worse than one that admits
 them.

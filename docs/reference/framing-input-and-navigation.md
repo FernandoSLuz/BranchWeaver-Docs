@@ -1,9 +1,9 @@
 # Framing, input and navigation
 
-6 types in this area.
+7 types in this area.
 
 !!! abstract "On this page"
-    [InputSystemMapInputBridge](#inputsystemmapinputbridge) &middot; [MapAspectClass](#mapaspectclass) &middot; [MapFrameResult](#mapframeresult) &middot; [MapSafeAreaController](#mapsafeareacontroller) &middot; [MapViewportFrame](#mapviewportframe) &middot; [MapViewportResult](#mapviewportresult)
+    [InputSystemMapInputBridge](#inputsystemmapinputbridge) &middot; [MapAspectClass](#mapaspectclass) &middot; [MapFrameResult](#mapframeresult) &middot; [MapFrameUtility](#mapframeutility) &middot; [MapSafeAreaController](#mapsafeareacontroller) &middot; [MapViewportFrame](#mapviewportframe) &middot; [MapViewportResult](#mapviewportresult)
 
 ## InputSystemMapInputBridge
 
@@ -171,6 +171,25 @@ keep it reachable.
 `public Vector2 ClampPan(Vector2 pan)`
 
 :   Clamps a pan offset into the allowed range.
+
+---
+
+## MapFrameUtility
+
+```csharp
+public static class MapFrameUtility
+```
+
+`BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapViewportFrame.cs</small>
+
+Pure framing maths, separated from the component so it can be tested
+without a scene, a canvas, or a device.
+
+**Methods**
+
+`public static MapFrameResult Resolve()`
+
+:   Resolves the area, scale, and pan limits for a map. `availablePixels` is the full rectangle the map is allowed to consider, normally the canvas rect or the screen. `safeAreaPixels` is the device safe area in the same space; pass the full rectangle when there is none.
 
 ---
 

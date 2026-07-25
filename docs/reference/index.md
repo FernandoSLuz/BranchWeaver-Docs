@@ -1,9 +1,9 @@
 # API reference
 
-The types you are meant to use in BranchWeaver, grouped by what they are for rather than by namespace. **170 types.**
+The types you are meant to use in BranchWeaver, grouped by what they are for rather than by namespace. **175 types.**
 
 !!! info "What is not listed here"
-    75 further types are public in the source but left out of this reference. They are public only because `internal` is per-assembly in C# and the package spans several assemblies -- plumbing, not API. They carry `[EditorBrowsable(Never)]` in the source to say so. Nothing you need is hidden: if a documented type exposes it, it is documented too.
+    70 further types are public in the source but left out of this reference. They are public only because `internal` is per-assembly in C# and the package spans several assemblies -- plumbing, not API. They carry `[EditorBrowsable(Never)]` in the source to say so. Nothing you need is hidden: if a documented type exposes it, it is documented too.
 
 ## Start here
 
@@ -94,6 +94,7 @@ The types a new project meets first.
 | [`MapThemeAsset`](authoring-assets.md#mapthemeasset) | class | Authoring assets | The authored asset that decides how a generated map is laid out and drawn: layer and node spacing, which axis the layers run along, how edges are shaped, the two colours the built-... |
 | [`MapThemeCompilation`](authoring-assets.md#mapthemecompilation) | class | Authoring assets | The result of compiling one `MapThemeAsset`: the immutable theme on success, and in every case the diagnostics the compiler gathered. |
 | [`MapThemeLimits`](authoring-assets.md#mapthemelimits) | class | Authoring assets | The ceilings a map theme is compiled against. |
+| [`CanvasMapNodeStyling`](styling-and-appearance.md#canvasmapnodestyling) | class | Styling and appearance | Turns a node's compiled type, visual state, and fog state into the surface request that draws it. |
 | [`CompiledMapStyle`](styling-and-appearance.md#compiledmapstyle) | class | Styling and appearance | The immutable style the views read. |
 | [`IMapStyledView`](styling-and-appearance.md#imapstyledview) | interface | Styling and appearance | Implemented by a view that can be dressed by a map style and advanced by a visual clock. |
 | [`MapBackdropTokens`](styling-and-appearance.md#mapbackdroptokens) | struct | Styling and appearance | The backdrop drawn behind the map. |
@@ -110,7 +111,9 @@ The types a new project meets first.
 | [`MapPaletteTokens`](styling-and-appearance.md#mappalettetokens) | struct | Styling and appearance | The semantic colour roles a style assigns once and reuses everywhere. |
 | [`MapStyleDefaults`](styling-and-appearance.md#mapstyledefaults) | class | Styling and appearance | The shipped map styles, defined in code rather than as serialized assets. |
 | [`MapStylePreset`](styling-and-appearance.md#mapstylepreset) | class | Styling and appearance | Everything the map draws itself with, in one asset: palette, node shape and treatment, per-state emphasis, edge stroke, backdrop, typography, motion, and on-screen framing. |
+| [`MapStyleRuntime`](styling-and-appearance.md#mapstyleruntime) | class | Styling and appearance | Bridges an authored `CompiledMapStyle` to runtime visual state. |
 | [`MapSurfaceGraphic`](styling-and-appearance.md#mapsurfacegraphic) | class | Styling and appearance | Draws one styled map surface as a uGUI graphic through the BranchWeaver map surface shader. |
+| [`MapSurfaceRequest`](styling-and-appearance.md#mapsurfacerequest) | struct | Styling and appearance | The complete parameter set for one map surface material. |
 | [`MapSurfaceTokens`](styling-and-appearance.md#mapsurfacetokens) | struct | Styling and appearance | Fill, stroke, glow, and shadow for a drawn surface. |
 | [`MapTypographyTokens`](styling-and-appearance.md#maptypographytokens) | struct | Styling and appearance | Label sizing and treatment. |
 | [`CanvasMapEdgeView`](presentation-and-views.md#canvasmapedgeview) | class | Presentation and views | Draws one edge between two map nodes as a chain of uGUI images, and is the edge view the Canvas presentation builds by default. |
@@ -160,11 +163,13 @@ The types a new project meets first.
 | [`MapSetupHierarchyBinding`](presentation-and-views.md#mapsetuphierarchybinding) | class | Presentation and views | Durable identity for scene objects created and owned by the BranchWeaver setup wizard. |
 | [`MapTraversalController`](presentation-and-views.md#maptraversalcontroller) | class | Presentation and views | The scene component that owns one traversal run: it holds the graph, the progression, and the compiled content, applies every move through a `MapSession`, and reports what happened... |
 | [`PassthroughLocalizationAdapter`](presentation-and-views.md#passthroughlocalizationadapter) | class | Presentation and views | The `IMapLocalizationAdapter` used when a project has no localization system wired up: it returns the authored fallback text unchanged, falling back to the key itself when no text ... |
+| [`WorldMapEdgeView`](presentation-and-views.md#worldmapedgeview) | class | Presentation and views | Draws one edge between two map nodes as a world-space line, and is the edge view the World2D presentation builds by default. |
 | [`WorldMapNodeView`](presentation-and-views.md#worldmapnodeview) | class | Presentation and views | Draws one map node as a world-space sprite, and is the node view the World2D presentation builds by default. |
 | [`WorldMapPresenter`](presentation-and-views.md#worldmappresenter) | class | Presentation and views | Draws a map as ordinary scene objects rather than UI. |
 | [`InputSystemMapInputBridge`](framing-input-and-navigation.md#inputsystemmapinputbridge) | class | Framing, input and navigation | Optional PlayerInput UnityEvent bridge compiled only when com.unity.inputsystem is installed. |
 | [`MapAspectClass`](framing-input-and-navigation.md#mapaspectclass) | enum | Framing, input and navigation | Coarse bucket for a screen's shape, so framing and layout can be chosen per display class instead of per resolution. |
 | [`MapFrameResult`](framing-input-and-navigation.md#mapframeresult) | struct | Framing, input and navigation | The resolved on-screen placement of a map: the rectangle it may occupy, the scale that fits its content into that rectangle, and the pan limits that keep it reachable. |
+| [`MapFrameUtility`](framing-input-and-navigation.md#mapframeutility) | class | Framing, input and navigation | Pure framing maths, separated from the component so it can be tested without a scene, a canvas, or a device. |
 | [`MapSafeAreaController`](framing-input-and-navigation.md#mapsafeareacontroller) | class | Framing, input and navigation | Keeps the RectTransform it sits on inside the device safe area, so notches, rounded corners, and gesture bars never cover the map. |
 | [`MapViewportFrame`](framing-input-and-navigation.md#mapviewportframe) | class | Framing, input and navigation | Places a map on screen: reserves margins for your own interface, fits the content, insets into the device safe area, and clamps pan and zoom. |
 | [`MapViewportResult`](framing-input-and-navigation.md#mapviewportresult) | struct | Framing, input and navigation | The outcome of measuring one screen: whether the measurement succeeded, the safe area as fractions of the screen, and the aspect bucket. |

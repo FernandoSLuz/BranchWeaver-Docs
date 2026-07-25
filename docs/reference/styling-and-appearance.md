@@ -1,9 +1,41 @@
 # Styling and appearance
 
-19 types in this area.
+22 types in this area.
 
 !!! abstract "On this page"
-    [CompiledMapStyle](#compiledmapstyle) &middot; [IMapStyledView](#imapstyledview) &middot; [MapBackdropTokens](#mapbackdroptokens) &middot; [MapEasing](#mapeasing) &middot; [MapEdgeCap](#mapedgecap) &middot; [MapEdgeStyleTokens](#mapedgestyletokens) &middot; [MapFillMode](#mapfillmode) &middot; [MapFitMode](#mapfitmode) &middot; [MapFramingTokens](#mapframingtokens) &middot; [MapMotionTokens](#mapmotiontokens) &middot; [MapNodeShape](#mapnodeshape) &middot; [MapNodeStateStyle](#mapnodestatestyle) &middot; [MapNodeStyleTokens](#mapnodestyletokens) &middot; [MapPaletteTokens](#mappalettetokens) &middot; [MapStyleDefaults](#mapstyledefaults) &middot; [MapStylePreset](#mapstylepreset) &middot; [MapSurfaceGraphic](#mapsurfacegraphic) &middot; [MapSurfaceTokens](#mapsurfacetokens) &middot; [MapTypographyTokens](#maptypographytokens)
+    [CanvasMapNodeStyling](#canvasmapnodestyling) &middot; [CompiledMapStyle](#compiledmapstyle) &middot; [IMapStyledView](#imapstyledview) &middot; [MapBackdropTokens](#mapbackdroptokens) &middot; [MapEasing](#mapeasing) &middot; [MapEdgeCap](#mapedgecap) &middot; [MapEdgeStyleTokens](#mapedgestyletokens) &middot; [MapFillMode](#mapfillmode) &middot; [MapFitMode](#mapfitmode) &middot; [MapFramingTokens](#mapframingtokens) &middot; [MapMotionTokens](#mapmotiontokens) &middot; [MapNodeShape](#mapnodeshape) &middot; [MapNodeStateStyle](#mapnodestatestyle) &middot; [MapNodeStyleTokens](#mapnodestyletokens) &middot; [MapPaletteTokens](#mappalettetokens) &middot; [MapStyleDefaults](#mapstyledefaults) &middot; [MapStylePreset](#mapstylepreset) &middot; [MapStyleRuntime](#mapstyleruntime) &middot; [MapSurfaceGraphic](#mapsurfacegraphic) &middot; [MapSurfaceRequest](#mapsurfacerequest) &middot; [MapSurfaceTokens](#mapsurfacetokens) &middot; [MapTypographyTokens](#maptypographytokens)
+
+## CanvasMapNodeStyling
+
+```csharp
+public static class CanvasMapNodeStyling
+```
+
+`BranchWeaver.Presentation.Canvas` &middot; <small>BranchWeaver/Runtime/Presentation/Canvas/CanvasMapNodeStyling.cs</small>
+
+Turns a node's compiled type, visual state, and fog state into the surface
+request that draws it.
+
+Keeping this a pure function of its inputs means the same mapping drives the
+runtime views, the Map Studio graph, and the Style Browser previews, so what
+an author sees while editing is what ships. It also makes the mapping
+directly testable without a canvas.
+
+**Methods**
+
+`public static MapSurfaceRequest BuildBackdrop(CompiledMapStyle style)`
+
+:   Builds the surface request for the map backdrop.
+
+`public static MapSurfaceRequest BuildEdgeSegment()`
+
+:   Builds the surface request for one straight edge segment.
+
+`public static MapSurfaceRequest BuildNode()`
+
+:   Builds the surface request for one node.
+
+---
 
 ## CompiledMapStyle
 
@@ -848,6 +880,40 @@ saved blueprints keep working untouched.
 
 ---
 
+## MapStyleRuntime
+
+```csharp
+public static class MapStyleRuntime
+```
+
+`BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapStyleRuntime.cs</small>
+
+Bridges an authored `CompiledMapStyle` to runtime visual state.
+
+The visual-state enum belongs to this assembly, so the mapping lives here
+rather than on the style itself; that keeps BranchWeaver.Authoring free of
+any dependency on the runtime assembly.
+
+**Methods**
+
+`public static float FogOpacity(MapFogState fog)`
+
+:   The opacity multiplier a fog state contributes, layered on top of the per-state opacity so fog and state emphasis compose rather than fight.
+
+`public static void ResolveNodeColors()`
+
+:   Resolves the final node colours for a state: the node type's identity colour adjusted by the style's brightness and opacity, plus the second gradient stop derived from the style's spread.
+
+`public static Color Shift(Color value, float amount)`
+
+:   Lightens (positive) or darkens (negative) without changing alpha.
+
+`public static MapNodeStateStyle StateStyle(CompiledMapStyle style, MapNodeVisualState state)`
+
+:   The per-state treatment for one runtime visual state.
+
+---
+
 ## MapSurfaceGraphic
 
 ```csharp
@@ -895,6 +961,164 @@ sprite, type, or border behaviour is inherited.
 `public void SetDashOffset(float offset)`
 
 :   Updates only the dash scroll offset. Separate from `Apply` so an animated flowing edge does not rebuild its mesh every frame.
+
+---
+
+## MapSurfaceRequest
+
+```csharp
+public struct MapSurfaceRequest
+```
+
+`BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapStyleRuntime.cs</small>
+
+The complete parameter set for one map surface material. Two surfaces with
+identical parameters share a material and therefore batch together, which
+keeps a map of many same-looking nodes cheap.
+
+**Fields**
+
+`public float ArrowLength`
+
+:   &mdash;
+
+`public bool CapEnd`
+
+:   &mdash;
+
+`public float CornerRadius`
+
+:   &mdash;
+
+`public float DashGap`
+
+:   &mdash;
+
+`public float DashLength`
+
+:   &mdash;
+
+`public float DashOffset`
+
+:   &mdash;
+
+`public MapEdgeCap EdgeCap`
+
+:   &mdash;
+
+`public float EdgeLength`
+
+:   &mdash;
+
+`public float EdgeWidth`
+
+:   &mdash;
+
+`public Vector2 Extent`
+
+:   &mdash;
+
+`public MapFillMode FillMode`
+
+:   &mdash;
+
+`public Color FillPrimary`
+
+:   &mdash;
+
+`public Color FillSecondary`
+
+:   &mdash;
+
+`public Color GlowColor`
+
+:   &mdash;
+
+`public float GlowIntensity`
+
+:   &mdash;
+
+`public float GlowRadius`
+
+:   &mdash;
+
+`public float GradientAngleDegrees`
+
+:   &mdash;
+
+`public Color GridColor`
+
+:   &mdash;
+
+`public float GridLineWidth`
+
+:   &mdash;
+
+`public float GridSpacing`
+
+:   &mdash;
+
+`public MapSurfaceMode Mode`
+
+:   &mdash;
+
+`public Color RingColor`
+
+:   &mdash;
+
+`public float RingGap`
+
+:   &mdash;
+
+`public float RingWidth`
+
+:   &mdash;
+
+`public Color ShadowColor`
+
+:   &mdash;
+
+`public Vector2 ShadowOffset`
+
+:   &mdash;
+
+`public float ShadowRadius`
+
+:   &mdash;
+
+`public MapNodeShape Shape`
+
+:   &mdash;
+
+`public Vector2 Size`
+
+:   &mdash;
+
+`public Color StrokeColor`
+
+:   &mdash;
+
+`public float StrokeWidth`
+
+:   &mdash;
+
+`public float VignetteSoftness`
+
+:   &mdash;
+
+`public float VignetteStrength`
+
+:   &mdash;
+
+**Methods**
+
+`public void ApplyTo(Material material)`
+
+:   Writes every request value onto a material.
+
+`public string Key()`
+
+:   A stable key over every value that reaches the material. Lengths and sizes quantize to whole pixels and the dash offset to 1/4 pixel, so a flowing edge does not allocate a new material every frame.
 
 ---
 

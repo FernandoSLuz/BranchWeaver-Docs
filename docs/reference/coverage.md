@@ -4,14 +4,14 @@ Generated from source alongside the reference itself, so it cannot quietly drift
 
 | Scope | Documented | Total | Coverage |
 | --- | --- | --- | --- |
-| Public types | 170 | 170 | 100% |
-| Public members | 1010 | 1010 | 100% |
+| Public types | 175 | 175 | 100% |
+| Public members | 1020 | 1067 | 96% |
 
-Measured over the 170 types this reference publishes.
+Measured over the 175 types this reference publishes.
 
 ## What is excluded, and why
 
-A further **75** public types are left out. They are public only because `internal` is per-assembly in C# and this package spans several assemblies, so publishing them would describe plumbing as API. They carry `[EditorBrowsable(Never)]` in the source.
+A further **70** public types are left out. They are public only because `internal` is per-assembly in C# and this package spans several assemblies, so publishing them would describe plumbing as API. They carry `[EditorBrowsable(Never)]` in the source.
 
 Coverage is reported over the published surface for the same reason: documenting the excluded types would raise this percentage without helping anyone read the package.
 
@@ -22,9 +22,9 @@ Coverage is reported over the published surface for the same reason: documenting
 | [Getting a map](getting-a-map.md) | 12 | 12 | 100% |
 | [Traversal and progression](traversal-and-progression.md) | 8 | 8 | 100% |
 | [Authoring assets](authoring-assets.md) | 17 | 17 | 100% |
-| [Styling and appearance](styling-and-appearance.md) | 19 | 19 | 100% |
-| [Presentation and views](presentation-and-views.md) | 49 | 49 | 100% |
-| [Framing, input and navigation](framing-input-and-navigation.md) | 6 | 6 | 100% |
+| [Styling and appearance](styling-and-appearance.md) | 22 | 22 | 100% |
+| [Presentation and views](presentation-and-views.md) | 50 | 50 | 100% |
+| [Framing, input and navigation](framing-input-and-navigation.md) | 7 | 7 | 100% |
 | [Rules and constraints](rules-and-constraints.md) | 18 | 18 | 100% |
 | [Graph, layout and geometry](graph-layout-and-geometry.md) | 10 | 10 | 100% |
 | [Saving and migration](saving-and-migration.md) | 12 | 12 | 100% |
