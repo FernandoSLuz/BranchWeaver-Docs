@@ -130,6 +130,32 @@ If nodes render as plain rectangles with no shading anywhere, that is the shader
 load rather than a setting on this page: see
 [Troubleshooting](troubleshooting.md#the-map-looks-flat).
 
+## Optional bloom over the whole map
+
+Everything above is drawn in-shader, including the glow. You do not need a post-processing
+stack, and BranchWeaver deliberately depends on none, so nothing here can collide with volumes
+or renderer features you already run.
+
+If you want a softer bloom across the whole map anyway, and you are not already running your
+own post stack, add **BranchWeaver > Map Camera Bloom (Optional)** to the camera that draws the
+map. It is off by default and nothing in the package adds it for you.
+
+```csharp
+var bloom = mapCamera.gameObject.AddComponent<MapCameraBloom>();
+// Threshold 0.80, Intensity 0.45 and a light vignette by default.
+// Set Intensity to 0 to keep the vignette and drop the bloom pass entirely.
+```
+
+!!! warning "Built-in render pipeline only"
+    Under URP or HDRP the image-effect callback is never called. Rather than silently doing
+    nothing, the component detects the active pipeline, logs one warning naming the volume
+    overrides to use instead, and disables itself. Reach for your pipeline's own Bloom and
+    Vignette overrides there.
+
+Raise **Threshold** if the whole map glows rather than just the bright rims. Raise
+**Downsample** to make it cheaper and softer. If the bloom shader cannot load, the effect
+copies the frame through unchanged rather than blacking out the map.
+
 ## Next
 
 - **[Emphasise node states](style-node-states.md)** &mdash; make the node the player can act on the most prominent thing on screen.

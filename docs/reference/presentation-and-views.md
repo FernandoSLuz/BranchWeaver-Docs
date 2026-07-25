@@ -1,9 +1,9 @@
 # Presentation and views
 
-48 types in this area.
+49 types in this area.
 
 !!! abstract "On this page"
-    [CanvasMapEdgeView](#canvasmapedgeview) &middot; [CanvasMapNodeView](#canvasmapnodeview) &middot; [CanvasMapPresenter](#canvasmappresenter) &middot; [DefaultMapNodeHitTester](#defaultmapnodehittester) &middot; [IMapAudioCueAdapter](#imapaudiocueadapter) &middot; [IMapBackgroundPresenter](#imapbackgroundpresenter) &middot; [IMapDevelopmentHost](#imapdevelopmenthost) &middot; [IMapEdgeAvailabilityView](#imapedgeavailabilityview) &middot; [IMapEdgeTransitionView](#imapedgetransitionview) &middot; [IMapEdgeView](#imapedgeview) &middot; [IMapEdgeViewFactory](#imapedgeviewfactory) &middot; [IMapFocusIndicatorPresenter](#imapfocusindicatorpresenter) &middot; [IMapFocusView](#imapfocusview) &middot; [IMapInputSource](#imapinputsource) &middot; [IMapLocalizationAdapter](#imaplocalizationadapter) &middot; [IMapNodeHitState](#imapnodehitstate) &middot; [IMapNodeHitTester](#imapnodehittester) &middot; [IMapNodeTransitionView](#imapnodetransitionview) &middot; [IMapNodeView](#imapnodeview) &middot; [IMapNodeViewFactory](#imapnodeviewfactory) &middot; [IMapPresentationTransitionAdapter](#imappresentationtransitionadapter) &middot; [IMapViewFactoryLifetime](#imapviewfactorylifetime) &middot; [IPlayerPawnPresenter](#iplayerpawnpresenter) &middot; [IRouteMarkerPresenter](#iroutemarkerpresenter) &middot; [InputSystemSignalAdapter](#inputsystemsignaladapter) &middot; [LegacyMapInputSource](#legacymapinputsource) &middot; [MapDevelopmentCommandResult](#mapdevelopmentcommandresult) &middot; [MapDevelopmentFailureKind](#mapdevelopmentfailurekind) &middot; [MapEdgeViewData](#mapedgeviewdata) &middot; [MapFogSettings](#mapfogsettings) &middot; [MapFogState](#mapfogstate) &middot; [MapInputController](#mapinputcontroller) &middot; [MapInputFrame](#mapinputframe) &middot; [MapNavigationDirection](#mapnavigationdirection) &middot; [MapNavigationModel](#mapnavigationmodel) &middot; [MapNodeRuntimeState](#mapnoderuntimestate) &middot; [MapNodeViewData](#mapnodeviewdata) &middot; [MapNodeVisualState](#mapnodevisualstate) &middot; [MapPresenterBase](#mappresenterbase) &middot; [MapRuntimeContent](#mapruntimecontent) &middot; [MapRuntimeStateDeriver](#mapruntimestatederiver) &middot; [MapRuntimeStateSnapshot](#mapruntimestatesnapshot) &middot; [MapSelectionResult](#mapselectionresult) &middot; [MapSetupHierarchyBinding](#mapsetuphierarchybinding) &middot; [MapTraversalController](#maptraversalcontroller) &middot; [PassthroughLocalizationAdapter](#passthroughlocalizationadapter) &middot; [WorldMapNodeView](#worldmapnodeview) &middot; [WorldMapPresenter](#worldmappresenter)
+    [CanvasMapEdgeView](#canvasmapedgeview) &middot; [CanvasMapNodeView](#canvasmapnodeview) &middot; [CanvasMapPresenter](#canvasmappresenter) &middot; [DefaultMapNodeHitTester](#defaultmapnodehittester) &middot; [IMapAudioCueAdapter](#imapaudiocueadapter) &middot; [IMapBackgroundPresenter](#imapbackgroundpresenter) &middot; [IMapDevelopmentHost](#imapdevelopmenthost) &middot; [IMapEdgeAvailabilityView](#imapedgeavailabilityview) &middot; [IMapEdgeTransitionView](#imapedgetransitionview) &middot; [IMapEdgeView](#imapedgeview) &middot; [IMapEdgeViewFactory](#imapedgeviewfactory) &middot; [IMapFocusIndicatorPresenter](#imapfocusindicatorpresenter) &middot; [IMapFocusView](#imapfocusview) &middot; [IMapInputSource](#imapinputsource) &middot; [IMapLocalizationAdapter](#imaplocalizationadapter) &middot; [IMapNodeHitState](#imapnodehitstate) &middot; [IMapNodeHitTester](#imapnodehittester) &middot; [IMapNodeTransitionView](#imapnodetransitionview) &middot; [IMapNodeView](#imapnodeview) &middot; [IMapNodeViewFactory](#imapnodeviewfactory) &middot; [IMapPresentationTransitionAdapter](#imappresentationtransitionadapter) &middot; [IMapViewFactoryLifetime](#imapviewfactorylifetime) &middot; [IPlayerPawnPresenter](#iplayerpawnpresenter) &middot; [IRouteMarkerPresenter](#iroutemarkerpresenter) &middot; [InputSystemSignalAdapter](#inputsystemsignaladapter) &middot; [LegacyMapInputSource](#legacymapinputsource) &middot; [MapCameraBloom](#mapcamerabloom) &middot; [MapDevelopmentCommandResult](#mapdevelopmentcommandresult) &middot; [MapDevelopmentFailureKind](#mapdevelopmentfailurekind) &middot; [MapEdgeViewData](#mapedgeviewdata) &middot; [MapFogSettings](#mapfogsettings) &middot; [MapFogState](#mapfogstate) &middot; [MapInputController](#mapinputcontroller) &middot; [MapInputFrame](#mapinputframe) &middot; [MapNavigationDirection](#mapnavigationdirection) &middot; [MapNavigationModel](#mapnavigationmodel) &middot; [MapNodeRuntimeState](#mapnoderuntimestate) &middot; [MapNodeViewData](#mapnodeviewdata) &middot; [MapNodeVisualState](#mapnodevisualstate) &middot; [MapPresenterBase](#mappresenterbase) &middot; [MapRuntimeContent](#mapruntimecontent) &middot; [MapRuntimeStateDeriver](#mapruntimestatederiver) &middot; [MapRuntimeStateSnapshot](#mapruntimestatesnapshot) &middot; [MapSelectionResult](#mapselectionresult) &middot; [MapSetupHierarchyBinding](#mapsetuphierarchybinding) &middot; [MapTraversalController](#maptraversalcontroller) &middot; [PassthroughLocalizationAdapter](#passthroughlocalizationadapter) &middot; [WorldMapNodeView](#worldmapnodeview) &middot; [WorldMapPresenter](#worldmappresenter)
 
 ## CanvasMapEdgeView
 
@@ -730,6 +730,41 @@ settings.
 `public MapInputFrame Capture()`
 
 :   Reads one frame from `Input`. While any finger is down the touch pointer replaces the mouse pointer and touch pan and zoom add to the mouse values; with no touches the gesture state is cleared, so a lifted finger cannot leak a delta into the next frame.
+
+---
+
+## MapCameraBloom
+
+```csharp
+public sealed class MapCameraBloom : MonoBehaviour
+```
+
+`BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapCameraBloom.cs</small>
+
+Optional map bloom and vignette. **Off by default and never required.**
+
+The shipped map look needs no post-processing: node glow, edge glow and
+state rings are drawn inside the SDF map surface shader. That is why
+BranchWeaver depends on no post-processing package, and why a project's
+existing volumes, renderer features and profiles cannot collide with it.
+
+This component exists only for a project that wants a softer bloom across
+the whole map and is not already running its own post stack. It is a
+self-contained image effect with no package dependency.
+
+Built-in render pipeline only. Under URP or HDRP, `OnRenderImage` is
+never called, so rather than silently doing nothing this component detects
+the active pipeline, logs one explanatory warning, and disables itself.
+Use that pipeline's own Bloom volume override instead.
+
+To enable: add it to the camera that draws the map and enable the
+component. Nothing in the package adds it for you.
+
+**Properties**
+
+`public bool IsSupportedPipeline`
+
+:   True when this effect can run in the active pipeline, which means the Built-in pipeline. Under a Scriptable Render Pipeline the image-effect callback is never invoked, so the component turns itself off instead.
 
 ---
 

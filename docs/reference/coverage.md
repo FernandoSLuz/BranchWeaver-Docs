@@ -4,10 +4,10 @@ Generated from source alongside the reference itself, so it cannot quietly drift
 
 | Scope | Documented | Total | Coverage |
 | --- | --- | --- | --- |
-| Public types | 169 | 169 | 100% |
-| Public members | 1009 | 1009 | 100% |
+| Public types | 170 | 170 | 100% |
+| Public members | 1010 | 1010 | 100% |
 
-Measured over the 169 types this reference publishes.
+Measured over the 170 types this reference publishes.
 
 ## What is excluded, and why
 
@@ -23,7 +23,7 @@ Coverage is reported over the published surface for the same reason: documenting
 | [Traversal and progression](traversal-and-progression.md) | 8 | 8 | 100% |
 | [Authoring assets](authoring-assets.md) | 17 | 17 | 100% |
 | [Styling and appearance](styling-and-appearance.md) | 19 | 19 | 100% |
-| [Presentation and views](presentation-and-views.md) | 48 | 48 | 100% |
+| [Presentation and views](presentation-and-views.md) | 49 | 49 | 100% |
 | [Framing, input and navigation](framing-input-and-navigation.md) | 6 | 6 | 100% |
 | [Rules and constraints](rules-and-constraints.md) | 18 | 18 | 100% |
 | [Graph, layout and geometry](graph-layout-and-geometry.md) | 10 | 10 | 100% |

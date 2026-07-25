@@ -1,6 +1,6 @@
 # API reference
 
-The types you are meant to use in BranchWeaver, grouped by what they are for rather than by namespace. **169 types.**
+The types you are meant to use in BranchWeaver, grouped by what they are for rather than by namespace. **170 types.**
 
 !!! info "What is not listed here"
     75 further types are public in the source but left out of this reference. They are public only because `internal` is per-assembly in C# and the package spans several assemblies -- plumbing, not API. They carry `[EditorBrowsable(Never)]` in the source to say so. Nothing you need is hidden: if a documented type exposes it, it is documented too.
@@ -139,6 +139,7 @@ The types a new project meets first.
 | [`IRouteMarkerPresenter`](presentation-and-views.md#iroutemarkerpresenter) | interface | Presentation and views | Optional hook for marking the route already walked: footprints, a trail, a drawn line. |
 | [`InputSystemSignalAdapter`](presentation-and-views.md#inputsystemsignaladapter) | class | Presentation and views | Package-neutral bridge for Input System PlayerInput UnityEvents. |
 | [`LegacyMapInputSource`](presentation-and-views.md#legacymapinputsource) | class | Presentation and views | Input source for Unity's legacy Input Manager: axes for navigation, Return, Space or the Submit button for activation, the mouse for pointing, middle-drag to pan and the wheel to z... |
+| [`MapCameraBloom`](presentation-and-views.md#mapcamerabloom) | class | Presentation and views | Optional map bloom and vignette. |
 | [`MapDevelopmentCommandResult`](presentation-and-views.md#mapdevelopmentcommandresult) | class | Presentation and views | The outcome of one development command: success, optionally carrying a value, or a refusal with a reason fit to show in a debug overlay. |
 | [`MapDevelopmentFailureKind`](presentation-and-views.md#mapdevelopmentfailurekind) | enum | Presentation and views | Why a development command was refused. |
 | [`MapEdgeViewData`](presentation-and-views.md#mapedgeviewdata) | struct | Presentation and views | Everything an edge view needs to draw one route in one presented state: the graph edge, the sampled path along it, the colour to draw it in, and its fog state. |
