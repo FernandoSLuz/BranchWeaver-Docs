@@ -21,55 +21,65 @@ backup without repairing or otherwise mutating any candidate.
 
 `public FileMapSaveAdapter(string rootDirectory)`
 
-:   &mdash;
+:   Creates an adapter over a save directory using the default serializer.
+    - `rootDirectory` &mdash; Absolute path of the directory slot files live in, typically a folder under the platform's persistent data path. It does not have to exist yet; it is created on the first write.
 
 `public FileMapSaveAdapter(string rootDirectory, MapSaveSerializer serializer)`
 
-:   &mdash;
+:   Creates an adapter over a save directory with a serializer you supply, which is how a game registers its own save migrations. The root is normalised and inspected here rather than on first use, so a save location that is unusable or unsafe fails while you are wiring the adapter up instead of the first time a player saves.
+    - `rootDirectory` &mdash; Absolute path of the directory slot files live in. It does not have to exist yet; it is created on the first write.
+    - `serializer` &mdash; Serializer used for every read and write through this adapter.
 
 **Properties**
 
 `public string Backup`
 
-:   &mdash;
+:   Full path holding the bytes the previous write replaced, and the last candidate a read falls back to.
 
 `public string Path`
 
-:   &mdash;
+:   Full path of the file this candidate would be read from.
 
 `public string Primary`
 
-:   &mdash;
+:   Full path of the slot's committed save, and the first candidate a read tries.
 
 `public string RootDirectory`
 
-:   &mdash;
+:   The directory every slot file is resolved inside, normalised to an absolute path with any trailing separator removed. It is a boundary rather than a hint: a slot ID whose resolved path would land outside this directory, or in a subdirectory of it, is refused instead of followed.
 
 `public MapSaveRecoverySource Source`
 
-:   &mdash;
+:   Which of the three save files this candidate is. It is reported back to the caller when this candidate is the one that loads, and used as the context on any diagnostic raised against it, so a failure names the file it came from.
 
 `public string Temporary`
 
-:   &mdash;
+:   Full path a write publishes to before swapping it over the committed save. One left behind means a write was interrupted after the bytes were safely on disk, so a read treats it as the second candidate.
 
 `public string Tombstone`
 
-:   &mdash;
+:   Full path of the deletion marker. While it exists the slot reads as not found, whatever save files happen to remain beside it.
 
 **Methods**
 
 `public MapSaveOperationResult TryDelete(StableId slotId)`
 
-:   &mdash;
+:   Deletes a slot by committing a durable deletion marker and then removing the committed save, the temporary file, and the backup. The marker is written and flushed before anything is removed, so a crash part-way through cannot leave a stale temporary file or backup that `TryRead` would happily load as a resurrected save. While the marker is present the slot reads as `MapSaveFailureKind.NotFound`; the next successful write clears it.
+    - `slotId` &mdash; Slot to delete; an empty ID is refused as an unsafe path.
+    - **Returns** &mdash; Success even when the slot held no files, since the deletion marker still records the intent. Failure when one of the slot's paths is a reparse point or the wrong kind of entry, or when the marker or the cleanup throws.
 
 `public MapSaveReadResult TryRead(StableId slotId)`
 
-:   &mdash;
+:   Loads a slot, trying the committed save first, then the temporary file an interrupted write may have left, then the backup. Nothing on disk is repaired, replaced, or deleted by a read, so a slot that fails to load is left exactly as it was for a retry or a support copy. When something other than the committed save supplies the data, the returned report carries a warning naming which file it came from, together with the diagnostics from the candidates rejected before it, downgraded to warnings.
+    - `slotId` &mdash; Slot to read; an empty ID is refused as an unsafe path.
+    - **Returns** &mdash; The envelope and the file it was recovered from on success. On failure the kind is the most serious one seen across the candidates, and is `MapSaveFailureKind.NotFound` both when the slot has no files at all and when it carries a deletion marker.
 
 `public MapSaveOperationResult TryWrite(StableId slotId, MapSaveEnvelope envelope)`
 
-:   &mdash;
+:   Serialises a save and publishes it to the slot, keeping the bytes it replaced as a backup. The new save is written to a private staging file, flushed all the way to the device, promoted to the slot's temporary file, and only then swapped over the committed save. A crash at any point therefore leaves either the previous save or a complete temporary file that `TryRead` can recover from; a half-written save is never left where a read would find it. Writing to a slot that was deleted revives it and clears its deletion marker.
+    - `slotId` &mdash; Slot to publish to; an empty ID is refused as an unsafe path.
+    - `envelope` &mdash; The save to serialise and store.
+    - **Returns** &mdash; Failure when the envelope will not serialise, when one of the slot's paths is a reparse point or the wrong kind of entry, or when the commit throws. In that last case any temporary file already published is deliberately left in place, because it is a valid recovery candidate.
 
 ---
 
@@ -89,9 +99,9 @@ so where a save lives, whether that is memory, a rooted file, or a platform serv
 adapter decision rather than an engine one.
 
 An implementation must report problems through the returned result instead of throwing,
-must reject an empty slot ID as `apSaveFailureKind.UnsafePath`, and must
-persist serialized bytes from `apSaveSerializer` rather than keeping live
-`apGraph` or `apProgressionState` references -- a save that
+must reject an empty slot ID as `MapSaveFailureKind.UnsafePath`, and must
+persist serialized bytes from `MapSaveSerializer` rather than keeping live
+`MapGraph` or `MapProgressionState` references -- a save that
 aliases live objects is not a save. Decoding through that same serializer is what
 migrates older formats and validates every field before a caller sees the envelope.
 
@@ -109,7 +119,7 @@ public interface IMapSaveMigration
 
 One step of the save upgrade chain: it accepts an envelope at its declared source version
 and returns the same run at its target version.
-`apSaveSerializer` applies the steps in order while loading an older save,
+`MapSaveSerializer` applies the steps in order while loading an older save,
 which is how a format change ships without invalidating live campaigns.
 
 An implementation must be deterministic and free of Unity, editor, and global state; must
@@ -117,7 +127,7 @@ declare a target exactly one above its source; must return a new envelope instea
 mutating the one it was handed; and must leave the generator version, seed, rules
 fingerprint, stored graph fingerprint, and canonical graph bytes untouched. The serializer
 re-checks all of that after the call, so a step that throws, drifts, or returns the wrong
-version fails the load as `apSaveFailureKind.MigrationFailed` instead of
+version fails the load as `MapSaveFailureKind.MigrationFailed` instead of
 quietly rewriting a player's save.
 
 ---
@@ -138,47 +148,59 @@ A complete, versioned graph and traversal snapshot.
 
 `public MapSaveEnvelope()`
 
-:   &mdash;
+:   Assembles an envelope from its parts, without checking that they agree. Prefer `CreateCurrent` for a save you are about to write, since it fills the version and manifest fields from the graph itself. This constructor exists for the two cases that must state a version rather than assume the current one: reading a save back, and migrating one forward.
+    - `formatVersion` &mdash; The save format these fields follow. Only `CurrentFormatVersion` may be serialized.
+    - `generatorVersion` &mdash; The embedded graph's generator version, repeated here; a value that disagrees with the graph is rejected on read and write.
+    - `seed` &mdash; The embedded graph's seed, repeated here; it too must agree with the graph.
+    - `rulesFingerprint` &mdash; The embedded graph's rules fingerprint, repeated here. Null is stored as an empty string.
+    - `graphFingerprint` &mdash; The canonical fingerprint of `graph`. Null is stored as an empty string.
+    - `graph` &mdash; The map the run took place on.
+    - `progression` &mdash; How far the run had got on that map.
+    - `customerMetadata` &mdash; Your own data to carry alongside the run. Null is stored as `MapDataPayload.Empty`.
 
 **Properties**
 
 `public MapDataPayload CustomerMetadata`
 
-:   &mdash;
+:   Your own data carried alongside the run; nothing in the package reads it. Never null. It must be canonical or the save is refused, and it counts against the same per-payload property limit as a node payload. Format 1 had no such field, so a save from that version reads back with `MapDataPayload.Empty` here.
 
 `public int FormatVersion`
 
-:   &mdash;
+:   Which save format this envelope follows, and therefore which fields the reader expects to find. An envelope read from an older save keeps the version it was written at until a migration raises it; only `CurrentFormatVersion` is ever written back out.
 
 `public int GeneratorVersion`
 
-:   &mdash;
+:   The generator version recorded with the map, repeated at the top of the save so a reader can tell which algorithm built it without walking into the graph. It must agree with the embedded graph, which is what catches an envelope assembled around the wrong map.
 
 `public MapGraph Graph`
 
-:   &mdash;
+:   The map the run took place on, stored in full rather than as a seed to rebuild from, so a save still opens onto the map it was made on after the rules have moved on.
 
 `public string GraphFingerprint`
 
-:   &mdash;
+:   The canonical fingerprint of `Graph`. Never null. Reading a save recomputes this from the graph it just deserialized and refuses the save when the two differ, so a hand-edited or truncated map is reported rather than loaded into a run.
 
 `public MapProgressionState Progression`
 
-:   &mdash;
+:   How far the run had got: where the traveller stands, what may be entered next, and the results already recorded. It is checked against `Graph` when the save is read, so progression naming a node that map does not hold is reported rather than restored.
 
 `public string RulesFingerprint`
 
-:   &mdash;
+:   The canonical fingerprint of the rules the map was generated from, repeated from the embedded graph and required to match it. Never null. Compare it against the fingerprint of your current rules to spot a save made before a rules change.
 
 `public uint Seed`
 
-:   &mdash;
+:   The seed the map was generated from, repeated from the embedded graph and required to match it.
 
 **Methods**
 
 `public static MapSaveEnvelope CreateCurrent()`
 
-:   &mdash;
+:   Builds the envelope to write for a run in progress: it stamps `CurrentFormatVersion`, copies the generator version, seed, and rules fingerprint off `graph`, and computes the graph fingerprint. Taking those fields from the graph rather than from the caller is what stops the manifest drifting from the map it describes, which is the mismatch serialization would otherwise reject.
+    - `graph` &mdash; The map to save.
+    - `progression` &mdash; How far the run has got.
+    - `customerMetadata` &mdash; Your own data to carry with the run. Null is stored as `MapDataPayload.Empty`.
+    - **Returns** &mdash; An envelope at the current format, ready to serialize.
 
 ---
 
@@ -192,7 +214,7 @@ public enum MapSaveFailureKind
 
 Why a save read, write, or delete did not succeed. Persistence returns these kinds
 instead of throwing, and the kind is what a caller branches on:
-`apSaveFailureKind.NotFound` is a legitimate "no save here yet", while the
+`MapSaveFailureKind.NotFound` is a legitimate "no save here yet", while the
 corrupt, version, and migration kinds mean a save exists but must not be loaded, and each
 deserves its own player-facing message and support data.
 
@@ -226,11 +248,11 @@ a caller reads a result rather than building one.
 
 `public MapSaveFailureKind FailureKind`
 
-:   `apSaveFailureKind.None` exactly when `ucceeded` is true; a failed operation always names a kind.
+:   `MapSaveFailureKind.None` exactly when `Succeeded` is true; a failed operation always names a kind.
 
 `public bool Succeeded`
 
-:   &mdash;
+:   Whether the slot now holds what the call intended. False is not a promise that storage was left as it was found: only a refusal raised before storage is touched -- an unsafe slot ID, or an envelope that will not serialize -- leaves the slot alone. The shipped file adapter can also fail late, after publishing a temporary file, after committing the new save, or after writing a deletion marker, so re-read the slot rather than assuming the previous save is still the one `IMapSaveAdapter.TryRead` will return.
 
 `public ValidationReport Validation`
 
@@ -248,27 +270,27 @@ public sealed class MapSaveReadResult
 
 The outcome of a save read: the loaded envelope, which stored candidate supplied it, and
 the diagnostics gathered on the way. A failed read carries no envelope, so check
-`apSaveReadResult.Succeeded` before touching
-`apSaveReadResult.Envelope`; a `apSaveFailureKind.NotFound` read
+`MapSaveReadResult.Succeeded` before touching
+`MapSaveReadResult.Envelope`; a `MapSaveFailureKind.NotFound` read
 is a slot with no save, not a broken one.
 
 **Properties**
 
 `public MapSaveEnvelope Envelope`
 
-:   The loaded save, or null when the read failed. An adapter that decodes through `apSaveSerializer` hands it back already migrated to the current save format and fully validated.
+:   The loaded save, or null when the read failed. An adapter that decodes through `MapSaveSerializer` hands it back already migrated to the current save format and fully validated.
 
 `public MapSaveFailureKind FailureKind`
 
-:   `apSaveFailureKind.None` exactly when `ucceeded` is true; a failed read always names a kind.
+:   `MapSaveFailureKind.None` exactly when `Succeeded` is true; a failed read always names a kind.
 
 `public MapSaveRecoverySource RecoverySource`
 
-:   Which candidate supplied the bytes, or `apSaveRecoverySource.None` on failure. Anything but Primary or Memory means the primary save was unusable and a fallback was accepted, which is usually worth surfacing to the player.
+:   Which candidate supplied the bytes, or `MapSaveRecoverySource.None` on failure. Anything but Primary or Memory means the primary save was unusable and a fallback was accepted, which is usually worth surfacing to the player.
 
 `public bool Succeeded`
 
-:   &mdash;
+:   Whether a save was loaded. Check it before `Envelope`, which is null on failure; a true result may still carry warnings, since a recovery read succeeds while reporting the candidates it had to reject.
 
 `public ValidationReport Validation`
 
@@ -285,7 +307,7 @@ public enum MapSaveRecoverySource
 `BranchWeaver.Core` &middot; <small>BranchWeaver/Runtime/Core/Persistence/MapSaveContracts.cs</small>
 
 Which stored candidate supplied the bytes of a successful read. Anything other than
-`apSaveRecoverySource.Primary` or `apSaveRecoverySource.Memory`
+`MapSaveRecoverySource.Primary` or `MapSaveRecoverySource.Memory`
 means the primary save was missing or unusable and a validated fallback was accepted
 instead; the read reports that as a warning and leaves every stored file as it found it.
 
@@ -307,9 +329,9 @@ public sealed class MapSaveSerializationResult
 
 `BranchWeaver.Core` &middot; <small>BranchWeaver/Runtime/Core/Persistence/MapSaveContracts.cs</small>
 
-The outcome of one `apSaveSerializer` call, in either direction. A serialize
-fills `apSaveSerializationResult.Json` and echoes the envelope it wrote; a
-deserialize fills `apSaveSerializationResult.Envelope` with the migrated,
+The outcome of one `MapSaveSerializer` call, in either direction. A serialize
+fills `MapSaveSerializationResult.Json` and echoes the envelope it wrote; a
+deserialize fills `MapSaveSerializationResult.Envelope` with the migrated,
 validated save and leaves the JSON empty. A failure fills neither and names the kind
 instead.
 
@@ -321,7 +343,7 @@ instead.
 
 `public MapSaveFailureKind FailureKind`
 
-:   `apSaveFailureKind.None` whenever the call succeeded.
+:   `MapSaveFailureKind.None` whenever the call succeeded.
 
 `public string Json`
 
@@ -329,7 +351,7 @@ instead.
 
 `public bool Succeeded`
 
-:   &mdash;
+:   Whether the call produced usable output. Which of `Json` and `Envelope` is filled depends on the direction the call ran in, so a true value alone does not tell you which to read.
 
 `public ValidationReport Validation`
 
@@ -351,21 +373,26 @@ Strict, culture-invariant JSON persistence for complete map save envelopes.
 
 `public MapSaveSerializer()`
 
-:   &mdash;
+:   Creates a serializer carrying the migration chain this build ships with, which is what lets it read every save format back to version 1.
 
 `public MapSaveSerializer(IEnumerable<IMapSaveMigration> migrations)`
 
-:   &mdash;
+:   Creates a serializer over a migration chain of your own, for a project that has added save formats of its own on top of the shipped ones. A chain containing a null step, two steps declaring the same source version, or a step whose target is not exactly one above its source is not rejected here: the whole set is marked unusable and every later `TryDeserialize` fails with `MapSaveFailureKind.MigrationFailed`. Serializing is unaffected, since writing never migrates.
+    - `migrations` &mdash; The upgrade steps to apply while loading an older save, in any order; an empty sequence means only saves already at the current format can be read.
 
 **Methods**
 
 `public MapSaveSerializationResult TryDeserialize(string json)`
 
-:   &mdash;
+:   Reads saved JSON back into an envelope at the current save format, running whatever migration steps stand between the stored version and this one. The parse is strict rather than forgiving: an object carrying an unknown field, or missing one, is corrupt data rather than something to read on a best-effort basis, and so is a value of the wrong JSON type or outside its numeric range. A save written by a newer build is reported as `MapSaveFailureKind.UnsupportedVersion` instead of being read partially. Each migration step is checked after it runs, not trusted: the seed, generator version, rules fingerprint, stored graph fingerprint, and canonical graph bytes must all come back unchanged, and the step must report exactly the version it declared. A step that throws or drifts fails the load as `MapSaveFailureKind.MigrationFailed`, which is what stops a faulty upgrade from quietly rewriting a player's run. The envelope is validated both as it was stored and again after the last step, so a caller never sees a half-migrated save.
+    - `json` &mdash; The stored save text. Null, empty, or non-canonical text is corrupt data, not an argument error.
+    - **Returns** &mdash; The migrated, validated envelope, or the typed reason it could not be loaded. The JSON field of the result is empty either way.
 
 `public MapSaveSerializationResult TrySerialize(MapSaveEnvelope envelope)`
 
-:   &mdash;
+:   Writes one envelope to canonical JSON. The envelope is validated at the current save format first, so an invalid one is refused rather than written out and rejected on the way back in. Field order, number formatting, and string escaping are all fixed and culture-invariant, which is what makes the text comparable byte for byte between two runs, two machines, and two locales. Text longer than `MaximumJsonLength` is refused, as is anything that throws while being written, so this never propagates an exception from the writer.
+    - `envelope` &mdash; The complete graph, progression, and metadata snapshot to encode.
+    - **Returns** &mdash; The JSON text and the envelope it came from, or the typed reason nothing was produced.
 
 ---
 
@@ -384,17 +411,19 @@ progression objects, so their canonical bytes and graph fingerprint remain uncha
 
 `public int SourceVersion`
 
-:   &mdash;
+:   Save format 1, the original format, which this step accepts.
 
 `public int TargetVersion`
 
-:   &mdash;
+:   Save format 2, which this step produces.
 
 **Methods**
 
 `public MapSaveEnvelope Migrate(MapSaveEnvelope previous)`
 
-:   &mdash;
+:   Rebuilds a version 1 envelope as a version 2 one, carrying every field across unchanged and giving the new customer metadata field its empty value, since a version 1 save had nowhere to store any. The result is a new envelope; `previous` is not modified, and the graph and progression objects are shared with it rather than copied, which is what keeps the canonical graph bytes and the graph fingerprint identical across the step.
+    - `previous` &mdash; The envelope as read at version 1.
+    - **Returns** &mdash; The same run reported at version 2.
 
 ---
 
@@ -412,25 +441,33 @@ An in-memory adapter that stores canonical JSON rather than live object referenc
 
 `public MemoryMapSaveAdapter()`
 
-:   &mdash;
+:   Creates an adapter backed by a default `MapSaveSerializer`, so a slot goes through the same canonical JSON, the same validation, and the same migration chain a file adapter would put it through.
 
 `public MemoryMapSaveAdapter(MapSaveSerializer serializer)`
 
-:   &mdash;
+:   Creates an adapter that encodes and decodes through a serializer you supply, which is how a test or a tool exercises a custom migration chain without writing to disk.
+    - `serializer` &mdash; The serializer every read and write of this adapter passes through.
 
 **Methods**
 
 `public MapSaveOperationResult TryDelete(StableId slotId)`
 
-:   &mdash;
+:   Drops whatever the slot held. Clearing a slot that holds no save still succeeds, and nothing survives the call: this adapter keeps no backup and writes no deletion marker, so a later read of the same slot reports `MapSaveFailureKind.NotFound`.
+    - `slotId` &mdash; The slot to clear; an empty ID is refused as `MapSaveFailureKind.UnsafePath`.
+    - **Returns** &mdash; Success, or the typed reason the slot may still hold data.
 
 `public MapSaveReadResult TryRead(StableId slotId)`
 
-:   &mdash;
+:   Loads the save held in one in-process slot, reporting `MapSaveRecoverySource.Memory` as the candidate that supplied it. A slot that was never written comes back as `MapSaveFailureKind.NotFound` rather than as damage to report. The stored text is decoded afresh on every call, so the envelope handed back is a new object graph the caller may keep or alter without that reaching the slot.
+    - `slotId` &mdash; The slot to load; an empty ID is refused as `MapSaveFailureKind.UnsafePath`.
+    - **Returns** &mdash; The decoded and migrated envelope on success, or the typed reason the read failed.
 
 `public MapSaveOperationResult TryWrite(StableId slotId, MapSaveEnvelope envelope)`
 
-:   &mdash;
+:   Serializes the envelope and replaces whatever the slot held. The envelope is validated and encoded before the slot is touched, so a refused write leaves the previous save in place. Only the canonical text is retained, never the envelope, so later edits to the graph or progression you passed cannot reach back into what was stored.
+    - `slotId` &mdash; The slot to write; an empty ID is refused as `MapSaveFailureKind.UnsafePath`.
+    - `envelope` &mdash; The complete graph, progression, and metadata snapshot to store.
+    - **Returns** &mdash; Success, or the typed reason nothing was stored.
 
 ---
 

@@ -13,15 +13,15 @@ public sealed class ConstraintContext
 
 `BranchWeaver.Core` &middot; <small>BranchWeaver/Runtime/Core/Constraints/ConstraintContracts.cs</small>
 
-Everything an `MapConstraint` is allowed to see: the frozen rules, every slot
+Everything an `IMapConstraint` is allowed to see: the frozen rules, every slot
 and slot edge in the attempt, and the type assignments decided so far. It carries no random
 source, no Unity object, and no way back into the generator, which is what lets a constraint
 reach the same verdict on every run of the same seed.
 
 The generator builds a fresh context for each evaluation and hands that one instance to every
 constraint in the pass, so treat it as read-only. During the search
-`ssignments` normally covers only part of the map: check
-`sComplete` before concluding that a rule is broken rather than merely undecided.
+`Assignments` normally covers only part of the map: check
+`IsComplete` before concluding that a rule is broken rather than merely undecided.
 
 **Constructors**
 
@@ -38,7 +38,7 @@ constraint in the pass, so treat it as read-only. During the search
 
 `public IReadOnlyList<MapNodeTypeAssignment> Assignments`
 
-:   The slots whose type is already decided, sorted. Partial during the search: expect fewer entries than `lots` until `sComplete` is true.
+:   The slots whose type is already decided, sorted. Partial during the search: expect fewer entries than `Slots` until `IsComplete` is true.
 
 `public IReadOnlyList<MapSlotEdge> Edges`
 
@@ -46,7 +46,7 @@ constraint in the pass, so treat it as read-only. During the search
 
 `public bool IsComplete`
 
-:   True when every slot has an assignment -- the last check before a candidate map is accepted, and always true when an existing graph is validated. While it is false, `onstraintEvaluationState.Undetermined` is a legitimate answer; once it is true, only `onstraintEvaluationState.Satisfied` passes.
+:   True when every slot has an assignment -- the last check before a candidate map is accepted, and always true when an existing graph is validated. While it is false, `ConstraintEvaluationState.Undetermined` is a legitimate answer; once it is true, only `ConstraintEvaluationState.Satisfied` passes.
 
 `public MapRuleSnapshot Rules`
 
@@ -54,7 +54,7 @@ constraint in the pass, so treat it as read-only. During the search
 
 `public IReadOnlyList<MapNodeSlot> Slots`
 
-:   Every slot in the attempt, ordered by layer then ordinal -- not only the assigned ones. Its count is the size of the map being built, so comparing it against `ssignments` shows how much is still open.
+:   Every slot in the attempt, ordered by layer then ordinal -- not only the assigned ones. Its count is the size of the map being built, so comparing it against `Assignments` shows how much is still open.
 
 ---
 
@@ -67,11 +67,11 @@ public enum ConstraintEvaluationState
 `BranchWeaver.Core` &middot; <small>BranchWeaver/Runtime/Core/Constraints/ConstraintContracts.cs</small>
 
 What a custom constraint concluded about the assignment it was shown.
-`onstraintEvaluationState.Violated` makes the generator abandon the partial
+`ConstraintEvaluationState.Violated` makes the generator abandon the partial
 assignment it is on and report the result's code and message, while
-`onstraintEvaluationState.Undetermined` is tolerated only while the assignment
+`ConstraintEvaluationState.Undetermined` is tolerated only while the assignment
 is still partial: once every slot has a type -- and whenever an existing graph is validated
--- anything other than `onstraintEvaluationState.Satisfied` fails the map.
+-- anything other than `ConstraintEvaluationState.Satisfied` fails the map.
 
 | Value | Meaning |
 | --- | --- |
@@ -90,9 +90,9 @@ public sealed class ConstraintResult
 `BranchWeaver.Core` &middot; <small>BranchWeaver/Runtime/Core/Constraints/ConstraintContracts.cs</small>
 
 One constraint's answer for one evaluation: the state, plus the diagnostic code and message
-that are reported when the state is `onstraintEvaluationState.Violated`. Build
-these with `atisfied()`, `ndetermined()`, and
-`iolated(string, string)`. A constraint that returns null is treated as having
+that are reported when the state is `ConstraintEvaluationState.Violated`. Build
+these with `Satisfied()`, `Undetermined()`, and
+`Violated(string, string)`. A constraint that returns null is treated as having
 reported a violation, so there is no "no answer" result to reach for.
 
 **Constructors**
@@ -107,7 +107,7 @@ reported a violation, so there is no "no answer" result to reach for.
 
 `public string DiagnosticCode`
 
-:   The code reported with a violation. Never null, and empty on satisfied and undetermined results; a violation that leaves it empty is reported as `apDiagnosticCodes.GenerationConstraintsUnsatisfiable` instead.
+:   The code reported with a violation. Never null, and empty on satisfied and undetermined results; a violation that leaves it empty is reported as `MapDiagnosticCodes.GenerationConstraintsUnsatisfiable` instead.
 
 `public string Message`
 
@@ -115,7 +115,7 @@ reported a violation, so there is no "no answer" result to reach for.
 
 `public ConstraintEvaluationState State`
 
-:   &mdash;
+:   The verdict itself, and the only part of the result the generator branches on. `DiagnosticCode` and `Message` are read only when this is `ConstraintEvaluationState.Violated`, so filling them in on a satisfied or undetermined result has no effect.
 
 **Methods**
 
@@ -125,12 +125,12 @@ reported a violation, so there is no "no answer" result to reach for.
 
 `public static ConstraintResult Undetermined()`
 
-:   A result stating that the rule cannot be judged yet. Only useful while `onstraintContext.IsComplete` is false; on a finished assignment it is treated as a failure rather than as a pass.
+:   A result stating that the rule cannot be judged yet. Only useful while `ConstraintContext.IsComplete` is false; on a finished assignment it is treated as a failure rather than as a pass.
 
 `public static ConstraintResult Violated(string code, string message)`
 
 :   A result stating that the rule is broken, which makes the generator backtrack and record an error against the constraint that returned it.
-    - `code` &mdash; The diagnostic code to report; an empty code becomes `apDiagnosticCodes.GenerationConstraintsUnsatisfiable`.
+    - `code` &mdash; The diagnostic code to report; an empty code becomes `MapDiagnosticCodes.GenerationConstraintsUnsatisfiable`.
     - `message` &mdash; The reason, reported to the caller as written.
 
 ---
@@ -143,8 +143,13 @@ public enum EdgeCrossingPolicy
 
 `BranchWeaver.Core` &middot; <small>BranchWeaver/Runtime/Core/Constraints/MapConnectionRules.cs</small>
 
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
+Whether the generator may produce routes that cross one another between two layers.
+
+Crossing here is structural, not visual: two edges leaving the same layer cross when one
+starts at a lower ordinal than the other and ends at a higher one. `Forbid` therefore
+confines generation to a monotone topology, which is what gives the untangled run-map look
+under any layout strategy, and `Allow` lifts that restriction so routes may weave past
+each other.
 
 | Value | Meaning |
 | --- | --- |
@@ -189,21 +194,21 @@ topology with no valid type assignment at all, rather than merely thinning the c
 
 `public ForbiddenAdjacencyRule()`
 
-:   Creates an adjacency ban between two node types. When `direction` is `orbiddenAdjacencyDirection.Either` the pair is stored in ascending type-ID order, so `irstTypeId` and `econdTypeId` may come back reversed from the arguments and two mirrored bans become indistinguishable.
+:   Creates an adjacency ban between two node types. When `direction` is `ForbiddenAdjacencyDirection.Either` the pair is stored in ascending type-ID order, so `FirstTypeId` and `SecondTypeId` may come back reversed from the arguments and two mirrored bans become indistinguishable.
     - `ruleId` &mdash; Identity of the rule; must be non-empty and unique among all rules in the snapshot.
-    - `firstTypeId` &mdash; Source-side type when `direction` is `orbiddenAdjacencyDirection.Forward`.
-    - `secondTypeId` &mdash; Target-side type when `direction` is `orbiddenAdjacencyDirection.Forward`.
+    - `firstTypeId` &mdash; Source-side type when `direction` is `ForbiddenAdjacencyDirection.Forward`.
+    - `secondTypeId` &mdash; Target-side type when `direction` is `ForbiddenAdjacencyDirection.Forward`.
     - `direction` &mdash; Whether the ban follows edge direction or covers both orderings.
 
 **Properties**
 
 `public ForbiddenAdjacencyDirection Direction`
 
-:   &mdash;
+:   Whether the ban follows edge direction or covers both orderings of the pair. It also governs how the two type IDs were stored: `ForbiddenAdjacencyDirection.Either` sorts them, so on such a rule the pair cannot be read back as source and target.
 
 `public StableId FirstTypeId`
 
-:   Source-side type of a `orbiddenAdjacencyDirection.Forward` ban, or the lower-sorting member of the pair for an `orbiddenAdjacencyDirection.Either` ban. Not necessarily the first type handed to the constructor.
+:   Source-side type of a `ForbiddenAdjacencyDirection.Forward` ban, or the lower-sorting member of the pair for an `ForbiddenAdjacencyDirection.Either` ban. Not necessarily the first type handed to the constructor.
 
 `public StableId RuleId`
 
@@ -211,7 +216,7 @@ topology with no valid type assignment at all, rather than merely thinning the c
 
 `public StableId SecondTypeId`
 
-:   Target-side type of a `orbiddenAdjacencyDirection.Forward` ban, or the higher-sorting member of the pair for an `orbiddenAdjacencyDirection.Either` ban.
+:   Target-side type of a `ForbiddenAdjacencyDirection.Forward` ban, or the higher-sorting member of the pair for an `ForbiddenAdjacencyDirection.Either` ban.
 
 **Methods**
 
@@ -222,7 +227,7 @@ topology with no valid type assignment at all, rather than merely thinning the c
 
 `public bool Forbids(StableId sourceType, StableId targetType)`
 
-:   Reports whether this rule bans an edge between two typed endpoints. A `orbiddenAdjacencyDirection.Forward` ban matches only the stored ordering; an `orbiddenAdjacencyDirection.Either` ban matches both.
+:   Reports whether this rule bans an edge between two typed endpoints. A `ForbiddenAdjacencyDirection.Forward` ban matches only the stored ordering; an `ForbiddenAdjacencyDirection.Either` ban matches both.
     - `sourceType` &mdash; Type of the endpoint on the earlier layer, which the edge leaves.
     - `targetType` &mdash; Type of the endpoint on the next layer, which the edge enters.
     - **Returns** &mdash; `true` when the edge is forbidden and must not exist.
@@ -263,7 +268,7 @@ authored minimum and change which layer sizes remain feasible.
 
 `public StableId TypeId`
 
-:   Type assigned to the slot. It must appear in the map-wide type table and must not be forbidden or zero-weighted by the zone covering `lot`.
+:   Type assigned to the slot. It must appear in the map-wide type table and must not be forbidden or zero-weighted by the zone covering `Slot`.
 
 **Methods**
 
@@ -286,7 +291,7 @@ public interface IMapConstraint
 
 A game-specific rule the generator has to respect. Given the slots, edges, and type
 assignments settled so far, it answers whether the map is still acceptable; register
-implementations on `apRuleSnapshot` and BranchWeaver evaluates them inside the
+implementations on `MapRuleSnapshot` and BranchWeaver evaluates them inside the
 search, so a rule that quotas and adjacency cannot express prunes bad maps while they are
 being built instead of rejecting them once finished.
 
@@ -296,7 +301,7 @@ one seed stops producing one map. It must not mutate the context or anything rea
 it, because a single context instance is shared by every constraint in the pass. And it runs
 deep inside a backtracking search -- once for every candidate type the search tries in every
 slot, plus once when the assignment is complete -- so keep it cheap and allocation-free:
-scanning `onstraintContext.Assignments` is fine, building collections per call is
+scanning `ConstraintContext.Assignments` is fine, building collections per call is
 not. Returning null counts as a violation, and a thrown exception is caught and turned into
 one, so neither can crash generation but both fail the map.
 
@@ -310,40 +315,51 @@ public sealed class MapConnectionRules
 
 `BranchWeaver.Core` &middot; <small>BranchWeaver/Runtime/Core/Constraints/MapConnectionRules.cs</small>
 
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
+The topology half of a rule set: how many routes a node may send and receive, how many
+optional routes are added beyond the mandatory backbone, and whether routes may cross.
+Where the rest of a rule set decides what each node is, this decides how the nodes are
+wired together.
+
+Every value here, the identity included, is hashed into the rules fingerprint that feeds
+the generation key and the generator's random streams. Changing any of them re-rolls every
+map, so an existing seed no longer reproduces the layout a player saw.
 
 **Constructors**
 
 `public MapConnectionRules()`
 
-:   &mdash;
+:   Creates a connection rule set. Nothing is checked here; the rule validator is what enforces the ranges described on each property, and it also rejects caps too tight to join two adjacent layers at any of their permitted node counts.
+    - `ruleId` &mdash; Identity reported in diagnostics and hashed into the fingerprint.
+    - `maximumOutgoingPerNode` &mdash; Branch cap; validation requires 1 to 256.
+    - `maximumIncomingPerNode` &mdash; Merge cap; validation requires 1 to 256.
+    - `optionalEdgeChance` &mdash; Optional-route chance out of 10,000; validation requires 0 to 10,000.
+    - `crossingPolicy` &mdash; Whether crossing routes are forbidden or allowed.
 
 **Properties**
 
 `public EdgeCrossingPolicy CrossingPolicy`
 
-:   &mdash;
+:   Whether generated routes may cross. Forbidding them narrows the generator to a monotone enumeration per layer and also turns on the crossing check in map validation, so a graph that was hand-built or loaded from an older save is reported rather than quietly drawn tangled.
 
 `public int MaximumIncomingPerNode`
 
-:   &mdash;
+:   Merge cap: the most routes one node may receive from the layer behind it, on the same terms as `MaximumOutgoingPerNode`. Raising one without the other biases a map towards fanning out or funnelling in.
 
 `public int MaximumOutgoingPerNode`
 
-:   &mdash;
+:   Branch cap: the most routes one node may send to the layer in front of it. Validation requires 1 to 256, and separately rejects a cap that cannot fan out far enough to reach the next layer at any of its permitted node counts.
 
 `public int OptionalEdgeChance`
 
-:   &mdash;
+:   The chance out of 10,000 -- not out of 100 -- that any route not already part of the mandatory backbone is added as well. Zero yields the sparsest map that still connects. The draw is only the first gate. An optional route is still dropped when it would breach a degree cap, cross while crossings are forbidden, join a forbidden type pair, or hit an override marked forbidden, so 10,000 means "as dense as the other rules permit" rather than "every node joined to every node".
 
 `public StableId RuleId`
 
-:   &mdash;
+:   Identity these rules are reported under when generation or validation blames them for a diagnostic. It is hashed into the rules fingerprint as well, so renaming it changes the maps every seed produces even though nothing about the topology limits moved.
 
 `public static MapConnectionRules VersionTwoDefault`
 
-:   &mdash;
+:   The permissive starting point a rule set takes when it states no connection rules of its own: both degree caps opened to the per-layer node ceiling, no optional routes, and crossings forbidden. Shaping a map means tightening these rather than loosening them. A fresh instance is built on every read, and this type carries no value equality, so two reads give two objects that are not reference-equal.
 
 ---
 
@@ -411,8 +427,8 @@ public readonly struct MapNodeTypeAssignment : IComparable<MapNodeTypeAssignment
 
 `BranchWeaver.Core` &middot; <small>BranchWeaver/Runtime/Core/Constraints/ConstraintContracts.cs</small>
 
-One decided slot: where it sits, the identity the node there will carry, and the node type
-chosen for it. Ordering is part of the contract -- `onstraintContext` sorts
+One decided slot: where it sits, the identity of the node there, and the node type chosen for
+it. Ordering is part of the contract -- `ConstraintContext` sorts
 assignments before a constraint sees them, so the same seed presents them in the same
 sequence no matter what order the search settled them in.
 
@@ -426,21 +442,21 @@ sequence no matter what order the search settled them in.
 
 `public StableId NodeId`
 
-:   The identity the node in this slot will carry in the finished graph. It is settled before any type is chosen -- derived from the generation key for a generated node, or taken from the pinned override for an authored one -- so a constraint may key on it.
+:   The identity of the node occupying this slot: the ID of the existing node when a finished graph is validated, and during generation the ID the node will be built with, which is settled before any type is chosen. Either way a constraint may key on it.
 
 `public MapNodeSlot Slot`
 
-:   &mdash;
+:   Where in the layered grid this decision sits, as a layer and an ordinal within it. It is the first key assignments are sorted on, so scanning `ConstraintContext.Assignments` walks the map in layer order.
 
 `public StableId TypeId`
 
-:   &mdash;
+:   The node type the search settled on for this slot. It names an entry in the snapshot's weight table, so a constraint that cares about a particular type compares IDs and never has to resolve the type to its content.
 
 **Methods**
 
 `public int CompareTo(MapNodeTypeAssignment other)`
 
-:   Orders by `lot`, then `odeId`, then `ypeId`.
+:   Orders by `Slot`, then `NodeId`, then `TypeId`.
 
 ---
 
@@ -467,17 +483,17 @@ never equals target-to-source.
 
 `public MapNodeSlot Source`
 
-:   &mdash;
+:   The slot the edge leaves. Edge lists sort on it before `Target`, so they arrive grouped by source slot.
 
 `public MapNodeSlot Target`
 
-:   &mdash;
+:   The slot the edge arrives at -- one layer further on in anything the generator produced. Nothing on this struct enforces that; it is a property of how edges are built, not of the value.
 
 **Methods**
 
 `public int CompareTo(MapSlotEdge other)`
 
-:   Orders by `ource`, then `arget`, which is how edge lists are kept in one deterministic order.
+:   Orders by `Source`, then `Target`, which is how edge lists are kept in one deterministic order.
 
 `public bool Equals(MapSlotEdge other)`
 
@@ -485,11 +501,11 @@ never equals target-to-source.
 
 `public override bool Equals(object obj)`
 
-:   Value equality against another `apSlotEdge`; any other object is unequal.
+:   Value equality against another `MapSlotEdge`; any other object is unequal.
 
 `public override int GetHashCode()`
 
-:   Hash of both endpoints, consistent with `quals(MapSlotEdge)`.
+:   Hash of both endpoints, consistent with `Equals(MapSlotEdge)`.
 
 `public override string ToString()`
 
@@ -505,34 +521,52 @@ public sealed class MapValidator : IMapValidator
 
 `BranchWeaver.Core` &middot; <small>BranchWeaver/Runtime/Core/MapValidator.cs</small>
 
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
+The shipped `IMapValidator`: it judges a finished graph against the rule snapshot
+it claims to have come from. It checks the graph's own metadata and fingerprints, node identity
+and placement, edge shape and crossings, and reachability, and for generator version two also
+forced types, quotas, forbidden adjacencies, custom constraints, and authoring overrides.
+
+Nothing is repaired and nothing is thrown -- every problem becomes an error diagnostic -- so a
+single call lists everything wrong with a graph instead of stopping at the first fault. A
+custom constraint that throws is caught and reported as a violation, so one bad constraint
+cannot take a generation run down. The validator keeps no state between calls and sorts the
+graph into canonical order before inspecting it, so the same graph and rules always produce the
+same report in the same order.
 
 **Methods**
 
 `public int Compare(MapEdge left, MapEdge right)`
 
-:   &mdash;
+:   Orders edges the way the crossing sweep reads them: by source layer, then by source ordinal, then by target ordinal, falling back to the edges' own ordering so equal geometry still sorts deterministically. Both endpoints must be present in the node index the comparer was built with.
+    - **Returns** &mdash; A negative value, zero, or a positive value as `left` sorts before, alongside, or after `right`.
 
 `public bool Equals(EdgeConnection other)`
 
-:   &mdash;
+:   Reports whether both values name the same directed source-to-target pair. Direction matters: a reversed pair is a different connection.
 
 `public override bool Equals(object obj)`
 
-:   &mdash;
+:   Reports whether `obj` is a connection naming the same directed pair.
 
 `public override int GetHashCode()`
 
-:   &mdash;
+:   Returns a hash combining the two endpoint IDs, so connections can be collected in a set and a repeated one spotted in a single pass over the edges.
 
 `public ValidationReport Validate(MapGraph graph, MapRuleSnapshot rules)`
 
-:   &mdash;
+:   Judges a graph against the rules, taking the generation mode from the graph itself and comparing it against no authoring overrides. A version-two graph must still carry well-formed override metadata, but it is checked only for shape and self-consistency, not against any particular set of pins -- none were supplied. Use the overload taking a mode and overrides when the caller knows which ones the graph was generated under.
+    - `graph` &mdash; The graph to inspect. Null is reported as a missing-graph error rather than thrown.
+    - `rules` &mdash; The compiled snapshot the graph is judged against; its own faults are reported first and stop the graph being inspected at all.
+    - **Returns** &mdash; Every diagnostic found. Any error-severity diagnostic rejects the graph.
 
 `public ValidationReport Validate()`
 
-:   &mdash;
+:   Judges a graph against the rules, the generation mode, and the authoring overrides the caller believes it was produced under. This is the strict form, and the one an authoring pipeline wants: a version-two graph must also declare the same mode, carry an overrides fingerprint and generation key that match `overrides`, and preserve every pinned node field and every edge override. A procedural request additionally requires the overrides to be empty, and a manual one requires seed zero and forbids the graph from holding any node or edge the overrides did not spell out.
+    - `graph` &mdash; The graph to inspect. Null is reported as a missing-graph error rather than thrown.
+    - `rules` &mdash; The compiled snapshot the graph is judged against.
+    - `mode` &mdash; The mode the graph is expected to declare; a graph recording a different one is an error.
+    - `overrides` &mdash; The pins the graph must honour. Null is treated as `MapGenerationOverrides.Empty`.
+    - **Returns** &mdash; Every diagnostic found. Any error-severity diagnostic rejects the graph.
 
 ---
 
@@ -544,50 +578,60 @@ public sealed class MapZoneDefinition : IComparable<MapZoneDefinition>
 
 `BranchWeaver.Core` &middot; <small>BranchWeaver/Runtime/Core/Constraints/MapZoneDefinition.cs</small>
 
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
+A contiguous inclusive band of layers that carries its own node type rules: an allowed set, a
+forbidden set, and per-type weight overrides. Zones are how a map varies its character with
+depth without needing a separate rule snapshot per region. Rule validation keeps zone ranges
+disjoint, so at most one zone governs any layer, and layers no zone covers use the map-wide
+node type table unchanged.
 
 **Constructors**
 
 `public MapZoneDefinition()`
 
-:   &mdash;
+:   Creates a zone. Every collection is copied and sorted into canonical order, so the caller may reuse or mutate the sequences it passed afterwards, and any of them may be null to mean empty. Nothing is validated here: whether the layer range fits the map and whether the type references resolve is decided when the owning rule snapshot is validated.
+    - `id` &mdash; Identity of the zone, which quota rules use to scope themselves to it.
+    - `firstLayerInclusive` &mdash; Zero-based index of the first layer in the zone, counted into the layer list of the rule snapshot the zone belongs to.
+    - `lastLayerInclusive` &mdash; Zero-based index of the last layer in the zone, itself included.
+    - `permittedTypeIds` &mdash; Types allowed in the zone. An empty or null sequence is not an empty allowance but the absence of one: every map-wide declared type stays permitted.
+    - `forbiddenTypeIds` &mdash; Types barred from the zone, applied after the allowed set.
+    - `weightOverrides` &mdash; Per-type weight replacements; an entry of weight 0 bars its type as well.
 
 **Properties**
 
 `public int FirstLayerInclusive`
 
-:   &mdash;
+:   Zero-based index of the first layer of the zone within the rule snapshot's layer list. Validation requires 0 <= first <= last < layer count.
 
 `public IReadOnlyList<StableId> ForbiddenTypeIds`
 
-:   &mdash;
+:   Types barred from this zone, sorted. Applied after `PermittedTypeIds`, so listing a type in both bars it.
 
 `public StableId Id`
 
-:   &mdash;
+:   Identity of this zone. A `NodeTypeQuotaRule` names it to bound a type inside this band of layers rather than across the whole map, and diagnostics quote it to say which zone is at fault, so it has to be non-empty and unique among the snapshot's zones.
 
 `public int LastLayerInclusive`
 
-:   &mdash;
+:   Zero-based index of the last layer of the zone, itself part of the zone.
 
 `public IReadOnlyList<StableId> PermittedTypeIds`
 
-:   &mdash;
+:   Types allowed in this zone, sorted. An empty list means the zone imposes no allowance and every map-wide declared type remains available, so this is not a way to empty a zone.
 
 `public IReadOnlyList<NodeTypeWeightOverride> WeightOverrides`
 
-:   &mdash;
+:   Zone-local weight replacements, sorted, at most one per type. A type with no entry keeps its map-wide weight; an entry of weight 0 bars the type from the zone entirely.
 
 **Methods**
 
 `public int CompareTo(MapZoneDefinition other)`
 
-:   &mdash;
+:   Orders zones by ID first, then by layer range, then by their allowed, forbidden, and override contents. Comparing the whole contents rather than the ID alone is what lets a rule snapshot sort its zones into an order that depends only on what they say, which is a precondition for a stable rule fingerprint. A null zone sorts before any zone.
+    - **Returns** &mdash; A negative value, zero, or a positive value as this zone sorts before, alongside, or after `other`.
 
 `public bool ContainsLayer(int layer)`
 
-:   &mdash;
+:   Reports whether the given layer index falls inside this zone, both bounds included.
 
 ---
 
@@ -600,7 +644,7 @@ public readonly struct NodeTypeQuotaRule : IComparable<NodeTypeQuotaRule>
 `BranchWeaver.Core` &middot; <small>BranchWeaver/Runtime/Core/Constraints/NodeTypeRules.cs</small>
 
 A count bound on how many nodes of one type a scope may hold: the whole map when
-`oneId` is empty, otherwise the layers of the named zone. The generator treats a
+`ZoneId` is empty, otherwise the layers of the named zone. The generator treats a
 quota as a hard constraint rather than a preference, so it backtracks and finally fails with
 a diagnostic instead of returning a map that breaks the bound.
 
@@ -618,11 +662,11 @@ a diagnostic instead of returning a map that breaks the bound.
 
 `public int Maximum`
 
-:   Inclusive upper bound on how many nodes of `ypeId` the scope may hold. Every quota caps its type, since no value stands for unbounded: a maximum of zero bans the type from the scope outright.
+:   Inclusive upper bound on how many nodes of `TypeId` the scope may hold. Every quota caps its type, since no value stands for unbounded: a maximum of zero bans the type from the scope outright.
 
 `public int Minimum`
 
-:   Inclusive lower bound on how many nodes of `ypeId` the scope must end up with. Zero means the quota only caps the type.
+:   Inclusive lower bound on how many nodes of `TypeId` the scope must end up with. Zero means the quota only caps the type.
 
 `public StableId RuleId`
 
@@ -630,7 +674,7 @@ a diagnostic instead of returning a map that breaks the bound.
 
 `public StableId TypeId`
 
-:   &mdash;
+:   The node type being counted. It must be declared in the map-wide type table, since a quota bounds a type rather than introducing one, and each quota bounds exactly one type: several rules are needed to bound several types.
 
 `public StableId ZoneId`
 
@@ -656,7 +700,7 @@ public readonly struct NodeTypeWeight : IComparable<NodeTypeWeight>
 One entry of the map-wide node type table: it declares that a type exists and how often the
 generator should reach for it. The table is also the type domain, so a type with no entry
 cannot be placed at all and cannot be referenced by a quota, forced, or adjacency rule.
-Zones retune the value for their own layers through `odeTypeWeightOverride`.
+Zones retune the value for their own layers through `NodeTypeWeightOverride`.
 
 **Constructors**
 
@@ -669,7 +713,7 @@ Zones retune the value for their own layers through `odeTypeWeightOverride`.
 
 `public StableId TypeId`
 
-:   &mdash;
+:   The node type this entry declares. Because the weight table is also the type domain, an ID appearing here is what makes that type placeable at all and referenceable by a quota, forced, or adjacency rule.
 
 `public int Weight`
 
@@ -692,30 +736,35 @@ public readonly struct NodeTypeWeightOverride : IComparable<NodeTypeWeightOverri
 
 `BranchWeaver.Core` &middot; <small>BranchWeaver/Runtime/Core/Constraints/MapZoneDefinition.cs</small>
 
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
+Replaces the map-wide selection weight of one node type for the layers of a single zone.
+A weight of zero is not merely unlikely but excluding: the type becomes unplaceable in that
+zone exactly as a forbidden-type entry would make it, and rule validation rejects a zone left
+with no effective type at all.
 
 **Constructors**
 
 `public NodeTypeWeightOverride(StableId typeId, int weight)`
 
-:   &mdash;
+:   Declares the zone-local weight to apply to one node type.
+    - `typeId` &mdash; Type to retune. It must also appear in the map-wide node type table, because that table is the type domain; an override cannot introduce a type of its own.
+    - `weight` &mdash; Zone-local replacement weight, which rule validation restricts to 0 through 1,000,000. Note that this admits 0, where a map-wide weight may not go below 1.
 
 **Properties**
 
 `public StableId TypeId`
 
-:   &mdash;
+:   The node type being retuned. It must already appear in the map-wide type table, which is the type domain: an override adjusts how often an existing type is reached for and cannot bring a new one into the zone.
 
 `public int Weight`
 
-:   &mdash;
+:   Weight used for this type inside the zone in place of its map-wide weight, restricted by rule validation to 0 through 1,000,000. Zero excludes the type from the zone.
 
 **Methods**
 
 `public int CompareTo(NodeTypeWeightOverride other)`
 
-:   &mdash;
+:   Orders overrides by type ID and then by weight. This is the canonical order the owning zone sorts its overrides into, so that two zones authored in different orders produce the same rule fingerprint.
+    - **Returns** &mdash; A negative value, zero, or a positive value as this override sorts before, alongside, or after `other`.
 
 ---
 
@@ -729,34 +778,43 @@ public sealed class ValidationReport
 
 `BranchWeaver.Core` &middot; <small>BranchWeaver/Runtime/Core/Diagnostics.cs</small>
 
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
+Everything one validation pass had to say, plus the single number that decides whether the
+pass succeeded. Compilation, generation preflight, generation, and save loading all report
+through this type, so one habit - check `IsValid`, then show
+`Diagnostics` - covers the whole package.
+
+The diagnostics are copied and sorted on construction: errors before warnings, then by code,
+context, related IDs, and message, all ordinal. The order therefore depends only on what was
+found and not on the order it was found in, which is what lets two runs over equivalent input
+be compared line by line. Warnings never make a report invalid.
 
 **Constructors**
 
 `public ValidationReport(IEnumerable<MapDiagnostic> diagnostics)`
 
-:   &mdash;
+:   Builds a report from a set of diagnostics, taking a sorted copy; later changes to the caller's collection do not affect the report.
+    - `diagnostics` &mdash; The diagnostics to report. Null yields an empty, valid report. The sequence itself must not contain null entries.
 
 **Properties**
 
 `public IReadOnlyList<MapDiagnostic> Diagnostics`
 
-:   &mdash;
+:   Every diagnostic from the pass, errors first, then warnings. Never null; empty when the pass found nothing to say.
 
 `public int ErrorCount`
 
-:   &mdash;
+:   How many of the diagnostics are errors. Warnings are not counted, so this is zero for a report that still carries advice.
 
 `public bool IsValid`
 
-:   &mdash;
+:   Whether the validated subject may be used: true when there are no errors, whatever warnings were raised.
 
 **Methods**
 
 `public int Compare(MapDiagnostic left, MapDiagnostic right)`
 
-:   &mdash;
+:   Orders two diagnostics the way a report stores them: errors before warnings, then by code, context, related rules, related slots, related nodes, and finally message, every text comparison ordinal. Comparing all the way down to the message is what makes the order depend only on what was found and never on the order it was found in, so two runs over equivalent input produce reports that can be compared line by line. Nulls sort first rather than throwing.
+    - **Returns** &mdash; A negative value, zero, or a positive value as `left` sorts before, alongside, or after `right`.
 
 ---
 

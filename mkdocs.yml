@@ -125,6 +125,7 @@ nav:
       - Shape and colour nodes: how-to/style-nodes.md
       - Emphasise node states: how-to/style-node-states.md
       - Style edges and the backdrop: how-to/style-edges-and-backdrop.md
+      - Use your own node art: how-to/use-your-own-node-art.md
       - Place the map on screen: how-to/place-the-map-on-screen.md
       - Control what the player can see: how-to/reveal-and-fog.md
       - Drive traversal from code: how-to/drive-traversal-from-code.md

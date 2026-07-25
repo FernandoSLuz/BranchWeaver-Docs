@@ -13,36 +13,42 @@ public sealed class CanvasMapEdgeView : MonoBehaviour, IMapEdgeView, IMapEdgeTra
 
 `BranchWeaver.Presentation.Canvas` &middot; <small>BranchWeaver/Runtime/Presentation/Canvas/CanvasMapViews.cs</small>
 
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
+Draws one edge between two map nodes as a chain of uGUI images, and is the
+edge view the Canvas presentation builds by default.
+
+An edge is rendered as a run of straight segments through its points rather
+than as a single stretched sprite, so curved and elbowed connections keep an
+even thickness. Fog dims or hides the edge, and edges leading to an available
+node can animate a flow along their length to draw the eye forward.
 
 **Properties**
 
 `public StableId EdgeId`
 
-:   &mdash;
+:   The edge this view currently stands for, taken from the last `Bind`. Informational: the presenter tracks edges by its own bookkeeping and never reads it back.
 
 `public bool IsTransitioning`
 
-:   &mdash;
+:   Whether a fog cross-fade started by `BeginTransition` is still running. The dash flow is not counted, so a settled edge reports false while it goes on flowing.
 
 `public IReadOnlyList<NormalizedMapPosition> Points`
 
-:   &mdash;
+:   The path last bound, in normalized layout space, running from the edge's source endpoint to its target. Read-only and owned by the bind data, so it does not change until the next bind.
 
 `public IReadOnlyList<Vector2> RenderedPoints`
 
-:   &mdash;
+:   The same path in the anchored positions the segments were actually laid out along, so anything you place on the route -- a traveller, a label, a marker -- can follow the drawn line without repeating the conversion. This is the view's own buffer rather than a copy, and it is rebuilt on every bind, so take a copy of it if you need it to outlive one.
 
 `public Transform Transform`
 
-:   &mdash;
+:   The edge's own transform. The factory parents it under the edge root and pushes it to the front of the sibling order, which in uGUI draws it first and so keeps routes behind the nodes they connect.
 
 **Methods**
 
 `public void AdvanceTransition(float deltaSeconds)`
 
-:   &mdash;
+:   Advances a fog cross-fade in flight and, when one that ends hidden lands, deactivates the edge. The presenter drives this once a frame on an unscaled delta, so pausing the game does not strand an edge mid-fade. A negative delta counts as none.
+    - `deltaSeconds` &mdash; Seconds since the previous advance.
 
 `public void ApplyStyle(CompiledMapStyle style)`
 
@@ -50,27 +56,33 @@ public sealed class CanvasMapEdgeView : MonoBehaviour, IMapEdgeView, IMapEdgeTra
 
 `public void BeginTransition(MapFogState fromFog, MapFogState toFog, float durationSeconds)`
 
-:   &mdash;
+:   Cross-fades the edge into the fog state it has just been bound in, and owns its own visibility while doing so. The edge is kept active for the whole fade even when it is on its way to hidden, and deactivated only once the fade lands, so a route fading out is never cut off part-way. A duration of zero or less, or two fog states that resolve to the same colour, applies the destination and its visibility at once.
+    - `fromFog` &mdash; The fog state being left, used to derive the colour the fade starts from. Overridden by the colour `PrepareForBind` captured when a fade was already running.
+    - `toFog` &mdash; The fog state being entered. Not read here: the destination colour and the visibility to settle on were both resolved by the preceding bind.
+    - `durationSeconds` &mdash; Fade time in seconds; zero or less applies the destination immediately.
 
 `public void Bind(MapEdgeViewData data)`
 
-:   &mdash;
+:   Applies one presented state to the edge: the path to draw, the colour to draw it in, and its fog state. One image is laid out per pair of points rather than a single sprite stretched end to end, which is what lets a curved or elbowed route keep an even thickness. Those segment objects are pooled across binds, so a shorter path deactivates the surplus instead of destroying it, and the segment rects carry the stroke thickness with room left for the style's glow.
+    - `data` &mdash; The state to draw. Its presentation points are used when it carries them, otherwise the normalized points are converted against this view's own rect.
 
 `public void CancelTransition(bool applyTerminalState)`
 
-:   &mdash;
+:   Abandons a fog cross-fade in flight, before the edge is bound again or handed back to its factory.
+    - `applyTerminalState` &mdash; True to finish by applying the destination colour together with the visibility that belongs to it, which for an edge on its way to hidden means deactivating it; false to leave the edge exactly as it is, because another fade is about to start from there.
 
 `public void PrepareForBind()`
 
-:   &mdash;
+:   Records the colour the segments are showing right now, immediately before a bind that changes fog state, so the fade that follows can carry on from a fade already in flight. An edge with no segments yet -- the state it is in before its first bind -- records fully transparent.
 
 `public void RestoreAfterUnchangedBind()`
 
-:   &mdash;
+:   Re-activates the edge and puts back the colour `PrepareForBind` captured, for a bind that turned out not to change fog state, so a fade in flight is not cut short. Safe to call with nothing captured and with nothing fading, in which case it only clears the capture.
 
 `public void SetActive(bool active)`
 
-:   &mdash;
+:   Shows or hides the edge's whole GameObject. Because this view animates its own fog changes, the presenter stops toggling it on a fog change and leaves visibility to the transition, so in practice this is the pooling switch. It has to be reversible: the same instance is handed back out later.
+    - `active` &mdash; False to park the edge, typically because its factory has taken it back.
 
 `public void SetLeadsToAvailable(bool value)`
 
@@ -90,52 +102,62 @@ public sealed class CanvasMapNodeView : MonoBehaviour, IMapNodeView, IMapNodeHit
 
 `BranchWeaver.Presentation.Canvas` &middot; <small>BranchWeaver/Runtime/Presentation/Canvas/CanvasMapViews.cs</small>
 
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
+Draws one map node as a uGUI element inside a Canvas, and is the node view
+the Canvas presentation builds by default.
+
+It owns everything about a node the player can see: position, size, colour,
+icon, label, fog, and the focus and transition animations. Sizes and colours
+come from the compiled style rather than from the caller, so a current node
+can read larger and brighter than a locked one without anyone computing that.
+
+Replace it by supplying your own `IMapNodeView` when you want a
+different look; see the World2D counterpart `World2D.WorldMapNodeView`
+for the sprite-based equivalent.
 
 **Properties**
 
 `public string DisplayLabel`
 
-:   &mdash;
+:   The label last bound, already through the localization adapter. Empty when the node type declares none; the label is also left undrawn when the style's treatment for the current visual state suppresses it.
 
 `public MapFogState FogState`
 
-:   &mdash;
+:   How fog is treating the node. A dimmed node is drawn at three quarters of its colour's alpha and a hidden one at zero, so a hidden node is transparent rather than deactivated: it stops being clickable instead.
 
 `public bool IsHitTestVisible`
 
-:   &mdash;
+:   Whether a click on the node should count. False while fog hides it and false while its graphic is not a raycast target, so a node the player cannot see cannot be selected by accident.
 
 `public bool IsTransitioning`
 
-:   &mdash;
+:   Whether a colour cross-fade started by `BeginTransition` is still running. Focus easing and the current-node pulse are not counted, so a settled node reports false while it goes on pulsing.
 
 `public StableId NodeId`
 
-:   &mdash;
+:   The node this view currently stands for, taken from the last `Bind`. Empty until the first bind, which is what keeps an unbound pooled instance out of hit testing.
 
 `public NormalizedMapPosition NormalizedPosition`
 
-:   &mdash;
+:   Where the presenter laid the node out, in normalized layout space: the layout-space coordinate rather than the pixels the node ended up at. The shipped presenters resolve the placement themselves and send it with the bind, and the node is drawn at that; this value is only converted against the parent rect when the bind data carries no presentation position.
 
 `public string Tooltip`
 
-:   &mdash;
+:   The tooltip last bound, already localized. Kept for a host that draws its own tooltips; this view never renders it.
 
 `public Transform Transform`
 
-:   &mdash;
+:   The node's own transform. Input resolves a click to this node through it, and the factory parents and orders the node by it, so it stays valid for the component's whole lifetime.
 
 `public MapNodeVisualState VisualState`
 
-:   &mdash;
+:   The traversal state the node was last bound in: hidden, locked, available, current, visited or completed. It is the destination of a state change, not what is on screen: the bind runs before the cross-fade, so this already reads the new state while the colour is still travelling towards it.
 
 **Methods**
 
 `public void AdvanceTransition(float deltaSeconds)`
 
-:   &mdash;
+:   Advances a colour cross-fade in flight, interpolating straight from the captured start colour to the destination. The presenter drives this once a frame on an unscaled delta, so pausing the game does not strand a node mid-fade. A negative delta counts as none, and the fade stops the moment it reaches the destination.
+    - `deltaSeconds` &mdash; Seconds since the previous advance.
 
 `public void ApplyStyle(CompiledMapStyle style)`
 
@@ -143,31 +165,40 @@ public sealed class CanvasMapNodeView : MonoBehaviour, IMapNodeView, IMapNodeHit
 
 `public void BeginTransition(MapNodeVisualState fromVisual, MapFogState fromFog,)`
 
-:   &mdash;
+:   Cross-fades the node's colour into the state it has just been bound in, carrying the icon and label alpha along with it. The bind has already applied the destination colour, so the fade works by putting the starting colour back and easing forward from there. A fade interrupted part-way resumes from the colour `PrepareForBind` captured, which is what stops states that change in quick succession from jumping. A duration of zero or less, or two states that resolve to the same colour, applies the destination at once and leaves `IsTransitioning` false.
+    - `fromVisual` &mdash; The visual state being left, used to derive the colour the fade starts from.
+    - `fromFog` &mdash; The fog state being left, which scales that starting colour's alpha.
+    - `toVisual` &mdash; The visual state being entered, which decides the colour the fade lands on.
+    - `toFog` &mdash; The fog state being entered, which scales that destination alpha.
+    - `durationSeconds` &mdash; Fade time in seconds; zero or less applies the destination immediately.
 
 `public void Bind(MapNodeViewData data)`
 
-:   &mdash;
+:   Applies one presented state to the node: where it sits, how big it is, its colour, its icon, its label, and whether it accepts clicks. The size drawn is the authored node size scaled by the style's treatment for the bound visual state, so re-binding the same node in a new state can change its size as well as its colour; with no style applied the authored size is used unchanged. The presenter re-binds every node on a topology change, including nodes that did not change, so this is written to be repeatable rather than incremental.
+    - `data` &mdash; The state to draw. Its compiled node type supplies the per-state colours and the icon, and its presentation position is used when it carries one.
 
 `public void CancelTransition(bool applyTerminalState)`
 
-:   &mdash;
+:   Abandons a cross-fade in flight, before the node is bound again or handed back to its factory. Focus scale and the pulse are left alone.
+    - `applyTerminalState` &mdash; True to finish by applying the destination colour, which is what the shipped factory does when it pools a node so the next reuse starts from a settled look; false to leave the node showing the colour the fade had reached, because another fade is about to start from there.
 
 `public void PrepareForBind()`
 
-:   &mdash;
+:   Records the colour on screen right now, immediately before a bind that changes state, so the cross-fade that follows can carry on from a fade already in flight instead of snapping back to the old state. Does nothing on a node that has no graphic yet.
 
 `public void RestoreAfterUnchangedBind()`
 
-:   &mdash;
+:   Puts back the colour `PrepareForBind` captured, for a bind that turned out not to change state, so a fade in flight is not cut short. Safe to call with nothing captured and with nothing fading, in which case it only clears the capture.
 
 `public void SetActive(bool active)`
 
-:   &mdash;
+:   Shows or hides the node's whole GameObject. This is not how fog is applied: the presenter activates a node after every bind, a fogged one included, and hiding is done with alpha instead. In practice this is the pooling switch, so it has to be reversible -- the same instance is handed back out later.
+    - `active` &mdash; False to park the node, typically because its factory has taken it back.
 
 `public void SetFocused(bool focused)`
 
-:   &mdash;
+:   Shows or clears the keyboard and gamepad focus treatment, by scaling the node to `FocusScale`. The scale jumps past its destination by `FocusOvershoot` on the frame focus changes and eases back over the style's focus time, so selection reads as immediate instead of as a slow grow. Being told the value it already has re-applies the settled scale without restarting that motion, and with no style, or a focus time of zero, the new scale is simply applied at once.
+    - `focused` &mdash; True while this is the focused node.
 
 `public void TickStyle(float deltaSeconds)`
 
@@ -185,8 +216,22 @@ public sealed class CanvasMapPresenter : MapPresenterBase
 
 `BranchWeaver.Presentation.Canvas` &middot; <small>BranchWeaver/Runtime/Presentation/Canvas/CanvasMapPresenter.cs</small>
 
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
+Draws a map inside a uGUI Canvas. Nodes become Image-backed views pooled per node type, routes
+become chains of thin rotated rects drawn from a pool of their own, and both are parented to
+the node and edge roots, so a map takes part in the same hierarchy, batching, and sorting as
+the rest of your interface. A node type carrying a Canvas prefab is instantiated instead of
+the built-in view, which is how a project replaces the look without replacing the presenter.
+
+It also sizes the two roots. Whenever the graph's topology changes, the node and edge
+RectTransforms are resized to the extent the graph and theme produce, which is what lets a
+ScrollRect or layout group above them pan and clamp against the real size of the map. A root
+that is not a RectTransform is left alone rather than treated as a mistake, so the presenter
+still works when both roots are the presenter's own transform.
+
+Everything else -- binding to the traversal controller, fog and visual state, transitions,
+focus, and styles -- comes from `MapPresenterBase`. Use
+`BranchWeaver.Presentation.World2D.WorldMapPresenter` instead for a map drawn in
+the scene rather than on a Canvas.
 
 ---
 
@@ -198,18 +243,18 @@ public sealed class DefaultMapNodeHitTester : MonoBehaviour, IMapNodeHitTester
 
 `BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapInput.cs</small>
 
-The shipped hit tester. It considers the active `MapNodeView`
+The shipped hit tester. It considers the active `IMapNodeView`
 components on this object and its children, and covers both presentation styles:
 Canvas views by rectangle, World2D views by renderer bounds. Candidates are
 visited topmost first, so an overlapping node cannot steal a press. A view that
-also implements `MapNodeHitState` decides its own eligibility;
+also implements `IMapNodeHitState` decides its own eligibility;
 otherwise a view whose renderers are all disabled is skipped.
 
 **Properties**
 
 `public Camera EventCamera`
 
-:   The camera screen positions are interpreted through. When it is null the tester resolves one itself: `amera.main`, else the first active camera in a stable order.
+:   The camera screen positions are interpreted through. When it is null the tester resolves one itself: `Camera.main`, else the first active camera in a stable order.
 
 **Methods**
 
@@ -261,9 +306,9 @@ Optional hook for drawing whatever sits behind the map: a backdrop image, a
 parallax layer, a shader quad.
 
 Called once at the end of every presented pass, not every frame, and always
-with the theme currently in force — so an implementation must tolerate being
+with the theme currently in force - so an implementation must tolerate being
 handed the same theme repeatedly and should do nothing when it has not changed.
-A background presenter that also implements `MapStyledView`
+A background presenter that also implements `IMapStyledView`
 receives the map's style the same way views do.
 
 ---
@@ -282,8 +327,8 @@ reset, force a result, regenerate, and copy the generation manifest.
 Every command here mutates a run outside the normal traversal rules, so it is for
 authoring and debugging only, never gameplay. The whole interface exists only in
 a build that defines BRANCHWEAVER_DEVTOOLS, which is what keeps it out of a
-shipping build. Each command answers with a result rather than throwing, and one
-command cannot run while another is dispatching callbacks.
+shipping build. Commands report a refusal through their result rather than by
+throwing, and one command cannot run while another is dispatching callbacks.
 
 ---
 
@@ -300,7 +345,7 @@ public interface IMapEdgeAvailabilityView
 Implemented by an edge view that can emphasize routes leading to a
 reachable node.
 
-Separate from `MapStyledView` so a custom edge view can adopt
+Separate from `IMapStyledView` so a custom edge view can adopt
 styling without also having to reason about availability, and vice versa.
 
 ---
@@ -315,9 +360,9 @@ public interface IMapEdgeTransitionView
 
 `BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapRuntimeContracts.cs</small>
 
-Optional on an `MapEdgeView`: the edge counterpart of
-`MapNodeTransitionView`, driven in the same order and under the same
-condition that no `MapPresentationTransitionAdapter` is installed.
+Optional on an `IMapEdgeView`: the edge counterpart of
+`IMapNodeTransitionView`, driven in the same order and under the same
+condition that no `IMapPresentationTransitionAdapter` is installed.
 
 An edge only ever transitions between fog states. When one is implemented the
 presenter stops toggling the edge active on a fog change and leaves visibility to
@@ -336,11 +381,11 @@ public interface IMapEdgeView
 `BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapRuntimeContracts.cs</small>
 
 The contract for anything that draws a single map edge. Implement it to draw
-routes your own way — a line renderer, a UI mesh, a chain of sprites — and hand
-instances to the presenter through an `MapEdgeViewFactory`.
+routes your own way - a line renderer, a UI mesh, a chain of sprites - and hand
+instances to the presenter through an `IMapEdgeViewFactory`.
 
 Unlike a node view, an edge view really is deactivated when fog hides it, so
-`etActive` must be reversible rather than a teardown.
+`SetActive` must be reversible rather than a teardown.
 
 ---
 
@@ -354,8 +399,8 @@ public interface IMapEdgeViewFactory
 
 `BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapRuntimeContracts.cs</small>
 
-Creates and recycles the edge views a presenter draws with — the same seam as
-`MapNodeViewFactory`, for routes instead of nodes. Edges have no
+Creates and recycles the edge views a presenter draws with - the same seam as
+`IMapNodeViewFactory`, for routes instead of nodes. Edges have no
 per-type art, so one factory serves every edge on the map.
 
 ---
@@ -374,7 +419,7 @@ Optional hook for one shared focus indicator drawn at the focused node, as an
 alternative to every node styling its own focus.
 
 Called when focus moves, once per presented pass, and once more when the
-presenter clears the map — that last call arrives with an empty node id and a
+presenter clears the map - that last call arrives with an empty node id and a
 null layout and means "hide yourself", so an implementation must handle it.
 
 ---
@@ -389,7 +434,7 @@ public interface IMapFocusView
 
 `BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapRuntimeContracts.cs</small>
 
-Optional on an `MapNodeView`: lets a view show keyboard or gamepad
+Optional on an `IMapNodeView`: lets a view show keyboard or gamepad
 focus.
 
 The presenter drives it when focus moves and again on each presented pass for
@@ -410,7 +455,7 @@ public interface IMapInputSource
 `BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapInput.cs</small>
 
 Supplies the map with input frames. Implement this to drive a map from any input
-stack — legacy Input, Input System, a recorded replay, a test — without the
+stack - legacy Input, Input System, a recorded replay, a test - without the
 package taking a dependency on it.
 
 ---
@@ -428,7 +473,7 @@ public interface IMapLocalizationAdapter
 Bridges node labels and tooltips to whatever localization system a project
 already uses. Without one, the text authored on the node type is shown as-is.
 
-`esolve` is called twice for every node the presenter binds, so it
+`Resolve` is called twice for every node the presenter binds, so it
 must be cheap, and nothing guards it: an exception thrown from it abandons the
 presentation pass part-way through.
 
@@ -444,7 +489,7 @@ public interface IMapNodeHitState
 
 `BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapRuntimeContracts.cs</small>
 
-Optional on an `MapNodeView`: lets the view decide for itself
+Optional on an `IMapNodeView`: lets the view decide for itself
 whether it can be clicked.
 
 Implementing it replaces the default hit tester's own guess, which is drawn
@@ -480,14 +525,14 @@ public interface IMapNodeTransitionView
 
 `BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapRuntimeContracts.cs</small>
 
-Optional on an `MapNodeView`: lets a view animate its own state
+Optional on an `IMapNodeView`: lets a view animate its own state
 changes, which is how the shipped node views cross-fade.
 
-Consulted only while no `MapPresentationTransitionAdapter` is
+Consulted only while no `IMapPresentationTransitionAdapter` is
 installed. The presenter drives it in a fixed order:
-`repareForBind` before a bind that changes state, then
-`eginTransition` after that bind, then
-`dvanceTransition` once a frame on an unscaled delta so that
+`PrepareForBind` before a bind that changes state, then
+`BeginTransition` after that bind, then
+`AdvanceTransition` once a frame on an unscaled delta so that
 pausing the game does not freeze the map. Reaching the destination is the
 view's own responsibility; nothing polls it to check that it got there.
 
@@ -504,11 +549,11 @@ public interface IMapNodeView
 `BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapRuntimeContracts.cs</small>
 
 The contract for anything that draws a single map node. Implement it to render
-nodes your own way — a prefab, a sprite, a UI element — and hand instances to
-the presenter through an `MapNodeViewFactory`.
+nodes your own way - a prefab, a sprite, a UI element - and hand instances to
+the presenter through an `IMapNodeViewFactory`.
 
-An implementation must report `odeId` from the data it was bound
-with and keep `ransform` non-null for its lifetime: input
+An implementation must report `NodeId` from the data it was bound
+with and keep `Transform` non-null for its lifetime: input
 resolves a click to a node through those two members and nothing else. Beyond
 them the presenter never inspects the object, so a view is free to render
 however it likes.
@@ -527,10 +572,10 @@ public interface IMapNodeViewFactory
 
 Creates and recycles the node views a presenter draws with. This is the main
 seam for bringing your own art: pass a factory to
-`apPresenterBase.Configure` and the presenter never constructs a
+`MapPresenterBase.Configure` and the presenter never constructs a
 node view itself.
 
-`reate` must return a view already parented under the transform it
+`Create` must return a view already parented under the transform it
 was given, because the presenter does not reparent it, and one that is safe to
 bind immediately. Pooling is expected rather than exceptional: the presenter
 releases views it no longer needs, and asks for a replacement view for the same
@@ -552,8 +597,8 @@ Takes over every node and edge state transition for the whole map, as an
 alternative to letting each view animate itself.
 
 Installing one switches the per-view path off completely: the presenter then
-never calls `MapNodeTransitionView` or
-`MapEdgeTransitionView`, and never advances a view's animation. The
+never calls `IMapNodeTransitionView` or
+`IMapEdgeTransitionView`, and never advances a view's animation. The
 adapter therefore owns its own clock and must carry its animations to completion
 itself. Durations come from the theme and can be zero, which means "apply the
 destination immediately".
@@ -587,8 +632,8 @@ public interface IPlayerPawnPresenter
 Optional hook for drawing the traveller's own marker on the map.
 
 Called once at the end of every presented pass. The current node is empty
-whenever the traveller is between nodes — before the first node is entered, and
-again after each one is completed — so an implementation needs an answer for
+whenever the traveller is between nodes - before the first node is entered, and
+again after each one is completed - so an implementation needs an answer for
 "nowhere", usually hiding the pawn.
 
 ---
@@ -635,7 +680,7 @@ methods from PlayerInput without adding a BranchWeaver compile-time package depe
 
 `public void SignalNavigate(Vector2 value)`
 
-:   Sets the directional axis. It persists until changed, so send `ector2.zero` when the control is released or focus keeps repeating in that direction.
+:   Sets the directional axis. It persists until changed, so send `Vector2.zero` when the control is released or focus keeps repeating in that direction.
 
 `public void SignalPan(Vector2 delta)`
 
@@ -643,7 +688,7 @@ methods from PlayerInput without adding a BranchWeaver compile-time package depe
 
 `public void SignalPinch(float scaleDelta)`
 
-:   Reports an in-progress pinch. It marks the pinch active and drops any pending pointer press, so pinching never selects a node; call `ndPinch` when the gesture finishes.
+:   Reports an in-progress pinch. It marks the pinch active and drops any pending pointer press, so pinching never selects a node; call `EndPinch` when the gesture finishes.
     - `scaleDelta` &mdash; Pinch scale factor for this event: 1 leaves the zoom alone, 1.1 zooms in a tenth. The adapter accumulates `scaleDelta - 1` into the frame's zoom delta.
 
 `public void SignalPointer(Vector2 value)`
@@ -656,7 +701,7 @@ methods from PlayerInput without adding a BranchWeaver compile-time package depe
 
 `public void SignalSubmit()`
 
-:   Requests activation of the focused node on the next captured frame. `apture` clears it, so one call is one submit.
+:   Requests activation of the focused node on the next captured frame. `Capture` clears it, so one call is one submit.
 
 `public void SignalZoom(float delta)`
 
@@ -675,7 +720,7 @@ public sealed class LegacyMapInputSource : IMapInputSource
 Input source for Unity's legacy Input Manager: axes for navigation, Return, Space
 or the Submit button for activation, the mouse for pointing, middle-drag to pan
 and the wheel to zoom, with touches folded in as tap, drag-pan and pinch-zoom.
-`apInputController` falls back to this when no other source is bound,
+`MapInputController` falls back to this when no other source is bound,
 so the project needs the legacy input backend enabled and the "Horizontal",
 "Vertical", "Submit", "Mouse X" and "Mouse Y" entries present in its input
 settings.
@@ -684,7 +729,7 @@ settings.
 
 `public MapInputFrame Capture()`
 
-:   Reads one frame from `nput`. While any finger is down the touch pointer replaces the mouse pointer and touch pan and zoom add to the mouse values; with no touches the gesture state is cleared, so a lifted finger cannot leak a delta into the next frame.
+:   Reads one frame from `Input`. While any finger is down the touch pointer replaces the mouse pointer and touch pan and zoom add to the mouse values; with no touches the gesture state is cleared, so a lifted finger cannot leak a delta into the next frame.
 
 ---
 
@@ -704,7 +749,7 @@ that defines BRANCHWEAVER_DEVTOOLS.
 
 `public MapDevelopmentFailureKind FailureKind`
 
-:   Why the command was refused, or `apDevelopmentFailureKind.None` on success.
+:   Why the command was refused, or `MapDevelopmentFailureKind.None` on success.
 
 `public string Message`
 
@@ -712,11 +757,11 @@ that defines BRANCHWEAVER_DEVTOOLS.
 
 `public bool Succeeded`
 
-:   &mdash;
+:   Whether the command ran. A refusal is reported here rather than thrown, so an overlay can offer every command and simply show `Message` when one is turned down.
 
 `public string Value`
 
-:   Data returned by the commands that produce some — today the copied generation manifest. Never null; empty for every other success and for all failures.
+:   Data returned by the commands that produce some - today the copied generation manifest. Never null; empty for every other success and for all failures.
 
 **Methods**
 
@@ -726,7 +771,7 @@ that defines BRANCHWEAVER_DEVTOOLS.
 
 `public static MapDevelopmentCommandResult Success(string value = null)`
 
-:   Records a success, optionally carrying data in `alue`.
+:   Records a success, optionally carrying data in `Value`.
 
 ---
 
@@ -767,8 +812,8 @@ graph edge, the sampled path along it, the colour to draw it in, and its fog
 state.
 
 Immutable and passed by value. Both point lists are wrapped read-only on
-construction — copied unless they are already a
-`eadOnlyCollection{T}` — so a caller may keep reusing its own
+construction - copied unless they are already a
+`ReadOnlyCollection{T}` - so a caller may keep reusing its own
 buffers without a bound view seeing them change underneath it.
 
 **Constructors**
@@ -787,15 +832,15 @@ buffers without a bound view seeing them change underneath it.
 
 `public Color Color`
 
-:   &mdash;
+:   The colour to draw the route in, already resolved for the role it plays this pass: walked, leading to a node the traveller may enter next, or dimmed by fog. It comes from the map's style, falling back to the theme's single edge colour when no style is assigned, so a view should draw with it rather than choose a colour of its own.
 
 `public MapEdge Edge`
 
-:   &mdash;
+:   The graph edge being drawn, carrying its id and the two nodes it joins.
 
 `public MapFogState FogState`
 
-:   &mdash;
+:   How visible the route is: the more hidden of its two endpoints' fog states, and `MapFogState.Hidden` when either endpoint has no state. A view that animates its own fog transitions is not deactivated for it, and so must end a transition to hidden invisible by itself.
 
 `public IReadOnlyList<NormalizedMapPosition> Points`
 
@@ -803,7 +848,7 @@ buffers without a bound view seeing them change underneath it.
 
 `public IReadOnlyList<Vector2> PresentationPoints`
 
-:   The same path in presentation units, one entry per `oints` entry, or null when it was not supplied. A view given null converts `oints` itself.
+:   The same path in presentation units, one entry per `Points` entry, or null when it was not supplied. A view given null converts `Points` itself.
 
 ---
 
@@ -860,10 +905,11 @@ public enum MapFogState
 
 `BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapRuntimeState.cs</small>
 
-How visible a node is, derived from its `apNodeVisualState`: a hidden
-node reports `idden`, a locked one `immed`, and anything
-the traveller has reached or can reach `isible`. The built-in
-presenters give a route the more hidden of its two endpoints' states.
+How visible a node is, derived from its `MapNodeVisualState`: a hidden
+node reports `MapFogState.Hidden`, a locked one
+`MapFogState.Dimmed`, and anything the traveller has reached or can reach
+`MapFogState.Visible`. The built-in presenters give a route the more
+hidden of its two endpoints' states.
 
 | Value | Meaning |
 | --- | --- |
@@ -884,10 +930,10 @@ public sealed class MapInputController : MonoBehaviour, ISerializationCallbackRe
 `BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapInput.cs</small>
 
 The component that turns input frames into map interaction: it moves focus between
-nodes, submits the focused or pressed node to a `apTraversalController`,
+nodes, submits the focused or pressed node to a `MapTraversalController`,
 and pans and zooms the content transform inside the theme's zoom limits while
-keeping the focused node in view. Frames come from any `MapInputSource`
-and presses are resolved by any `MapNodeHitTester`, so a project can
+keeping the focused node in view. Frames come from any `IMapInputSource`
+and presses are resolved by any `IMapNodeHitTester`, so a project can
 change input stack or presentation style without touching the map. It stays inert
 until a traversal controller is initialized and a layout is available: ticks before
 that are dropped, not queued.
@@ -896,23 +942,23 @@ that are dropped, not queued.
 
 `public MapLayout CurrentLayout`
 
-:   &mdash;
+:   The layout spatial navigation and framing currently work from, or null before one is set. With a presenter bound it follows that presenter's layout; otherwise it is whatever `SetLayout` or `Configure` last supplied. Input frames are dropped while it is null.
 
 `public DefaultMapNodeHitTester DefaultHitTester`
 
-:   &mdash;
+:   The serialized hit tester, kept in a field so the binding survives a domain reload. It is not necessarily the tester in use: one passed to `Configure` takes precedence without being stored here, while `BindPresenter` does store one it is given when it happens to be a `DefaultMapNodeHitTester`.
 
 `public Camera EventCamera`
 
-:   &mdash;
+:   The camera screen positions are interpreted through for zoom anchoring and world-space viewport maths, or null to let the controller resolve one itself: `Camera.main`, else the first active camera in a stable order. A camera resolved that way is cached and is looked for again only once it goes inactive or the scene's camera count changes, so an empty scene does not re-scan every frame.
 
 `public InputSystemSignalAdapter InputSignals`
 
-:   &mdash;
+:   The serialized Input System adapter, which acts as the fallback source: when no source has been bound the update loop captures from this, and when this is null too it falls back to `LegacyMapInputSource`.
 
 `public MapNavigationModel Navigation`
 
-:   &mdash;
+:   The focus model this controller drives. Read it to learn which node is focused, or move focus yourself between ticks. Focus is presentation state: moving it neither enters a node nor touches progression, and a change made directly on the model is not announced through `FocusChanged` until the next tick publishes it.
 
 `public Vector2 Pan`
 
@@ -920,15 +966,15 @@ that are dropped, not queued.
 
 `public MapPresenterBase Presenter`
 
-:   &mdash;
+:   The presenter supplying the layout and receiving focus updates, or null when the controller was pointed at a layout directly. Only a bound presenter keeps the layout current, and only while the component is enabled -- the subscription is dropped on disable and taken again on enable.
 
 `public MapTraversalController TraversalController`
 
-:   &mdash;
+:   The traversal controller node selections are submitted to, or null before one is bound. The component stays inert until this is set and initialized: frames arriving before then are dropped rather than queued.
 
 `public Transform ViewportContent`
 
-:   &mdash;
+:   The transform pan and zoom are written to, or null when the map is not to be moved at all. A `RectTransform` receives the pan as its anchored position; any other transform receives it as a local position in hundredths of the same units, which is why `Pan` is measured differently for the two presentation styles.
 
 `public float Zoom`
 
@@ -938,7 +984,7 @@ that are dropped, not queued.
 
 `public event Action<StableId> FocusChanged`
 
-:   Raised when the focused node changes, including when focus is lost — the argument is then an empty `tableId`. The presenter has already been told about the new focus by the time handlers run.
+:   Raised when the focused node changes, including when focus is lost - the argument is then an empty `StableId`. The presenter has already been told about the new focus by the time handlers run.
 
 **Methods**
 
@@ -948,7 +994,7 @@ that are dropped, not queued.
 
 `public void BindDefaultHitTester(DefaultMapNodeHitTester hitTester)`
 
-:   Makes this tester resolve pointer presses and stores it in the serialized field, so the binding survives a domain reload. It replaces any tester passed to `onfigure` or `indPresenter`.
+:   Makes this tester resolve pointer presses and stores it in the serialized field, so the binding survives a domain reload. It replaces any tester passed to `Configure` or `BindPresenter`.
 
 `public void BindInputSignals(InputSystemSignalAdapter signals)`
 
@@ -960,11 +1006,11 @@ that are dropped, not queued.
     - `presenter` &mdash; Supplies the layout and receives focus updates.
     - `contentTransform` &mdash; The transform pan and zoom are written to. Null means the map is not moved at all.
     - `source` &mdash; Where frames come from. Null leaves the component to fall back to its serialized signal adapter, or to legacy Input, on the next update.
-    - `hitTester` &mdash; Resolves pointer presses to nodes. Null falls back to the serialized `efaultMapNodeHitTester`, then to one found among the children.
+    - `hitTester` &mdash; Resolves pointer presses to nodes. Null falls back to the serialized `DefaultMapNodeHitTester`, then to one found among the children.
 
 `public void Configure()`
 
-:   Wires the controller to a layout directly, with no presenter: it drops any presenter binding and its layout-change subscription, recovers focus from the traversal state, and applies the current pan and zoom to the content transform. Prefer `indPresenter` when a `apPresenterBase` owns the layout, because only that path follows later layout changes.
+:   Wires the controller to a layout directly, with no presenter: it drops any presenter binding and its layout-change subscription, recovers focus from the traversal state, and applies the current pan and zoom to the content transform. Prefer `BindPresenter` when a `MapPresenterBase` owns the layout, because only that path follows later layout changes.
     - `layout` &mdash; The layout whose node positions drive spatial navigation and framing.
     - `source` &mdash; Where frames come from. Null leaves the component to fall back to its serialized signal adapter, or to legacy Input, on the next update.
     - `hitTester` &mdash; Resolves pointer presses to nodes. Null leaves pointer selection off until a tester is bound or the component is re-enabled.
@@ -994,17 +1040,17 @@ that are dropped, not queued.
 
 `public void Tick(MapInputFrame frame)`
 
-:   Applies one input frame, choosing the zoom anchor itself — the pointer when the frame carries one, otherwise the focused node — and only when the zoom would actually change. Navigation repeat runs on unscaled time, so a paused game still repeats at the same rate. The component already ticks itself every update from its bound source, so call this directly only when you drive input yourself. Frames that arrive before the traversal controller is initialized, or while no layout is set, are dropped.
+:   Applies one input frame, choosing the zoom anchor itself - the pointer when the frame carries one, otherwise the focused node - and only when the zoom would actually change. Navigation repeat runs on unscaled time, so a paused game still repeats at the same rate. The component already ticks itself every update from its bound source, so call this directly only when you drive input yourself. Frames that arrive before the traversal controller is initialized, or while no layout is set, are dropped.
 
 `public void Tick(MapInputFrame frame, Vector2 anchorLocal)`
 
 :   Applies one input frame around an explicit zoom anchor, timing navigation repeat with unscaled delta time.
-    - `anchorLocal` &mdash; The point that stays still while the zoom changes, in the same units as `an`.
+    - `anchorLocal` &mdash; The point that stays still while the zoom changes, in the same units as `Pan`.
 
 `public void Tick(MapInputFrame frame, Vector2 anchorLocal, float deltaSeconds)`
 
 :   Applies one input frame around an explicit zoom anchor with a caller-supplied time step. Use this to drive the map from a fixed step or a test.
-    - `anchorLocal` &mdash; The point that stays still while the zoom changes, in the same units as `an`.
+    - `anchorLocal` &mdash; The point that stays still while the zoom changes, in the same units as `Pan`.
     - `deltaSeconds` &mdash; Time since the previous tick. It advances the directional hold-repeat clock only; pan and zoom come from the frame's deltas, so the step never scales movement.
 
 ---
@@ -1020,14 +1066,14 @@ public readonly struct MapInputFrame
 One update's worth of map input, reduced to the six signals the controller acts
 on: a directional axis, a submit request, a pointer, pan and zoom deltas, and a
 pinch flag. Everything here describes that update alone, so a frame is meant to
-be applied once — feeding the same frame twice pans, zooms, and submits twice.
+be applied once - feeding the same frame twice pans, zooms, and submits twice.
 
 **Constructors**
 
 `public MapInputFrame()`
 
-:   Creates a frame and infers `asPointerPosition`: it is true when the pointer is pressed, a pinch is running, or the position is not the screen origin. Use the other constructor when a source knows better, for instance a mouse resting exactly at (0, 0).
-    - `navigation` &mdash; Directional intent; see `avigation` for the threshold applied.
+:   Creates a frame and infers `HasPointerPosition`: it is true when the pointer is pressed, a pinch is running, or the position is not the screen origin. Use the other constructor when a source knows better, for instance a mouse resting exactly at (0, 0).
+    - `navigation` &mdash; Directional intent; see `Navigation` for the threshold applied.
     - `pointerPosition` &mdash; Pointer position in screen pixels.
     - `panDelta` &mdash; Pan movement for this frame, not an absolute offset.
     - `zoomDelta` &mdash; Zoom change for this frame, not an absolute zoom.
@@ -1035,7 +1081,7 @@ be applied once — feeding the same frame twice pans, zooms, and submits twice.
 `public MapInputFrame()`
 
 :   Creates a frame with `hasPointerPosition` stated outright, for sources that know whether a pointer exists this frame.
-    - `navigation` &mdash; Directional intent; see `avigation` for the threshold applied.
+    - `navigation` &mdash; Directional intent; see `Navigation` for the threshold applied.
     - `pointerPosition` &mdash; Pointer position in screen pixels.
     - `panDelta` &mdash; Pan movement for this frame, not an absolute offset.
     - `zoomDelta` &mdash; Zoom change for this frame, not an absolute zoom.
@@ -1045,7 +1091,7 @@ be applied once — feeding the same frame twice pans, zooms, and submits twice.
 
 `public bool HasPointerPosition`
 
-:   Whether `ointerPosition` is usable this frame. It decides the zoom anchor: with a pointer the map zooms around it, without one it zooms around the focused node.
+:   Whether `PointerPosition` is usable this frame. It decides the zoom anchor: with a pointer the map zooms around it, without one it zooms around the focused node.
 
 `public Vector2 Navigation`
 
@@ -1053,7 +1099,7 @@ be applied once — feeding the same frame twice pans, zooms, and submits twice.
 
 `public Vector2 PanDelta`
 
-:   Pan movement for this frame in the source's own units; the controller scales it by its pan sensitivity and adds it to `apInputController.Pan`.
+:   Pan movement for this frame in the source's own units; the controller scales it by its pan sensitivity and adds it to `MapInputController.Pan`.
 
 `public bool PinchActive`
 
@@ -1061,11 +1107,11 @@ be applied once — feeding the same frame twice pans, zooms, and submits twice.
 
 `public Vector2 PointerPosition`
 
-:   Pointer position in screen pixels, meaningful only while `asPointerPosition` is set.
+:   Pointer position in screen pixels, meaningful only while `HasPointerPosition` is set.
 
 `public bool PointerPressed`
 
-:   Set for the one frame the source reports a press or tap. The controller hit-tests at `ointerPosition` and submits the node it finds.
+:   Set for the one frame the source reports a press or tap. The controller hit-tests at `PointerPosition` and submits the node it finds.
 
 `public bool Submit`
 
@@ -1085,8 +1131,8 @@ public enum MapNavigationDirection
 
 `BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapNavigation.cs</small>
 
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
+A directional focus step, named in normalized layout space: Up is increasing Y and Right is
+increasing X, whatever the presenter later does with those axes on screen.
 
 | Value | Meaning |
 | --- | --- |
@@ -1105,32 +1151,40 @@ public sealed class MapNavigationModel
 
 `BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapNavigation.cs</small>
 
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
+Keyboard and gamepad focus for a map. It holds nothing but the focused node and derives every
+choice from the progression, layout, and runtime state handed in, so the same inputs over the
+same map always land on the same node.
+
+Focus is presentation state: moving it neither enters a node nor changes progression, and a
+node hidden by fog is never chosen.
 
 **Properties**
 
 `public StableId FocusedNodeId`
 
-:   &mdash;
+:   The focused node, or an empty id when nothing is focused.
 
 **Methods**
 
 `public void ClearFocus()`
 
-:   &mdash;
+:   Drops focus, leaving `FocusedNodeId` empty.
 
 `public bool Move(MapNavigationDirection direction, MapLayout layout, MapRuntimeStateSnapshot runtimeState)`
 
-:   &mdash;
+:   Steps focus to the nearest visible node in one direction. A node counts as a candidate only when that direction is the dominant axis of the offset to it; the nearest by squared distance then wins, ties break by the offset across the direction, and remaining ties by the lower node id, which is what makes the step deterministic. Distances come from the layout, not from where the presenter draws the nodes.
+    - **Returns** &mdash; True when focus moved. With nothing focused yet, no focused position in the layout, or no qualifying candidate, focus is left untouched and this returns false.
 
 `public StableId RecoverFocus(MapProgressionState progression, MapLayout layout, MapRuntimeStateSnapshot runtimeState)`
 
-:   &mdash;
+:   Re-picks focus after the map changes, keeping the focused node when it is still visible. Otherwise it prefers the node being played, then the first visible available node, then the first visible visited node, then any visible node, and clears focus if the map has nothing visible at all.
+    - `runtimeState` &mdash; Per-node fog state; a node it does not contain cannot be focused.
+    - **Returns** &mdash; The focused node after recovery, or an empty id when nothing could be focused.
 
 `public bool TrySetFocus(StableId nodeId, MapRuntimeStateSnapshot runtimeState)`
 
-:   &mdash;
+:   Focuses a node directly, as a pointer tap does. Nothing changes when the node is unknown to `runtimeState` or hidden by fog, so a tap on a hidden node cannot take focus away from a visible one.
+    - **Returns** &mdash; True when focus moved to the node.
 
 ---
 
@@ -1144,7 +1198,7 @@ public readonly struct MapNodeRuntimeState : IComparable<MapNodeRuntimeState>
 
 One node's derived display state: the visual state a presenter styles it with, plus
 the fog state that decides whether it can be seen at all. An immutable value read
-out of a `apRuntimeStateSnapshot`; it is never updated in place, so a
+out of a `MapRuntimeStateSnapshot`; it is never updated in place, so a
 copy keeps reporting the revision it was taken from.
 
 **Constructors**
@@ -1157,21 +1211,21 @@ copy keeps reporting the revision it was taken from.
 
 `public MapFogState FogState`
 
-:   &mdash;
+:   How visible the node is, derived from `VisualState` and never independent of it: hidden nodes report `MapFogState.Hidden`, locked ones `MapFogState.Dimmed`, and everything else `MapFogState.Visible`. It is the field to test before drawing or hit-testing, since a concealed node is present in the snapshot rather than absent from it.
 
 `public StableId NodeId`
 
-:   &mdash;
+:   The node these two states were derived for; also the key it is stored and sorted under.
 
 `public MapNodeVisualState VisualState`
 
-:   &mdash;
+:   How the node reads to the player, and what a presenter styles it as. A node can satisfy several conditions at once, so this is already the winner of a fixed precedence and not a set to interpret further.
 
 **Methods**
 
 `public int CompareTo(MapNodeRuntimeState other)`
 
-:   Orders by `odeId` alone, ignoring both states. This is what gives a snapshot's node list an order that depends on the graph and not on progress.
+:   Orders by `NodeId` alone, ignoring both states. This is what gives a snapshot's node list an order that depends on the graph and not on progress.
 
 ---
 
@@ -1190,14 +1244,14 @@ graph node, where it sits, its compiled type, and its visual and fog state.
 
 Immutable and passed by value, so a view may keep a copy but must not expect
 that copy to change. The presenter rebuilds the data and calls
-`MapNodeView.Bind` again when the node's presented state changes,
+`IMapNodeView.Bind` again when the node's presented state changes,
 which is why a view never has to poll the graph or the traversal state.
 
 **Constructors**
 
 `public MapNodeViewData()`
 
-:   Builds view data without presentation metrics: the label and tooltip are taken straight off `nodeType` unlocalized, the node size is a nominal default, and `asPresentationPosition` stays false so the view places and sizes the node from `position` itself.
+:   Builds view data without presentation metrics: the label and tooltip are taken straight off `nodeType` unlocalized, the node size is a nominal default, and `HasPresentationPosition` stays false so the view places and sizes the node from `position` itself.
     - `nodeType` &mdash; The compiled type this node draws as; null leaves the label and tooltip empty.
 
 `public MapNodeViewData()`
@@ -1217,31 +1271,31 @@ which is why a view never has to poll the graph or the traversal state.
 
 `public MapFogState FogState`
 
-:   &mdash;
+:   How visible the node is, derived from `VisualState`. The presenter binds and activates a node view even when this is `MapFogState.Hidden`, so drawing nothing in that state is the view's own responsibility.
 
 `public bool HasPresentationPosition`
 
-:   False when this data was built without presentation metrics, in which case the view must place and size the node from `osition` itself instead of trusting `resentationPosition`.
+:   False when this data was built without presentation metrics, in which case the view must place and size the node from `Position` itself instead of trusting `PresentationPosition`.
 
 `public MapNode Node`
 
-:   &mdash;
+:   The graph node being drawn, carrying its id, its node-type reference, and its authored payload.
 
 `public float NodeSize`
 
-:   Node size in the same presentation units as `resentationPosition`. This is the unstyled base size: a style scales it per visual state, so it is not necessarily the size drawn.
+:   Node size in the same presentation units as `PresentationPosition`. This is the unstyled base size: a style scales it per visual state, so it is not necessarily the size drawn.
 
 `public CompiledMapNodeType NodeType`
 
-:   &mdash;
+:   The compiled node type this node draws as, and where a view finds its art, colours, and cue ids. The shipped presenter skips a node whose type the content does not declare, so it never binds a null here, but the short constructor allows one.
 
 `public NormalizedMapPosition Position`
 
-:   &mdash;
+:   Where the node sits in normalized layout space, before any framing or scaling. This is the placement to work from when `HasPresentationPosition` is false, and it stays meaningful even when it is true.
 
 `public Vector2 PresentationPosition`
 
-:   Where to draw the node, in presentation units. Meaningful only when `asPresentationPosition` is true.
+:   Where to draw the node, in presentation units. Meaningful only when `HasPresentationPosition` is true.
 
 `public string Tooltip`
 
@@ -1249,7 +1303,7 @@ which is why a view never has to poll the graph or the traversal state.
 
 `public MapNodeVisualState VisualState`
 
-:   &mdash;
+:   How the node reads to the player - hidden, locked, available, current, visited, or completed. Derived from progression rather than stored with the node, so it cannot disagree with the run it came from.
 
 ---
 
@@ -1274,7 +1328,7 @@ disagree with the save it came from.
 | `Locked` | Discovered but not reachable yet, so it is drawn dimmed rather than hidden. |
 | `Available` | Reachable now: the traveller may enter this node. |
 | `Current` | The node the traveller is on, entered but not yet completed. |
-| `Visited` | Reached earlier with no completion recorded; a completed node reports `ompleted`. |
+| `Visited` | Reached earlier with no completion recorded; a completed node reports `Completed`. |
 | `Completed` | Reached and finished, with its completion result recorded in the progression. |
 
 ---
@@ -1289,34 +1343,48 @@ public abstract class MapPresenterBase : MonoBehaviour, IMapPresentationHost
 
 `BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapPresenterBase.cs</small>
 
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
+Turns a traversal controller's graph, progression and compiled content into live
+node and edge views, and keeps them in step for the rest of the run. The shipped
+`CanvasMapPresenter` and `WorldMapPresenter` both derive from it; a
+subclass supplies the two default view factories and otherwise inherits the whole
+presentation pass.
+
+Presenting is incremental rather than a rebuild. The layout, the metrics and the
+view instances are reused for as long as the graph and content instances stay the
+same, and a pass only re-binds the nodes and edges whose derived state actually
+changed. That is what makes an ordinary state change cheap, and it is why a view
+has to treat `IMapNodeView.Bind` as idempotent rather than as a fresh
+start.
+
+Nothing here writes to the graph or to progression: everything the presenter
+derives is display state, so a save reopened later is the same run however it was
+last drawn.
 
 **Properties**
 
 `public int ActiveEdgeCount`
 
-:   &mdash;
+:   How many edge views the presenter is holding, counted the same way as `ActiveNodeCount`. An edge hidden by fog is deactivated rather than released, so it still counts.
 
 `public int ActiveNodeCount`
 
-:   &mdash;
+:   How many node views the presenter is holding. Nodes hidden by fog are counted: they are still bound and left active, and drawing them as invisible is the view's own job. Views handed back to a pooling factory are not counted, so this reports what is on the map rather than what has been allocated.
 
 `public MapLayout CurrentLayout`
 
-:   &mdash;
+:   The node positions the map is currently drawn from, or null before the first pass and after `Clear`. Rebuilt only when the graph or the compiled content instance changes, so the same instance is handed back across ordinary state changes.
 
 `public StableId FocusedNodeId`
 
-:   &mdash;
+:   The node currently shown as focused, or an empty id when nothing is. The presenter clears it by itself if that node becomes hidden by fog, so it can change without anyone calling `SetFocusedNode`.
 
 `public Vector2 PresentationContentSize`
 
-:   &mdash;
+:   The extent the laid-out map occupies in presentation units, derived from the theme's spacing and the busiest layer of the graph rather than from the views themselves. Zero until the first pass has run. Viewport framing, panning and clamping are all measured against it.
 
 `public float PresentationNodeSize`
 
-:   &mdash;
+:   The unstyled node size in the same units as `PresentationContentSize`, or zero until the first pass has run. This is the base size a style then scales per visual state, so it is not necessarily the size drawn; it is used as the margin when keeping a focused node inside the viewport.
 
 `public BranchWeaver.Authoring.CompiledMapStyle Style`
 
@@ -1324,19 +1392,20 @@ public abstract class MapPresenterBase : MonoBehaviour, IMapPresentationHost
 
 `public MapTraversalController TraversalController`
 
-:   &mdash;
+:   The controller being drawn, whether it was assigned in the inspector or through `SetTraversalController` or `Configure`. Null until one is assigned, and a presenter without one draws nothing.
 
 **Events**
 
 `public event Action<MapLayout> LayoutChanged`
 
-:   &mdash;
+:   Raised at the end of a pass that rebuilt the layout, carrying the new positions, and again with null when `Clear` throws the layout away. It does not fire for an ordinary state change, because the layout is only rebuilt when the graph or the compiled content instance changes. Anything that tracks node positions - a viewport, a minimap, a decoration layer - should listen here instead of polling `CurrentLayout` every frame.
 
 **Methods**
 
 `public void AdvanceTransitions(float deltaSeconds)`
 
-:   &mdash;
+:   Advances the state-change animations that node and edge views run for themselves. Driven once a frame from Update on an unscaled delta, so pausing the game does not freeze the map; call it yourself only when you want the map on a clock of your own. It returns without doing anything while an `IMapPresentationTransitionAdapter` is installed, because that adapter owns every transition and its own timing.
+    - `deltaSeconds` &mdash; Seconds elapsed since the last advance. Views have to cope with zero and with a very large value after a stall.
 
 `public void ApplyStyle(BranchWeaver.Authoring.MapStylePreset preset)`
 
@@ -1344,15 +1413,29 @@ public abstract class MapPresenterBase : MonoBehaviour, IMapPresentationHost
 
 `public void Clear()`
 
-:   &mdash;
+:   Empties the map: every node and edge view goes back to its factory, the layout, metrics and cached geometry are dropped, and focus is released. The factories and adapters themselves are kept, so a later `Refresh` or `Present` rebuilds the map with the same setup. A focus indicator is told to hide itself, and `LayoutChanged` is raised with null if there was a layout to throw away. Calling it twice is harmless.
 
 `public void Configure()`
 
-:   &mdash;
+:   Replaces the whole presentation setup in one call - the controller, the view factories, and every optional adapter - then clears the map and draws it again from scratch. This is the seam for bringing your own art and your own behaviour. The two factories, the localization adapter and the layout strategy fall back to the shipped defaults when left null; the rest are extra hooks that are simply not installed, so a map configured without a route marker or a pawn presenter draws neither. Each call discards the previous setup, disposing any factory the presenter had created for itself, which is why this is a setup call rather than something to run per frame.
+    - `controller` &mdash; The controller to draw. Null leaves the map empty.
+    - `nodeFactory` &mdash; Supplies node views. Null falls back to the subclass's default factory, which the presenter then owns and disposes with itself.
+    - `edgeFactory` &mdash; Supplies edge views, on the same terms as `nodeFactory`.
+    - `background` &mdash; Optional backdrop hook, called once at the end of every pass.
+    - `route` &mdash; Optional hook for marking the route already walked.
+    - `pawn` &mdash; Optional hook for the traveller's own marker.
+    - `transitions` &mdash; Optional adapter that takes over every node and edge transition. Installing one switches the per-view animation path off entirely.
+    - `localization` &mdash; Optional adapter for node labels and tooltips. Null shows the authored text as-is.
+    - `layoutStrategy` &mdash; Optional replacement for the shipped layered layout.
+    - `focusIndicator` &mdash; Optional shared focus indicator, as an alternative to each view styling its own focus.
 
 `public void Present(MapGraph graph, MapProgressionState progression, MapRuntimeContent content, bool revealAll)`
 
-:   &mdash;
+:   Draws an explicit graph, progression and content, bypassing the traversal controller. Intended for a map with no live run behind it: a preview, a save slot thumbnail, an editor tool. Display state is derived here from the arguments with the default fog look-ahead, not with an attached controller's own fog settings, so the two paths can disagree about what is hidden. Nothing is written back - drawing a progression cannot advance it - and the next state change from an attached controller redraws over whatever was presented this way.
+    - `graph` &mdash; The map to draw.
+    - `progression` &mdash; The progression the visual and fog states are derived from.
+    - `content` &mdash; Compiled content supplying the theme and the node types. A node whose type is missing from it is skipped.
+    - `revealAll` &mdash; True to leave nothing hidden by fog: an undiscovered node reads as locked instead.
 
 `public void PushStyleToViews()`
 
@@ -1360,15 +1443,17 @@ public abstract class MapPresenterBase : MonoBehaviour, IMapPresentationHost
 
 `public void Refresh()`
 
-:   &mdash;
+:   Draws the controller's current graph and progression again, or clears the map when there is no initialized controller to draw. The presenter already redraws itself whenever the controller reports a state change, so this is for the cases nothing signals: a controller initialized while the presenter was disabled, or a change made to the map from outside the controller's own events.
 
 `public void SetFocusedNode(StableId nodeId)`
 
-:   &mdash;
+:   Moves the keyboard or gamepad focus treatment to a node, clearing it from whichever node had it. The input controller drives this as focus moves, so a caller only needs it to place focus itself. Focus is display-only: it never selects the node or advances the run. A node hidden by fog is deliberately not shown as focused, and the presenter drops focus by itself if the focused node later becomes hidden.
+    - `nodeId` &mdash; The node to focus, or an empty id to clear focus. An id that is not on the map clears the previous focus and focuses nothing.
 
 `public void SetTraversalController(MapTraversalController controller)`
 
-:   &mdash;
+:   Points the presenter at a different controller, unsubscribing from the previous one and drawing the new one straight away. Factories and adapters installed through `Configure` are kept, so this is the call for swapping which run is on screen rather than how it is drawn. Passing the controller already assigned does nothing at all, so it is safe to call repeatedly.
+    - `controller` &mdash; The controller to draw. Null leaves the map empty until one is assigned.
 
 `public void TickStyle(float presentationDeltaSeconds)`
 
@@ -1376,7 +1461,10 @@ public abstract class MapPresenterBase : MonoBehaviour, IMapPresentationHost
 
 `public bool TryGetPresentationPosition(StableId nodeId, out Vector2 position)`
 
-:   &mdash;
+:   Looks up a node's laid-out position in presentation units, so a caller can place something of its own beside it - a tooltip, a marker, a camera target - without reaching into the view. The position comes from the layout and the metrics, not from the view's transform, so it is unaffected by any transition or focus scaling in flight. It is the layout position scaled by the content size, with the style's flow direction not applied, so it matches where the node is actually drawn only while that direction runs along the theme's axis unflipped - bottom-to-top for a vertical theme, left-to-right for a horizontal one, which is what the shipped default style uses. Under any other flow direction the drawn node is mirrored or transposed against this value.
+    - `nodeId` &mdash; The node to locate.
+    - `position` &mdash; The node's presentation-space position, or `Vector2.zero` when the lookup fails.
+    - **Returns** &mdash; False before the first pass has run and for a node the current layout does not hold.
 
 ---
 
@@ -1390,30 +1478,43 @@ public sealed class MapRuntimeContent
 
 `BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapRuntimeContent.cs</small>
 
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
+Everything needed to draw a map that the graph itself does not carry: the node types its type
+IDs resolve to, and the theme they are laid out and styled with. A graph names its node types
+by `StableId` and never reaches for their prefabs, icons, or colors, so this is
+the side of the split that decides how a map looks and the graph is the side that decides
+what it is -- swapping in different content restyles a map without changing it.
+
+It is immutable and holds nothing scene-specific, so one instance can be shared by the
+traversal controller, the presenter, and any custom view at once, and reused across every map
+generated against the same rules. Build it once per theme and content revision rather than
+per map: the lookup index is built up front, so rebuilding it costs more than keeping it.
 
 **Constructors**
 
 `public MapRuntimeContent(IEnumerable<CompiledMapNodeType> nodeTypes, CompiledMapTheme theme)`
 
-:   &mdash;
+:   Snapshots the node types and theme, copying the types, sorting them by ID, and indexing them for lookup, so the caller's collection may be changed afterwards without reaching the content.
+    - `nodeTypes` &mdash; Every node type a graph drawn with this content may name. The sequence may be in any order, but each entry needs a non-empty ID and no two may share one.
+    - `theme` &mdash; The compiled theme every view drawn from this content styles itself with.
 
 **Properties**
 
 `public IReadOnlyList<CompiledMapNodeType> NodeTypes`
 
-:   &mdash;
+:   Every node type this content can resolve, ordered by ID rather than by the order they were supplied in. Read-only, and the natural source for a legend or a type picker; resolving one node's type is what `TryGetNodeType` is for.
 
 `public CompiledMapTheme Theme`
 
-:   &mdash;
+:   The theme this content is drawn with: spacing, orientation, edge shape, the backdrop and edge colors, the zoom range, and the state transition duration. Never null, and fixed for the life of the instance -- change the look by building new content, not by mutating this.
 
 **Methods**
 
 `public bool TryGetNodeType(StableId typeId, out CompiledMapNodeType nodeType)`
 
-:   &mdash;
+:   Resolves a graph node's `MapNode.TypeId` to the content it should be drawn with, through the index built at construction rather than by scanning `NodeTypes`.
+    - `typeId` &mdash; The type ID carried by the node.
+    - `nodeType` &mdash; The matching node type, or null when this content does not carry one.
+    - **Returns** &mdash; False when the graph names a type this content has no entry for, which is how a graph built against a different rules asset shows itself; the view is then responsible for choosing a fallback.
 
 ---
 
@@ -1425,8 +1526,15 @@ public static class MapRuntimeStateDeriver
 
 `BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapRuntimeState.cs</small>
 
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
+Turns a graph plus the traveller's progression into the per-node fog and
+visual states a view needs, and is what decides how much of the map the
+player can currently see.
+
+Discovery walks outward from the nodes actually visited, up to
+`MapFogSettings.RevealDepth` edges - so depth 1 shows only the
+immediate next choices, and larger depths reveal further ahead. The result is
+derived fresh from progression rather than stored, so it can never drift out
+of sync with a loaded save.
 
 **Methods**
 
@@ -1448,30 +1556,38 @@ public sealed class MapRuntimeStateSnapshot
 
 `BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapRuntimeState.cs</small>
 
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
+The whole map's derived display state for one progression revision: one entry per
+node, sorted by node ID and addressable by ID.
+
+Immutable once built, so reading it cannot advance traversal or change what the
+player sees; a move, an unlock, or a change of fog settings needs a newly derived
+snapshot.
 
 **Constructors**
 
 `public MapRuntimeStateSnapshot(long revision, IEnumerable<MapNodeRuntimeState> nodes)`
 
-:   &mdash;
+:   Copies and sorts the supplied states; a null sequence yields an empty snapshot.
+    - `revision` &mdash; The progression revision these states describe. It is carried, not validated.
+    - `nodes` &mdash; One state per node, in any order.
 
 **Properties**
 
 `public IReadOnlyList<MapNodeRuntimeState> Nodes`
 
-:   &mdash;
+:   Every node's state, sorted by node ID rather than by progress or layout.
 
 `public long Revision`
 
-:   &mdash;
+:   The progression revision this state was derived from. It tracks progression only, so two snapshots can carry the same revision and still differ, for instance when the fog settings changed between them.
 
 **Methods**
 
 `public bool TryGet(StableId id, out MapNodeRuntimeState state)`
 
-:   &mdash;
+:   Looks one node's state up by ID instead of scanning `Nodes`.
+    - `state` &mdash; The node's derived state, or `default` when the node is absent.
+    - **Returns** &mdash; True when the snapshot holds that node. A node missing here is one the snapshot was not derived for, not a concealed one: concealed nodes are present and report `MapFogState.Hidden`.
 
 ---
 
@@ -1485,16 +1601,16 @@ public sealed class MapSelectionResult
 
 The outcome of asking the controller to move to a node.
 
-It separates a request that never reached the traversal session — an unknown
+It separates a request that never reached the traversal session - an unknown
 node, a node that is not available, or a controller already dispatching
-callbacks — from one that did, where `ransition` carries the
+callbacks - from one that did, where `Transition` carries the
 session's accept or reject.
 
 **Properties**
 
 `public StableId NodeId`
 
-:   &mdash;
+:   The node the request named, echoed back whatever became of it - including for a request that was dropped, and for an id the graph does not hold. It lets a caller match a result to the click that produced it without keeping the id itself.
 
 `public bool Succeeded`
 
@@ -1513,11 +1629,11 @@ session's accept or reject.
 `public static MapSelectionResult Attempted(StableId nodeId, bool wasAvailable, MapTransitionResult transition)`
 
 :   Records a request that reached the session, carrying the result it produced.
-    - `transition` &mdash; The session's accept or reject for the move; `ucceeded` follows it.
+    - `transition` &mdash; The session's accept or reject for the move; `Succeeded` follows it.
 
 `public static MapSelectionResult Ignored(StableId nodeId)`
 
-:   Records a request that was dropped before the session saw it: `ransition` stays null and `ucceeded` is false.
+:   Records a request that was dropped before the session saw it: `Transition` stays null and `Succeeded` is false.
 
 ---
 
@@ -1535,33 +1651,38 @@ Durable identity for scene objects created and owned by the BranchWeaver setup w
 
 `public Transform Content`
 
-:   &mdash;
+:   The transform the presenter sits on and node and edge views are parented to -- under `SafeArea` on a Canvas setup, directly under this object otherwise. It is owned by setup on the same terms as the safe area, so unrecognized components or children on it block repair rather than being deleted.
 
 `public bool IsCanvas`
 
-:   &mdash;
+:   True when the recorded hierarchy is the Canvas shape -- a safe-area rect with the map content beneath it -- and false when it is the world-space one. Running setup for the other shape destroys the recorded objects and rebuilds them, so this is what tells the wizard the two do not match.
 
 `public Component OptionalInputBridge`
 
-:   &mdash;
+:   The Input System bridge component setup added, or null when setup ran without Input System support. It is typed as `Component` so this assembly never has to reference the Input System package; the concrete type is resolved by name at setup time and is absent from builds that do not have the package installed.
 
 `public InputSystemSignalAdapter OptionalInputSignals`
 
-:   &mdash;
+:   The signal adapter setup wired to the bridge, or null when the optional input path was not installed. Recording it is what lets a later run remove exactly the components setup created instead of stripping ones you added by hand.
 
 `public RectTransform SafeArea`
 
-:   &mdash;
+:   The safe-area rect the wizard created under this object, or null on a world-space setup. Setup owns it and may delete it, so anything of yours parented into it stops setup: it reports the hierarchy as holding customer content rather than removing your objects.
 
 **Methods**
 
 `public void Configure(bool usesCanvas, RectTransform ownedSafeArea, Transform ownedContent)`
 
-:   &mdash;
+:   Records which objects setup owns, replacing whatever was recorded before. This is bookkeeping only: it creates, reparents, and destroys nothing, so passing nulls is how setup clears the record after it has already destroyed those objects itself.
+    - `usesCanvas` &mdash; True for the Canvas hierarchy, false for the world-space one.
+    - `ownedSafeArea` &mdash; The safe-area rect, or null on a world-space setup.
+    - `ownedContent` &mdash; The transform the presenter and the views live under.
 
 `public void ConfigureOptionalInput(Component ownedBridge, InputSystemSignalAdapter ownedSignals)`
 
-:   &mdash;
+:   Records the optional Input System components setup owns, replacing whatever was recorded before. Like `Configure` it only writes the record; passing nulls is how setup clears it after removing those components, which is what happens when setup is re-run with Input System support switched off or the package is not installed.
+    - `ownedBridge` &mdash; The bridge component, typed loosely because it is resolved by name so this assembly stays free of a package reference.
+    - `ownedSignals` &mdash; The signal adapter the bridge was bound to.
 
 ---
 
@@ -1575,22 +1696,45 @@ public sealed class MapTraversalController : MonoBehaviour, IMapDevelopmentHost
 
 `BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapTraversalController.cs</small>
 
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
+The scene component that owns one traversal run: it holds the graph, the
+progression, and the compiled content, applies every move through a
+`MapSession`, and reports what happened as C# events, as
+inspector-wired UnityEvents, and as a derived per-node display snapshot.
+
+One operation runs at a time. A selection, a completion, an initialize, or a
+development command issued from inside a callback the controller is already
+dispatching is refused rather than nested, because a nested call would commit
+progression on top of state the outer call is still reporting. A refusal comes
+back as a result value rather than an exception, so a view may call in straight
+from a click handler without guarding. The single exception is the regenerate
+command in a build that defines BRANCHWEAVER_DEVTOOLS, which deliberately opens
+one nested initialize for its handler and closes it again afterwards.
+
+Listeners are isolated from one another: one that throws is caught, the
+remaining listeners still run, the committed transition still stands, and the
+failure is appended as a warning to `LastControllerValidation`. That
+warning is only recorded, not announced: a throwing C# listener or UnityEvent
+slot does not raise `ValidationFailed`, so read the property after a
+dispatch when a failing listener has to be noticed. A throwing
+`AudioCueAdapter` is the one callback whose warning is published.
+
+In a build that defines BRANCHWEAVER_DEVTOOLS the component additionally
+implements IMapDevelopmentHost, which is the surface the development overlay
+drives.
 
 **Properties**
 
 `public IMapAudioCueAdapter AudioCueAdapter`
 
-:   &mdash;
+:   The hook that plays the enter and complete cue ids authored on node types. Leaving it null plays nothing; the controller has no audio of its own. It is called from inside a transition dispatch, and only when the node's compiled type declares a cue id that parses as a stable id. An exception thrown from it is recorded as a callback-failed warning rather than undoing the transition, and driving traversal from inside it is refused as a nested operation.
 
 `public MapUnityEvent AvailabilityChangedUnityEvent`
 
-:   &mdash;
+:   The first serialized slot for `AvailabilityChanged`. It takes no argument, so a slot that needs the new set reads it back from `State`. Never null.
 
 `public MapRuntimeContent Content`
 
-:   &mdash;
+:   The compiled node types and theme this run was initialized with, or null before the first successful initialize. The controller reads it to confirm every node in the graph has a compiled type, and to look up the cue ids it hands to `AudioCueAdapter`.
 
 `public MapFogSettings FogSettings`
 
@@ -1598,159 +1742,185 @@ public sealed class MapTraversalController : MonoBehaviour, IMapDevelopmentHost
 
 `public MapGraph Graph`
 
-:   &mdash;
+:   The graph currently being traversed, or null before the first successful initialize. A refused initialize leaves the previous graph in place.
 
 `public bool IsInitialized`
 
-:   &mdash;
+:   Whether a traversal session exists. It stays true once a run has finished, so the final state can still be read, and it keeps reporting the previous run when an initialize is refused.
 
 `public ValidationReport LastControllerValidation`
 
-:   &mdash;
+:   The most recent report the controller recorded: never null, and emptied by a successful initialize. It also collects the callback failures that are never announced through `ValidationFailed`, so read it whenever a call returns false or a refusal - and after a dispatch when a throwing listener matters - since problems are recorded here rather than logged or thrown.
 
 `public MapUnityEvent MapCompletedUnityEvent`
 
-:   &mdash;
+:   The first serialized slot for `MapCompleted`, the usual place to wire an end-of-run screen from the inspector. Never null.
 
 `public MapUnityEvent MapGeneratedUnityEvent`
 
-:   &mdash;
+:   The first serialized slot for `MapGenerated`, which is the one the inspector shows. Never null: an empty or cleared slot list is repopulated on access, so a listener added from code always has somewhere to attach.
 
 `public MapStringUnityEvent NodeCompletedUnityEvent`
 
-:   &mdash;
+:   The first serialized slot for `NodeCompleted`, invoked with the completed node's id as text. The result payload is not carried; read it from the C# event when it matters. Never null.
 
 `public MapStringUnityEvent NodeEnteredUnityEvent`
 
-:   &mdash;
+:   The first serialized slot for `NodeEntered`, invoked with the entered node's id as text. The rest of the transition event is not carried, so use the C# event when a listener needs the revision or the available set. Never null.
 
 `public MapStringUnityEvent NodeSelectionRequestedUnityEvent`
 
-:   &mdash;
+:   The first serialized slot for `NodeSelectionRequested`, invoked with the node's id as text rather than as a `StableId`, because a UnityEvent argument has to be a type the inspector can serialize. Never null.
 
 `public bool RevealAll`
 
-:   &mdash;
+:   Whether the development reveal-all override is on. Only the development command sets it, and an initialize or a development reset clears it, so it is always false in a build that does not define BRANCHWEAVER_DEVTOOLS. To reveal a map in a shipping build set `MapFogSettings.RevealAll` through `FogSettings` instead.
 
 `public MapUnityEvent SaveRequestedUnityEvent`
 
-:   &mdash;
+:   The first serialized slot for `SaveRequested`. It carries neither the graph nor the progression, so a slot wired here has to read them back from `Graph` and `State`. Never null.
 
 `public MapSerializedEventBridge SerializedEvents`
 
-:   &mdash;
+:   The inspector-wired UnityEvent hooks, for scenes that wire behaviour up without writing code. Each hook is a list of independent slots, invoked one at a time behind an exception guard so a misbehaving slot cannot stop the rest. They fire only while the component's Invoke Serialized Events flag is on; the C# events are the surface to prefer from code.
 
 `public MapProgressionState State`
 
-:   &mdash;
+:   The progression committed so far, or null before the first successful initialize. Each accepted transition replaces the whole value instead of mutating it, so a stored reference keeps reporting the revision it was read at.
 
 `public MapUnityEvent ValidationFailedUnityEvent`
 
-:   &mdash;
+:   The first serialized slot for `ValidationFailed`. The report itself is not carried; a slot wired here reads `LastControllerValidation` to see what was recorded. Never null.
 
 **Events**
 
 `public event Action<MapTransitionEvent> AvailabilityChanged`
 
-:   &mdash;
+:   Raised when the set of choosable nodes changed, with the new set on `MapTransitionEvent.AvailableNodeIds` and an empty `MapTransitionEvent.NodeId`, because the change concerns the map rather than one node. Entering a node also raises it, with an empty set: nothing else is choosable until that node is completed.
 
 `public event Action<uint> DevelopmentRegenerateRequested`
 
-:   &mdash;
+:   Raised by `DevelopmentRegenerate` with the seed to build from. The handler is expected to generate the replacement map and initialize the controller before it returns: exactly one nested initialize is opened for the duration of the call, and the command reports failure if it does not happen. Exists only in a build that defines BRANCHWEAVER_DEVTOOLS.
 
 `public event Action<MapTransitionEvent> MapCompleted`
 
-:   &mdash;
+:   Raised when the completed node had no outgoing edges and the run is therefore over. It follows `NodeCompleted` for the same node rather than replacing it, so an end-of-run screen belongs here and not on the last completion.
 
 `public event Action<MapGraph> MapGenerated`
 
-:   &mdash;
+:   Raised when an initialize succeeds, carrying the graph now being traversed. It fires for a restored save exactly as it does for a freshly generated map, so read it as "the map was replaced" rather than "a map was generated". It arrives before the first `StateChanged` of the new run.
 
 `public event Action<MapTransitionEvent> NodeCompleted`
 
-:   &mdash;
+:   Raised when the current node has been finished, carrying the completion data it was given on `MapTransitionEvent.ResultPayload`.
 
 `public event Action<MapTransitionEvent> NodeEntered`
 
-:   &mdash;
+:   Raised once the traveller has moved onto a node. The move is already committed by the time it arrives, so a listener reacts to it rather than vetoing it.
 
 `public event Action<StableId> NodeSelectionRequested`
 
-:   &mdash;
+:   Raised for each `RequestNodeSelection` naming a node that exists in the graph, before availability is tested - so it also fires for a node the traveller cannot enter, which is where a "locked" click response belongs. A request naming an unknown id raises nothing at all.
 
 `public event Action<MapGraph, MapProgressionState> SaveRequested`
 
-:   &mdash;
+:   Raised by `RequestSave` with the graph and the progression to persist. The controller writes nothing itself, so nothing is saved until a listener does it; both values are immutable snapshots, so a handler may hold them while it serializes.
 
 `public event Action<MapRuntimeStateSnapshot> StateChanged`
 
-:   &mdash;
+:   Raised after every committed change with a freshly derived `MapRuntimeStateSnapshot` for the whole map. This is what a presenter redraws from: fog and any development overrides are already folded in, so a view never has to combine the graph and the progression itself.
 
 `public event Action<ValidationReport> ValidationFailed`
 
-:   &mdash;
+:   Raised whenever the controller publishes a report: a refused initialize, a transition the session turned down, a transition that carried warnings, or an `AudioCueAdapter` that threw. A C# listener or UnityEvent slot that throws does not raise it - that failure is only appended to `LastControllerValidation`. Not every report is fatal - a callback failure arrives as a warning-only report - so check `ValidationReport.IsValid` rather than assuming the run has stopped.
 
 **Methods**
 
 `public MapTransitionResult CompleteCurrent()`
 
-:   &mdash;
+:   Finishes the node the traveller is on and records an empty result, which is what an encounter with no outcome data to hand back calls.
+    - **Returns** &mdash; Whatever the payload overload returns: null when the controller is not initialized, a refusal carrying `MapTransitionFailureKind.TransitionInProgress` when the call came from inside a callback the controller is already dispatching, and otherwise the session's result.
 
 `public MapTransitionResult CompleteCurrent(MapDataPayload result)`
 
-:   &mdash;
+:   Finishes the node the traveller is on and records `result` against it, so later branching and a reloaded save can both read what happened there. Completing is what makes the next nodes choosable: it raises `NodeCompleted` followed by `AvailabilityChanged`, or by `MapCompleted` instead when the node had no outgoing edges.
+    - `result` &mdash; Completion data to record. A null or non-canonical payload is refused rather than stored.
+    - **Returns** &mdash; The session's result; null when the controller is not initialized, and a refusal carrying `MapTransitionFailureKind.TransitionInProgress` when the call came from inside a callback the controller is already dispatching.
 
 `public MapDevelopmentCommandResult CopyGenerationManifest()`
 
-:   &mdash;
+:   Collects the fields that identify how this map was generated - generator and graph format versions, seed, rules and graph fingerprints, and generation key - as semicolon-separated key=value text, which is what makes a bug report against a procedural map reproducible. Despite the name it does not touch the system clipboard: the text comes back on `MapDevelopmentCommandResult.Value` and the caller decides what to do with it. Exists only in a build that defines BRANCHWEAVER_DEVTOOLS.
+    - **Returns** &mdash; A refusal carrying `MapDevelopmentFailureKind.NotInitialized` when there is no run to describe.
 
 `public MapDevelopmentCommandResult DevelopmentCompleteCurrent()`
 
-:   &mdash;
+:   Completes the node the traveller is on with an empty result, as if its encounter had finished normally - so it goes through the ordinary transition rules and raises the ordinary events rather than going around them. Exists only in a build that defines BRANCHWEAVER_DEVTOOLS.
+    - **Returns** &mdash; A refusal carrying `MapDevelopmentFailureKind.RejectedTransition` when there is no run, no current node to complete, or the transition was otherwise turned down.
 
 `public MapDevelopmentCommandResult DevelopmentForceResult(MapDataPayload result)`
 
-:   &mdash;
+:   Completes the current node with a chosen result payload, which is how branching that keys off an outcome gets exercised without playing the encounter that produces it. Exists only in a build that defines BRANCHWEAVER_DEVTOOLS.
+    - `result` &mdash; The completion data to record. It must be canonical.
+    - **Returns** &mdash; A refusal carrying `MapDevelopmentFailureKind.InvalidPayload` when `result` is null, or `MapDevelopmentFailureKind.RejectedTransition` when the payload is not canonical or there is no current node to complete.
 
 `public MapDevelopmentCommandResult DevelopmentRegenerate(uint seed)`
 
-:   &mdash;
+:   Asks the registered `DevelopmentRegenerateRequested` handler for a fresh map built from `seed`. The handler has to generate the map and initialize the controller before it returns. A single nested initialize is opened for the duration of the call and closed again afterwards, and the command reports failure when that initialize did not happen - which is what stops an asynchronous handler from leaving the overlay claiming a success it never got. Exists only in a build that defines BRANCHWEAVER_DEVTOOLS.
+    - `seed` &mdash; The generation seed to rebuild from.
+    - **Returns** &mdash; A refusal carrying `MapDevelopmentFailureKind.Unsupported` when no handler is registered, or `MapDevelopmentFailureKind.RejectedTransition` when the handler did not synchronously initialize a replacement map.
 
 `public MapDevelopmentCommandResult DevelopmentReset()`
 
-:   &mdash;
+:   Restarts the run on the same graph: progression goes back to the beginning, and the development unlocks and the reveal-all override are dropped. The compiled content is kept, so this is cheaper than re-initializing and cannot fail on content. Exists only in a build that defines BRANCHWEAVER_DEVTOOLS.
+    - **Returns** &mdash; A refusal carrying `MapDevelopmentFailureKind.NotInitialized` when there is no run to reset.
 
 `public MapDevelopmentCommandResult DevelopmentRevealAll(bool reveal)`
 
-:   &mdash;
+:   Turns the reveal-all override on or off and republishes the map's display state, without touching progression. Exists only in a build that defines BRANCHWEAVER_DEVTOOLS.
+    - `reveal` &mdash; True to show every node; false to go back to derived fog.
+    - **Returns** &mdash; A refusal carrying `MapDevelopmentFailureKind.NotInitialized` when there is no run, or `MapDevelopmentFailureKind.RejectedTransition` when another operation is already dispatching.
 
 `public MapDevelopmentCommandResult DevelopmentTeleport(StableId nodeId)`
 
-:   &mdash;
+:   Moves the traveller straight to a node, fabricating the route and the completions it would have taken to get there. A breadth-first search from the graph's start nodes supplies the path, and every node along it bar the destination is recorded as completed with an empty result, so the rebuilt progression is still a legal route and can still be saved. Those completions are invented, so branching that keys off a real result payload will not find one. Exists only in a build that defines BRANCHWEAVER_DEVTOOLS.
+    - `nodeId` &mdash; The node to stand the traveller on. It must be reachable from a start node.
+    - **Returns** &mdash; A refusal carrying `MapDevelopmentFailureKind.InvalidNode` when the id is empty or unreachable, or `MapDevelopmentFailureKind.RejectedTransition` when the revision cannot advance or the fabricated progression is turned down.
 
 `public MapDevelopmentCommandResult DevelopmentUnlock(StableId nodeId)`
 
-:   &mdash;
+:   Makes one node display as available whatever the progression says, so a branch can be inspected without walking to it. It changes derived display state only. Traversal still consults the session, so `RequestNodeSelection` goes on refusing the node. The unlock is remembered until the next initialize or development reset. Exists only in a build that defines BRANCHWEAVER_DEVTOOLS.
+    - `nodeId` &mdash; The node to show as available.
+    - **Returns** &mdash; A refusal carrying `MapDevelopmentFailureKind.InvalidNode` when the id is empty or names no node in the graph.
 
 `public MapRuntimeStateSnapshot GetRuntimeState()`
 
-:   &mdash;
+:   Returns the derived display state of every node - the visual state a presenter styles it with, and how far fog conceals it - for the progression as it now stands. The snapshot is derived rather than stored, then cached until something invalidates it, which a transition, a replaced session, and a change to `FogSettings` all do. Because it is derived it can never disagree with the save it came from, so changing how far ahead the map is revealed needs no migration.
+    - **Returns** &mdash; The current snapshot, or an empty one at revision 0 when the controller is not initialized.
 
 `public bool Initialize(MapGraph graph, MapRuntimeContent content)`
 
-:   &mdash;
+:   Starts a fresh run at the beginning of `graph`, with no progression restored.
+    - `graph` &mdash; The complete graph to traverse.
+    - `content` &mdash; Compiled node types and theme. Every node type the graph uses must be present.
+    - **Returns** &mdash; False when the map was refused - the previous run is untouched and `LastControllerValidation` explains why - and also false when the call arrived from inside a callback the controller is already dispatching, which is turned down without recording a report.
 
 `public bool Initialize(MapGraph graph, MapProgressionState restoredState, MapRuntimeContent content)`
 
-:   &mdash;
+:   Adopts a graph together with progression read back from a save, replacing whatever run was in progress. The graph is refused when a node names a type `content` does not compile, and the progression is refused when it does not describe one legal ordered route through that graph - which is what stops a tampered or mismatched save from standing the traveller somewhere unreachable. Nothing is replaced on a refusal. On success the reveal-all override and any development unlocks are dropped, `LastControllerValidation` is emptied, and `MapGenerated` is raised before the first `StateChanged`.
+    - `graph` &mdash; The complete graph to traverse.
+    - `restoredState` &mdash; Progression to resume from; null starts at the beginning of the graph.
+    - `content` &mdash; Compiled node types and theme. Every node type the graph uses must be present.
+    - **Returns** &mdash; False when the graph or the progression was refused, or when the call arrived from inside a callback the controller is already dispatching.
 
 `public MapSelectionResult RequestNodeSelection(StableId nodeId)`
 
-:   &mdash;
+:   Asks to move the traveller onto a node, which is what a click on the map should call. The request never reaches the session when the controller is not initialized, when another operation is already dispatching, when the id names no node in the graph, or when the node is not currently available. That last case still raises `NodeSelectionRequested` first, so an unavailable node can be answered with feedback. Anything else goes to `MapSession.TryEnter`, which may still turn it down.
+    - `nodeId` &mdash; The node to move onto.
+    - **Returns** &mdash; A result that tells a dropped request apart from an attempted one. Check `MapSelectionResult.Succeeded` rather than assuming the move happened.
 
 `public void RequestSave()`
 
-:   &mdash;
+:   Asks whoever is listening to persist the run, by raising `SaveRequested` with the current graph and progression. The controller stores nothing itself, so this does nothing until a save adapter is wired up, and nothing at all before the first successful initialize. Unlike the other operations it may be called from inside a controller callback, which is what lets a project save on `NodeCompleted`: it only reads state, so nothing can be committed underneath the outer call. A call made from inside a `SaveRequested` handler is ignored, so a handler cannot drive itself in a loop.
 
 ---
 
@@ -1762,14 +1932,19 @@ public sealed class PassthroughLocalizationAdapter : IMapLocalizationAdapter
 
 `BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapRuntimeContracts.cs</small>
 
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
+The `IMapLocalizationAdapter` used when a project has no
+localization system wired up: it returns the authored fallback text
+unchanged, falling back to the key itself when no text was authored.
+
+Returning the key rather than an empty string is deliberate - a missing
+string shows up on screen as a visible identifier you can search for,
+instead of a blank label that looks like a layout bug.
 
 **Methods**
 
 `public string Resolve(string key, string fallback)`
 
-:   &mdash;
+:   Returns `fallback` when it has text, otherwise `key`, never null.
 
 ---
 
@@ -1781,80 +1956,95 @@ public sealed class WorldMapNodeView : MonoBehaviour, IMapNodeView, IMapNodeHitS
 
 `BranchWeaver.Presentation.World2D` &middot; <small>BranchWeaver/Runtime/Presentation/World2D/WorldMapViews.cs</small>
 
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
+Draws one map node as a world-space sprite, and is the node view the World2D
+presentation builds by default.
+
+Use this instead of `CanvasMapNodeView` when the map lives
+in the scene alongside other 2D content - so it sorts, lights and parallaxes
+with the rest of the world - rather than on a screen-space overlay. Labels are
+drawn with `TextMesh` plus a shadow so they stay legible over busy art.
 
 **Properties**
 
 `public string DisplayLabel`
 
-:   &mdash;
+:   The label last bound, already through the localization adapter. Empty when the node type declares none, in which case the label object is deactivated rather than drawn blank.
 
 `public MapFogState FogState`
 
-:   &mdash;
+:   How fog is treating the node. A dimmed node is drawn at three quarters of its colour's alpha; a hidden one has its `SpriteRenderer` disabled outright as well as being given zero alpha, so it costs nothing to draw while it is out of sight.
 
 `public bool IsHitTestVisible`
 
-:   &mdash;
+:   Whether a click on the node should count. False while fog hides it and false while its renderer is disabled, so a node the player cannot see cannot be selected by accident. It follows the bound fog state, not the fade: a node on its way out stops accepting clicks as soon as it is bound to hidden, while it is still visibly fading away.
 
 `public bool IsTransitioning`
 
-:   &mdash;
+:   Whether a colour cross-fade started by `BeginTransition` is still running. The focus scale is applied instantly and is not counted here.
 
 `public StableId NodeId`
 
-:   &mdash;
+:   The node this view currently stands for, taken from the last `Bind`. Empty until the first bind, which is what keeps an unbound pooled instance out of hit testing.
 
 `public NormalizedMapPosition NormalizedPosition`
 
-:   &mdash;
+:   Where the presenter laid the node out, in normalized layout space. The drawn world position is derived from it, so this is the layout coordinate rather than the world units the node ended up at.
 
 `public string Tooltip`
 
-:   &mdash;
+:   The tooltip last bound, already localized. Kept for a host that draws its own tooltips; this view never renders it.
 
 `public Transform Transform`
 
-:   &mdash;
+:   The node's own transform. Input resolves a click to this node through it, and the factory parents the node by it, so it stays valid for the component's whole lifetime. Its local scale carries the focus treatment, so it is not a reliable place to read the node's size from.
 
 `public MapNodeVisualState VisualState`
 
-:   &mdash;
+:   The traversal state the node was last bound in: hidden, locked, available, current, visited or completed. An undiscovered node is bound as hidden rather than left out of the pass, so this reads hidden for most of a fogged map. It is the destination of a state change rather than what is on screen: the bind runs before the cross-fade, so this already reads the new state while the colour is still travelling towards it.
 
 **Methods**
 
 `public void AdvanceTransition(float deltaSeconds)`
 
-:   &mdash;
+:   Advances a colour cross-fade in flight, interpolating straight from the captured start colour to the destination. The presenter drives this once a frame on an unscaled delta, so pausing the game does not strand a node mid-fade. A negative delta counts as none, and the frame the fade lands on is also the frame the renderer returns to the visibility the last bind asked for.
+    - `deltaSeconds` &mdash; Seconds since the previous advance.
 
 `public void BeginTransition(MapNodeVisualState fromVisual, MapFogState fromFog,)`
 
-:   &mdash;
+:   Cross-fades the node's sprite into the state it has just been bound in, taking the label and its shadow along with it. The bind has already applied the destination colour, so the fade works by putting the starting colour back and easing forward from there. A fade interrupted part-way resumes from the colour `PrepareForBind` captured, which is what stops states that change in quick succession from jumping. The renderer is switched on for the duration even when the destination is hidden - so a node fades out rather than vanishing - and switched off again once the fade lands. A duration of zero or less, or two states that resolve to the same colour, applies the destination at once and leaves `IsTransitioning` false.
+    - `fromVisual` &mdash; The visual state being left, used to derive the colour the fade starts from.
+    - `fromFog` &mdash; The fog state being left, which scales that starting colour's alpha.
+    - `toVisual` &mdash; The visual state being entered, which decides the colour the fade lands on.
+    - `toFog` &mdash; The fog state being entered, which scales that destination alpha.
+    - `durationSeconds` &mdash; Fade time in seconds; zero or less applies the destination immediately.
 
 `public void Bind(MapNodeViewData data)`
 
-:   &mdash;
+:   Applies one presented state to the node: where it sits in the scene, how big it is, its sprite, its colour, whether it is drawn at all, and its label. Presentation coordinates and the node size are converted to world units at one hundredth of a presentation unit, the same divisor the edge view uses, so nodes and routes land on the same grid. Data built without presentation metrics falls back to placing the node straight from its normalized position and leaving it at unit scale. A node type with no icon is drawn with a generated rounded sprite, so an unfinished map still reads. The presenter re-binds every node on a topology change, including nodes that did not change, so this is written to be repeatable rather than incremental.
+    - `data` &mdash; The state to draw. Its compiled node type supplies the per-state colours and the icon.
 
 `public void CancelTransition(bool applyTerminalState)`
 
-:   &mdash;
+:   Abandons a cross-fade in flight, before the node is bound again or handed back to its factory. The focus scale is left alone.
+    - `applyTerminalState` &mdash; True to finish by applying the destination colour and the visibility the last bind asked for, which for a hidden node means switching the renderer off; false to leave the node exactly where the fade stopped, because a new fade is about to start from there.
 
 `public void PrepareForBind()`
 
-:   &mdash;
+:   Records the colour on screen right now, immediately before a bind that changes state, so the cross-fade that follows can carry on from a fade already in flight instead of snapping back to the old state. Does nothing on a node that has not been bound yet and so has no renderer resolved.
 
 `public void RestoreAfterUnchangedBind()`
 
-:   &mdash;
+:   Puts back the colour `PrepareForBind` captured and switches the renderer on again, for a bind that turned out not to change state, so a fade in flight is not cut short. Safe to call with nothing captured and with nothing fading, in which case it only clears the capture.
 
 `public void SetActive(bool active)`
 
-:   &mdash;
+:   Shows or hides the node's whole GameObject. This is not how fog is applied: the presenter activates a node after every bind, a fogged one included, and a hidden node is dealt with by disabling its renderer instead. In practice this is the pooling switch, so it has to be reversible - the same instance is handed back out later.
+    - `active` &mdash; False to park the node, typically because its factory has taken it back.
 
 `public void SetFocused(bool focused)`
 
-:   &mdash;
+:   Shows or clears the keyboard and gamepad focus treatment, by drawing the node at 115% of the size it was bound at. The scale is applied at once with no easing, and being told the value it already has re-applies the same scale, so the presenter can drive it on every pass without anything restarting or accumulating.
+    - `focused` &mdash; True while this is the focused node.
 
 ---
 
@@ -1868,8 +2058,16 @@ public sealed class WorldMapPresenter : MapPresenterBase
 
 `BranchWeaver.Presentation.World2D` &middot; <small>BranchWeaver/Runtime/Presentation/World2D/WorldMapPresenter.cs</small>
 
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
+Draws a map as ordinary scene objects rather than UI. Nodes become SpriteRenderer-backed views
+pooled per node type, routes become LineRenderers drawn from a pool of their own, and both are
+parented to the node and edge roots, so the map sits in world space alongside your other 2D
+content and is seen by the same cameras, sorting layers, and post-processing. A node type
+carrying a world prefab is instantiated instead of the built-in view.
+
+Unlike `BranchWeaver.Presentation.Canvas.CanvasMapPresenter` it resizes nothing:
+world roots have no rect to fit, so how large the map appears is a matter of the roots' own
+scale and the camera. Everything else -- binding to the traversal controller, fog and visual
+state, transitions, focus, and styles -- comes from `MapPresenterBase`.
 
 ---
 

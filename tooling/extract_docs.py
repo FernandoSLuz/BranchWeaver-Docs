@@ -30,6 +30,11 @@ CTOR = re.compile(r'^\s*public\s+([A-Za-z0-9_]+)\s*\(')
 
 ATTRIBUTE = re.compile(r'^\s*\[')
 DOC_LINE = re.compile(r'^\s*///\s?(.*)$')
+# A conditionally compiled declaration puts `#if SYMBOL` between the doc comment
+# and the type, so directives have to be transparent the same way attributes are.
+# Otherwise a documented type reads as undocumented -- which is worse than a plain
+# gap, because the reference then prints a "not documented" warning over real prose.
+DIRECTIVE = re.compile(r'^\s*#\s*(if|else|elif|endif|region|endregion|pragma|nullable|define|undef|line|warning|error)\b')
 
 EXCLUDE_DIR_PARTS = ('Tests', 'InternalTools', 'Internal', 'Library', 'obj', 'Temp')
 
@@ -40,10 +45,13 @@ def clean_inline(text):
     """Turn XML doc inline tags into Markdown."""
     if not text:
         return ''
-    text = re.sub(r'<see\s+cref="[A-Za-z]:?([^"]+)"\s*/>', r'`\1`', text)
-    text = re.sub(r'<see\s+cref="[A-Za-z]:?([^"]+)"\s*>(.*?)</see>', r'`\2`', text, flags=re.S)
+    # A cref may carry a documentation-ID prefix ("T:Foo.Bar", "M:Foo.Bar"), which is
+    # stripped. The colon has to be required: with it optional, `cref="BattleSnapshot"`
+    # matched B as the prefix and the reference rendered as `attleSnapshot`.
+    text = re.sub(r'<see\s+cref="(?:[A-Za-z]:)?([^"]+)"\s*/>', r'`\1`', text)
+    text = re.sub(r'<see\s+cref="(?:[A-Za-z]:)?([^"]+)"\s*>(.*?)</see>', r'`\2`', text, flags=re.S)
     text = re.sub(r'<see\s+href="([^"]+)"\s*/>', r'\1', text)
-    text = re.sub(r'<seealso\s+cref="[A-Za-z]:?([^"]+)"\s*/>', r'`\1`', text)
+    text = re.sub(r'<seealso\s+cref="(?:[A-Za-z]:)?([^"]+)"\s*/>', r'`\1`', text)
     text = re.sub(r'<paramref\s+name="([^"]+)"\s*/>', r'`\1`', text)
     text = re.sub(r'<typeparamref\s+name="([^"]+)"\s*/>', r'`\1`', text)
     text = re.sub(r'<c>(.*?)</c>', r'`\1`', text, flags=re.S)
@@ -86,7 +94,7 @@ def parse_doc(lines):
         'exceptions': [
             {'name': m.group(1), 'text': clean_inline(m.group(2))}
             for m in re.finditer(
-                r'<exception\s+cref="[A-Za-z]:?([^"]+)"\s*>(.*?)</exception>', buffer, flags=re.S)
+                r'<exception\s+cref="(?:[A-Za-z]:)?([^"]+)"\s*>(.*?)</exception>', buffer, flags=re.S)
         ],
     }
 
@@ -224,7 +232,9 @@ def parse_file(path, display, out):
             if attribute_depth < 0:
                 attribute_depth = 0
 
-        if not matched_declaration and not inside_attribute and stripped != '':
+        is_directive = DIRECTIVE.match(raw) is not None
+
+        if not matched_declaration and not inside_attribute and not is_directive and stripped != '':
             doc_buffer = []
 
         brace += code.count('{') - code.count('}')

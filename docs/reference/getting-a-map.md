@@ -34,15 +34,15 @@ question.
 
 `public EdgeOverrideDisposition Disposition`
 
-:   &mdash;
+:   Whether this override demands the connection or bans it.
 
 `public StableId OverrideId`
 
-:   &mdash;
+:   Identity of the override itself, which is not the identity of the edge it asks for. Required, unique among the overrides, and quoted in diagnostics, so it is worth naming after the intent -- a rejected constraint is reported by this ID alone.
 
 `public StableId PinnedEdgeId`
 
-:   &mdash;
+:   The ID a required edge must be generated with, unique among the pinned edges, which is how that edge can be referred to once the map exists. Empty on a forbidden override, where naming an edge ID is rejected rather than ignored.
 
 `public MapSlotEdge SlotEdge`
 
@@ -50,11 +50,11 @@ question.
 
 `public MapNodeSlot SourceSlot`
 
-:   &mdash;
+:   The slot the constrained edge leaves.
 
 `public MapNodeSlot TargetSlot`
 
-:   &mdash;
+:   The slot the constrained edge enters. Its layer must be exactly one above the source's.
 
 **Methods**
 
@@ -102,17 +102,20 @@ For layer sizes m and n, that lattice contains exactly m + n - 1 edges.
 
 `public LayeredMapGenerator()`
 
-:   &mdash;
+:   Creates the generator with the shipped `MapValidator`, which is the pairing every finished candidate is judged by unless you say otherwise.
 
 `public LayeredMapGenerator(IMapValidator validator)`
 
-:   &mdash;
+:   Creates the generator over a whole-graph validator of your own, for rules that can only be judged once a map is finished. Use `IMapConstraint` instead for rules that should prune the search while node types are still being chosen.
+    - `validator` &mdash; The check applied to each finished candidate. It is passed on to the version-2 search as well, which calls it once per complete candidate rather than once per request.
 
 **Methods**
 
 `public MapGenerationResult Generate(MapGenerationRequest request)`
 
-:   &mdash;
+:   Produces one map from the request, or a typed failure. Nothing is thrown: a null request, null or invalid rules, and a candidate that fails validation all come back as a failed result carrying the diagnostics that explain it. This is the entry point for both shipped generators, not only the version-1 one described on the type. When the rule snapshot declares generator version 2 the call is handed straight to that search, which is what honours the mode, the overrides, the search budgets, and the cancellation token; the version-1 path below reads only the rules and the seed, gives every node the default type, and makes a single attempt -- a candidate the validator rejects fails the seed rather than being retried.
+    - `request` &mdash; The rules, seed, and -- for a version-2 ruleset -- the mode, overrides, budgets, and cancellation token to honour.
+    - **Returns** &mdash; The graph and its generation manifest, or the diagnostics behind the failure. Never null.
 
 ---
 
@@ -124,17 +127,19 @@ public enum MapGenerationFailureKind
 
 `BranchWeaver.Core` &middot; <small>BranchWeaver/Runtime/Core/Generation/MapGenerationSearchOptions.cs</small>
 
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
+Why a generation attempt returned no graph, as reported by
+`MapGenerationResult.FailureKind`. The kinds are told apart because the fix differs:
+`Unsatisfiable` means the rules themselves have to change, whereas
+`SearchBudgetExhausted` means a larger budget or a different seed may still succeed.
 
 | Value | Meaning |
 | --- | --- |
-| `None` | &mdash; |
-| `InvalidInput` | &mdash; |
-| `Unsatisfiable` | &mdash; |
-| `SearchBudgetExhausted` | &mdash; |
-| `Cancelled` | &mdash; |
-| `PostValidationFailed` | &mdash; |
+| `None` | No failure; the attempt succeeded and the result carries a graph. |
+| `InvalidInput` | The request was rejected in preflight and no search ran -- missing or invalid rules, an unsupported mode, non-positive search budgets, or overrides that conflict with the mode. |
+| `Unsatisfiable` | The search completed and proved that no graph satisfies the hard constraints. |
+| `SearchBudgetExhausted` | A search budget ran out first, so unsatisfiability was neither proven nor ruled out. |
+| `Cancelled` | The caller's cancellation token was signalled. |
+| `PostValidationFailed` | Complete candidates were found, but every one of them failed post-generation validation. |
 
 ---
 
@@ -149,7 +154,7 @@ public enum MapGenerationMode
 `BranchWeaver.Core` &middot; <small>BranchWeaver/Runtime/Core/Generation/MapGenerationOverrides.cs</small>
 
 How much of a map a generation request may invent for itself, and therefore what role
-`apGenerationOverrides` plays: Procedural rejects overrides outright, Manual
+`MapGenerationOverrides` plays: Procedural rejects overrides outright, Manual
 builds nothing the overrides did not spell out, and Hybrid lets a seeded search fill in
 around whatever you pinned. The mode is folded into the generation key and into every random
 stream the generator draws from, so the same rules and seed under two different modes are two
@@ -194,7 +199,7 @@ reported by generation and validation, not by this constructor.
 
 `public bool IsEmpty`
 
-:   &mdash;
+:   Whether this set constrains nothing at all, pinning neither a node nor an edge. A request in `MapGenerationMode.Procedural` is required to carry a set that reports true here, so this is the check that separates an unconstrained request from one that must run in another mode.
 
 `public IReadOnlyList<PinnedNodeOverride> Nodes`
 
@@ -219,44 +224,59 @@ public sealed class MapGenerationRequest
 
 `BranchWeaver.Core` &middot; <small>BranchWeaver/Runtime/Core/GenerationContracts.cs</small>
 
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
+Everything one generation attempt needs, in one immutable object: the compiled rules, the seed,
+how much of the map the generator may invent, the authoring overrides it must honour, the search
+budgets it may spend, and the token that stops it. Keeping a request is enough to rebuild its map
+exactly, because generation only ever reads it.
+Mode, overrides, search budgets, and cancellation reach the version-2 generator only; when the
+rule snapshot declares generator version 1, just `Rules` and `Seed` are
+read. Nothing is validated here either -- procedural mode carrying overrides, manual mode with a
+non-zero seed, or a null rule snapshot all come back as a failed
+`MapGenerationResult` with diagnostics rather than as a thrown exception.
 
 **Constructors**
 
 `public MapGenerationRequest(MapRuleSnapshot rules, uint seed)`
 
-:   &mdash;
+:   Creates a purely procedural request: no overrides, default search budgets, and no cancellation.
+    - `rules` &mdash; The compiled rules the map must satisfy.
+    - `seed` &mdash; Seeds every random stream the generator draws from.
 
 `public MapGenerationRequest()`
 
-:   &mdash;
+:   Creates a request with every input stated. A null `overrides` or `searchOptions` is replaced with `MapGenerationOverrides.Empty` and `MapGenerationSearchOptions.Default`, while `rules` is stored as given -- including null, which generation reports as a failure instead.
+    - `rules` &mdash; The compiled rules the map must satisfy.
+    - `seed` &mdash; Seeds every random stream. Must be zero when `mode` is `MapGenerationMode.Manual`.
+    - `mode` &mdash; How much of the map the generator may invent for itself.
+    - `overrides` &mdash; The pinned nodes and edge dispositions to honour. Must be empty in `MapGenerationMode.Procedural`.
+    - `searchOptions` &mdash; The per-phase trial budgets the search may spend before it gives up.
+    - `cancellationToken` &mdash; Stops the search. A cancelled request produces a `MapGenerationFailureKind.Cancelled` result, not a thrown exception and not a partial graph.
 
 **Properties**
 
 `public CancellationToken CancellationToken`
 
-:   &mdash;
+:   Stops the search, and is observed by the version-2 generator only. Cancelling comes back as a `MapGenerationFailureKind.Cancelled` result rather than as a thrown exception, so a cancelled attempt is handled on the same path as any other failure and never leaves a partial graph behind.
 
 `public MapGenerationMode Mode`
 
-:   &mdash;
+:   How much of the map the generator may invent for itself. Read by the version-2 generator only, so a rule snapshot declaring generator version 1 generates procedurally whatever is set here.
 
 `public MapGenerationOverrides Overrides`
 
-:   &mdash;
+:   The overrides to honour, never null; an unconstrained request carries `MapGenerationOverrides.Empty`.
 
 `public MapRuleSnapshot Rules`
 
-:   &mdash;
+:   The compiled rules the map must satisfy, and the snapshot whose declared generator version decides which generator reads this request. Stored exactly as given, null included, which generation reports as a failed result rather than an argument exception.
 
 `public MapGenerationSearchOptions SearchOptions`
 
-:   &mdash;
+:   The search budgets, never null; a request that did not state them carries `MapGenerationSearchOptions.Default`.
 
 `public uint Seed`
 
-:   &mdash;
+:   Seeds every random stream the generator draws from. Zero is a usable seed everywhere, and `MapGenerationMode.Manual` requires it.
 
 ---
 
@@ -270,14 +290,23 @@ public sealed class MapGenerationResult
 
 `BranchWeaver.Core` &middot; <small>BranchWeaver/Runtime/Core/GenerationContracts.cs</small>
 
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
+The single outcome of a generation attempt: on success a complete graph and its
+`MapGenerationManifest`, on failure a `MapGenerationFailureKind` naming
+what went wrong, and either way the diagnostics and the search statistics. There is no partial
+success -- a failed result never carries a graph -- so `Succeeded` is the only test
+needed before reading `Graph`.
+The failure kinds are worth telling apart: `MapGenerationFailureKind.Unsatisfiable`
+means no map can satisfy the rules and the author must relax them,
+`MapGenerationFailureKind.SearchBudgetExhausted` means the budget ran out before that
+was proven either way, and `MapGenerationFailureKind.Cancelled` means the caller
+stopped the search. Results come from the `Success(MapGraph, MapGenerationManifest, ValidationReport)`
+and `Failure(ValidationReport)` factories; there is no public constructor.
 
 **Properties**
 
 `public MapGenerationFailureKind FailureKind`
 
-:   &mdash;
+:   Why the attempt failed. `MapGenerationFailureKind.None` exactly when `Succeeded` is true; a failed result always names a kind.
 
 `public MapGraph Graph`
 
@@ -289,33 +318,48 @@ public sealed class MapGenerationResult
 
 `public MapGenerationStatistics Statistics`
 
-:   &mdash;
+:   What the search cost, never null. Version-2 generation reports the trials it spent per phase, which is how a budget-exhausted failure is turned into a larger budget; version-1 generation searches nothing and reports zeroes.
 
 `public bool Succeeded`
 
-:   &mdash;
+:   Whether the attempt produced a map. It is the only test needed before reading `Graph` and `Manifest`, which are non-null exactly when this is true; a false result always names its reason in `FailureKind`.
 
 `public ValidationReport Validation`
 
-:   &mdash;
+:   The diagnostics for the attempt, never null and present on success too, where it may still carry warnings worth surfacing to the author.
 
 **Methods**
 
 `public static MapGenerationResult Failure(ValidationReport validation)`
 
-:   &mdash;
+:   Creates the failure for a request that never got as far as searching: the kind is fixed at `MapGenerationFailureKind.InvalidInput` and the statistics are empty. Use the other overload for a failure that has to name a different kind.
+    - `validation` &mdash; The diagnostics explaining the rejection. Required; null throws `ArgumentNullException`.
+    - **Returns** &mdash; A failed result carrying no graph and no manifest.
 
 `public static MapGenerationResult Failure()`
 
-:   &mdash;
+:   Creates a failure that names its own kind and reports what the abandoned search cost.
+    - `validation` &mdash; The diagnostics explaining the failure. Required; null throws `ArgumentNullException`.
+    - `failureKind` &mdash; Why the attempt failed. Must not be `MapGenerationFailureKind.None`, which throws `ArgumentException`.
+    - `statistics` &mdash; The trials spent before giving up. Null is stored as `MapGenerationStatistics.Empty`.
+    - **Returns** &mdash; A failed result carrying no graph and no manifest.
 
 `public static MapGenerationResult Success()`
 
-:   &mdash;
+:   Creates a successful result for a generator that did no searching, so `Statistics` is reported as empty rather than as zero trials of a real search.
+    - `graph` &mdash; The finished graph. Required; null throws `ArgumentNullException`.
+    - `manifest` &mdash; The manifest describing how the graph was produced. Required; null throws `ArgumentNullException`.
+    - `validation` &mdash; The diagnostics for the graph, which may carry warnings. Required; null throws `ArgumentNullException`.
+    - **Returns** &mdash; A result whose `Succeeded` is true and whose `FailureKind` is `MapGenerationFailureKind.None`.
 
 `public static MapGenerationResult Success()`
 
-:   &mdash;
+:   Creates a successful result and records what the search that found this graph cost.
+    - `graph` &mdash; The finished graph. Required; null throws `ArgumentNullException`.
+    - `manifest` &mdash; The manifest describing how the graph was produced. Required; null throws `ArgumentNullException`.
+    - `validation` &mdash; The diagnostics for the graph, which may carry warnings. Required; null throws `ArgumentNullException`.
+    - `statistics` &mdash; The trials the search spent reaching this graph. Null is stored as `MapGenerationStatistics.Empty`.
+    - **Returns** &mdash; A result whose `Succeeded` is true and whose `FailureKind` is `MapGenerationFailureKind.None`.
 
 ---
 
@@ -327,32 +371,39 @@ public sealed class MapGenerationSearchOptions
 
 `BranchWeaver.Core` &middot; <small>BranchWeaver/Runtime/Core/Generation/MapGenerationSearchOptions.cs</small>
 
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
+The work a single generation attempt may spend, as one positive cap per search phase. The
+generator counts against these caps as it explores, and the first cap it reaches ends the attempt
+with `MapGenerationFailureKind.SearchBudgetExhausted` -- a search that stopped early,
+not a proof that the rules cannot be satisfied. The caps bound only how far the search runs; the
+order candidates are tried in comes from the seed and the rules, so raising a cap can turn a
+failure into a success but never changes a map that already generated.
 
 **Constructors**
 
 `public MapGenerationSearchOptions()`
 
-:   &mdash;
+:   Creates a budget set. A non-positive cap is accepted here but makes `IsValid` false, and generation then fails preflight with `MapGenerationFailureKind.InvalidInput` instead of searching.
+    - `maximumCountStates` &mdash; Cap on the complete per-layer node-count combinations the search may consider.
+    - `maximumTopologyTrials` &mdash; Cap on the individual edge-candidate steps the search may take while wiring layers together.
+    - `maximumTypeTrials` &mdash; Cap on the node-type assignment attempts the backtracking type solver may make.
 
 **Properties**
 
 `public bool IsValid`
 
-:   &mdash;
+:   True when all three caps are positive. Anything else is rejected in generation preflight, so an invalid instance fails the attempt with `MapGenerationFailureKind.InvalidInput` rather than searching with no budget.
 
 `public int MaximumCountStates`
 
-:   &mdash;
+:   How many complete per-layer node-count combinations the search may consider before giving up.
 
 `public int MaximumTopologyTrials`
 
-:   &mdash;
+:   How many edge-candidate steps the search may take while wiring layers together. Counted per step of the walk, not per finished layer, so one layout can spend many.
 
 `public int MaximumTypeTrials`
 
-:   &mdash;
+:   How many node-type assignment attempts the type solver may make. Every retry after a constraint conflict spends one, so tight type quotas raise the cost sharply.
 
 ---
 
@@ -364,40 +415,48 @@ public sealed class MapGenerationStatistics
 
 `BranchWeaver.Core` &middot; <small>BranchWeaver/Runtime/Core/Generation/MapGenerationSearchOptions.cs</small>
 
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
+What one generation attempt actually cost, counted against
+`MapGenerationSearchOptions`. Successes and failures both report it, which is what
+makes it useful: compare the counters with the caps to see how close a blueprint runs to its
+budget before it ever fails in a player's hands. An attempt rejected before the search started
+reports `Empty`.
 
 **Constructors**
 
 `public MapGenerationStatistics()`
 
-:   &mdash;
+:   Creates a statistics snapshot. Produced by the generator; a null `exhaustedPhase` is stored as an empty string.
+    - `countStates` &mdash; Per-layer node-count combinations considered.
+    - `topologyTrials` &mdash; Edge-candidate steps taken while wiring layers.
+    - `typeTrials` &mdash; Node-type assignment attempts made.
+    - `deepestTypeAssignment` &mdash; Deepest point the type solver reached, in assigned slots.
+    - `exhaustedPhase` &mdash; The phase whose budget ran out, or empty when none did.
 
 **Properties**
 
 `public int CountStates`
 
-:   &mdash;
+:   Per-layer node-count combinations the search considered, counted against `MapGenerationSearchOptions.MaximumCountStates`.
 
 `public int DeepestTypeAssignment`
 
-:   &mdash;
+:   How many slots the type solver had filled at the deepest point it reached. Well short of the node count on a failure means a type rule conflicts early, which is where to look first.
 
 `public static MapGenerationStatistics Empty`
 
-:   &mdash;
+:   All counters zero and no exhausted phase, for a result that never reached the search.
 
 `public string ExhaustedPhase`
 
-:   &mdash;
+:   Which budget ran out: `count`, `topology` or `type`. Empty when no budget was exhausted, so this is only meaningful alongside `MapGenerationFailureKind.SearchBudgetExhausted`.
 
 `public int TopologyTrials`
 
-:   &mdash;
+:   Edge-candidate steps the search took, counted against `MapGenerationSearchOptions.MaximumTopologyTrials`.
 
 `public int TypeTrials`
 
-:   &mdash;
+:   Node-type assignment attempts the search made, counted against `MapGenerationSearchOptions.MaximumTypeTrials`.
 
 ---
 
@@ -411,9 +470,9 @@ public enum PinnedNodeFields
 
 Which of a pinned node's authored values the generator must reproduce exactly. A flag left
 clear hands that value back to the generator, and the matching value on the
-`innedNodeOverride` must then be left at its default -- a type ID or position
+`PinnedNodeOverride` must then be left at its default -- a type ID or position
 carried next to a clear flag is reported as an invalid override rather than quietly ignored.
-Identity is pinned separately and always, so even `innedNodeFields.None` still
+Identity is pinned separately and always, so even `PinnedNodeFields.None` still
 binds the slot to the pin's node ID.
 
 | Value | Meaning |
@@ -444,39 +503,39 @@ ordinal, so pinning a high ordinal forces a wider layer.
 
 `public PinnedNodeOverride()`
 
-:   Creates a pin. Every value whose flag is clear in `fields` must be left at its default, and a null `payload` is stored as `apNodePayload.Empty`.
+:   Creates a pin. Every value whose flag is clear in `fields` must be left at its default, and a null `payload` is stored as `MapNodePayload.Empty`.
     - `slot` &mdash; The layer and ordinal the pinned node must occupy.
     - `nodeId` &mdash; The node ID the generated node must carry. Required, even when no field is pinned.
     - `fields` &mdash; Which of type, position, and payload this pin fixes.
-    - `typeId` &mdash; The fixed node type; leave default unless `innedNodeFields.Type` is set.
-    - `position` &mdash; The fixed normalized position; leave default unless `innedNodeFields.Position` is set.
-    - `payload` &mdash; The fixed payload; leave empty unless `innedNodeFields.Payload` is set.
+    - `typeId` &mdash; The fixed node type; leave default unless `PinnedNodeFields.Type` is set.
+    - `position` &mdash; The fixed normalized position; leave default unless `PinnedNodeFields.Position` is set.
+    - `payload` &mdash; The fixed payload; leave empty unless `PinnedNodeFields.Payload` is set.
 
 **Properties**
 
 `public PinnedNodeFields Fields`
 
-:   &mdash;
+:   Which of the node's type, position, and payload this pin fixes. Anything left clear is the generator's to choose, and its value on this pin must then be left at its default.
 
 `public StableId NodeId`
 
-:   &mdash;
+:   The ID the generated node must carry. Required on every pin and unique across the override set, because identity is pinned even when `Fields` is `PinnedNodeFields.None` -- which is what lets you find this node again in a graph the generator otherwise built for itself.
 
 `public MapNodePayload Payload`
 
-:   The fixed payload, never null. Empty unless `innedNodeFields.Payload` is set in `ields`.
+:   The fixed payload, never null. Empty unless `PinnedNodeFields.Payload` is set in `Fields`.
 
 `public NormalizedMapPosition Position`
 
-:   The fixed normalized position. Default unless `innedNodeFields.Position` is set in `ields`.
+:   The fixed normalized position. Default unless `PinnedNodeFields.Position` is set in `Fields`.
 
 `public MapNodeSlot Slot`
 
-:   &mdash;
+:   The layer and ordinal this pin claims. At most one pin may occupy a slot, and because layers fill contiguously from ordinal zero, pinning a high ordinal obliges its layer to hold at least that many nodes.
 
 `public StableId TypeId`
 
-:   The fixed node type. Empty unless `innedNodeFields.Type` is set in `ields`.
+:   The fixed node type. Empty unless `PinnedNodeFields.Type` is set in `Fields`.
 
 **Methods**
 

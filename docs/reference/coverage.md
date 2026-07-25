@@ -4,14 +4,14 @@ Generated from source alongside the reference itself, so it cannot quietly drift
 
 | Scope | Documented | Total | Coverage |
 | --- | --- | --- | --- |
-| Public types | 100 | 169 | 59% |
-| Public members | 219 | 1009 | 22% |
+| Public types | 169 | 169 | 100% |
+| Public members | 1009 | 1009 | 100% |
 
 Measured over the 169 types this reference publishes.
 
 ## What is excluded, and why
 
-A further **77** public types are left out. They are public only because `internal` is per-assembly in C# and this package spans several assemblies, so publishing them would describe plumbing as API. They carry `[EditorBrowsable(Never)]` in the source.
+A further **75** public types are left out. They are public only because `internal` is per-assembly in C# and this package spans several assemblies, so publishing them would describe plumbing as API. They carry `[EditorBrowsable(Never)]` in the source.
 
 Coverage is reported over the published surface for the same reason: documenting the excluded types would raise this percentage without helping anyone read the package.
 
@@ -19,18 +19,18 @@ Coverage is reported over the published surface for the same reason: documenting
 
 | Area | Types | Documented | Coverage |
 | --- | --- | --- | --- |
-| [Getting a map](getting-a-map.md) | 12 | 7 | 58% |
-| [Traversal and progression](traversal-and-progression.md) | 8 | 3 | 38% |
-| [Authoring assets](authoring-assets.md) | 17 | 1 | 6% |
+| [Getting a map](getting-a-map.md) | 12 | 12 | 100% |
+| [Traversal and progression](traversal-and-progression.md) | 8 | 8 | 100% |
+| [Authoring assets](authoring-assets.md) | 17 | 17 | 100% |
 | [Styling and appearance](styling-and-appearance.md) | 19 | 19 | 100% |
-| [Presentation and views](presentation-and-views.md) | 48 | 35 | 73% |
-| [Framing, input and navigation](framing-input-and-navigation.md) | 6 | 3 | 50% |
-| [Rules and constraints](rules-and-constraints.md) | 18 | 12 | 67% |
-| [Graph, layout and geometry](graph-layout-and-geometry.md) | 10 | 2 | 20% |
+| [Presentation and views](presentation-and-views.md) | 48 | 48 | 100% |
+| [Framing, input and navigation](framing-input-and-navigation.md) | 6 | 6 | 100% |
+| [Rules and constraints](rules-and-constraints.md) | 18 | 18 | 100% |
+| [Graph, layout and geometry](graph-layout-and-geometry.md) | 10 | 10 | 100% |
 | [Saving and migration](saving-and-migration.md) | 12 | 12 | 100% |
-| [Editor tools](editor-tools.md) | 3 | 0 | 0% |
-| [Determinism and diagnostics](determinism-and-diagnostics.md) | 3 | 1 | 33% |
-| [Other](other.md) | 13 | 5 | 38% |
+| [Editor tools](editor-tools.md) | 3 | 3 | 100% |
+| [Determinism and diagnostics](determinism-and-diagnostics.md) | 3 | 3 | 100% |
+| [Other](other.md) | 13 | 13 | 100% |
 
 ## How to read this
 
