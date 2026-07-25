@@ -87,6 +87,14 @@ comes back is crossing-free by construction rather than by luck. The preflight a
 uses it, so an unsatisfiable combination of `Forbid` plus very dense connection rules
 is reported before the search starts instead of failing seed by seed.
 
+![Routes converge without crossing](../assets/images/hero-wayfarer.png){ .shot }
+
+/// caption
+`Forbid`, the default. Trace any two routes: they merge at a shared node and separate
+again, but no line passes over another. Every map image on this site is generated under
+`Forbid`, so what you see is what the default gives you.
+///
+
 !!! warning "It is part of the fingerprint"
     The crossing policy is included in the rules fingerprint, so changing it changes
     which maps a seed produces. Treat it as a compatibility contract: flipping it after
@@ -154,7 +162,27 @@ On the `MapTraversalController`, under **Fog of war**:
 | **Reveal Incoming** | Also reveal backwards, for maps that allow backtracking |
 | **Reveal All** | Show the whole map, ignoring depth |
 
-`Reveal Depth` is the one you want:
+`Reveal Depth` is the one you want. The same map and the same position, three depths
+&mdash; the amber node is where the traveller stands:
+
+<div class="grid-2" markdown>
+
+<figure markdown>
+  ![Reveal depth 1](../assets/images/fog-reveal-1.png){ .shot }
+  <figcaption><strong><code>RevealDepth = 1</code></strong> &mdash; the next choices, then dark. The default.</figcaption>
+</figure>
+
+<figure markdown>
+  ![Reveal depth 2](../assets/images/fog-reveal-2.png){ .shot }
+  <figcaption><strong><code>RevealDepth = 2</code></strong> &mdash; one more layer, enough to plan a step ahead.</figcaption>
+</figure>
+
+<figure markdown>
+  ![Reveal all](../assets/images/fog-reveal-all.png){ .shot }
+  <figcaption><strong><code>RevealAll = true</code></strong> &mdash; the whole route to the summit.</figcaption>
+</figure>
+
+</div>
 
 - **0** &mdash; only what the traveller has reached plus what is immediately available.
   Nothing ahead. Maximum mystery.
@@ -162,6 +190,16 @@ On the `MapTraversalController`, under **Fog of war**:
   behaviour and the **default**.
 - **2 or more** &mdash; look further ahead, one layer at a time.
 - At or above the layer count, effectively the whole map.
+
+Notice what happens to the *routes*, not just the nodes: an edge is never more visible
+than the node it leads to, so a revealed map shows where a road goes while a fogged one
+stops the line at the edge of what is known. You get that for free — there is no separate
+edge-fog setting.
+
+!!! note "Dimmed is a hint, not a state"
+    A dimmed node is drawn at 75% opacity. It is deliberately close to full brightness:
+    the point is "something is there", not "this is different". A hidden node is drawn at
+    zero opacity and has hit-testing disabled, so it cannot be clicked by accident.
 
 ```csharp
 // Wider look-ahead, for a map where planning several steps matters.

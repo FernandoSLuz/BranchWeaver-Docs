@@ -154,6 +154,18 @@ dashes to move.
 Fill mode, vignette strength and softness, grid spacing and line width. Set
 `Visible = false` to show your own scene art through the map instead.
 
+![Backdrop with vignette and grid](../assets/images/backdrop-vignette-grid.png){ .shot }
+
+/// caption
+A vertical gradient, a vignette darkening the corners, and a grid at the style's spacing.
+All three are the same shader that draws the nodes, so the backdrop costs one more quad and
+needs no texture.
+///
+
+The vignette is what stops a large map from reading as a flat rectangle: it pulls the eye
+to the centre where the route is. Turn it down to zero for a diagram-like look, or up for
+something closer to a lit table.
+
 ### Typography
 
 Optional font (left empty, Unity's built-in runtime font is used, so no font is
