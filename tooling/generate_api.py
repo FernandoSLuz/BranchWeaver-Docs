@@ -54,12 +54,43 @@ def anchor_for(entry):
     return slugify(entry['name'])
 
 
-def render_index(groups, order, product, total_types):
+def render_index(groups, order, product, total_types, tiers=None, excluded=0):
     out = []
     out.append('# API reference')
     out.append('')
-    out.append('Every public type in %s, grouped by what it is for rather than by '
-               'namespace. **%d types.**' % (product, total_types))
+    out.append('The types you are meant to use in %s, grouped by what they are for '
+               'rather than by namespace. **%d types.**' % (product, total_types))
+    out.append('')
+
+    if excluded:
+        out.append('!!! info "What is not listed here"')
+        out.append('    %d further types are public in the source but left out of this '
+                   'reference. They are public only because `internal` is per-assembly in '
+                   'C# and the package spans several assemblies -- plumbing, not API. They '
+                   'carry `[EditorBrowsable(Never)]` in the source to say so. Nothing you '
+                   'need is hidden: if a documented type exposes it, it is documented too.'
+                   % excluded)
+        out.append('')
+
+    tiers = tiers or {}
+    headline = tiers.get('headline') or set()
+    if headline:
+        first = [(g, e) for g in order for e in groups.get(g, []) if e.get('headline')]
+        if first:
+            out.append('## Start here')
+            out.append('')
+            out.append('The types a new project meets first.')
+            out.append('')
+            out.append('| Type | Area | What it is for |')
+            out.append('| --- | --- | --- |')
+            for group, entry in first:
+                link = '[`%s`](%s#%s)' % (
+                    entry['name'], slugify(group) + '.md', anchor_for(entry))
+                text = first_sentence(entry['doc']['summary']) or '_Undocumented._'
+                out.append('| %s | %s | %s |' % (link, group, text.replace('|', '\\|')))
+            out.append('')
+
+    out.append('## Every type')
     out.append('')
     out.append('!!! tip "Filter as you type"')
     out.append('    Start typing in the box below to narrow the table. '
@@ -113,6 +144,15 @@ def render_group(group, entries, product):
     for entry in entries:
         out.append('## ' + entry['name'])
         out.append('')
+        badges = []
+        if entry.get('headline'):
+            badges.append(':material-star: **Start here**')
+        if entry.get('extensionPoint'):
+            badges.append(':material-puzzle: **Extension point** &mdash; '
+                          'implement this yourself to change behaviour')
+        if badges:
+            out.append(' &middot; '.join(badges))
+            out.append('')
         declaration = 'public %s%s %s' % (
             (entry['modifiers'] + ' ') if entry['modifiers'] else '',
             entry['kind'], entry['name'])
@@ -188,11 +228,15 @@ def render_group(group, entries, product):
     return '\n'.join(out) + '\n'
 
 
-def render_coverage(groups, order, product, api):
-    total = len(api)
-    documented = sum(1 for e in api.values() if e['doc']['summary'])
-    members = sum(len(e['members']) for e in api.values())
-    doc_members = sum(1 for e in api.values() for m in e['members'] if m['doc']['summary'])
+def render_coverage(groups, order, product, api, excluded=0):
+    # Coverage is reported over the PUBLISHED surface. Measuring it over everything
+    # public would report a number nobody can act on, because most of that surface is
+    # deliberately not documented.
+    published = [e for g in groups.values() for e in g]
+    total = len(published)
+    documented = sum(1 for e in published if e['doc']['summary'])
+    members = sum(len(e['members']) for e in published)
+    doc_members = sum(1 for e in published for m in e['members'] if m['doc']['summary'])
 
     out = []
     out.append('# Documentation coverage')
@@ -208,6 +252,12 @@ def render_coverage(groups, order, product, api):
     out.append('| Public members | %d | %d | %d%% |' % (
         doc_members, members, round(100.0 * doc_members / max(1, members))))
     out.append('')
+    if excluded:
+        out.append('Measured over the %d types this reference publishes. A further %d are '
+                   'public in the source and deliberately excluded as cross-assembly '
+                   'plumbing; documenting them would raise a percentage without helping '
+                   'anyone.' % (total, excluded))
+        out.append('')
     out.append('## By area')
     out.append('')
     out.append('| Area | Types | Documented | Coverage |')
@@ -234,20 +284,52 @@ def render_coverage(groups, order, product, api):
     return '\n'.join(out) + '\n'
 
 
-def main(api_path, config_path, out_dir, product):
+def load_tiers(tiers_path):
+    """
+    The published surface, decided once by reading every type.
+
+    A reference that lists everything public lists the wrong things: most of a Unity
+    package's public surface is public only because `internal` is per-assembly, and a
+    reader cannot tell those apart from the types they are meant to call. `hidden`
+    names the ones to leave out.
+    """
+    if not tiers_path or not os.path.isfile(tiers_path):
+        return {'headline': set(), 'hidden': set(), 'internal': set(), 'extensionPoints': set()}
+
+    raw = json.load(io.open(tiers_path, encoding='utf-8'))
+    return {
+        'headline': set(raw.get('headline', [])),
+        'hidden': set(raw.get('hidden', [])),
+        'internal': set(raw.get('internal', [])),
+        'extensionPoints': set(raw.get('extensionPoints', [])),
+    }
+
+
+def main(api_path, config_path, out_dir, product, tiers_path=None):
     api = json.load(io.open(api_path, encoding='utf-8'))
     config = json.load(io.open(config_path, encoding='utf-8'))
     rules = config['rules']
     fallback = config.get('fallback', 'Other')
     order = config['order']
+    tiers = load_tiers(tiers_path)
 
     groups = {}
+    excluded = 0
     for key in sorted(api):
         entry = api[key]
         if config.get('exclude_namespaces'):
             if any(re.search(p, entry['namespace'])
                    for p in config['exclude_namespaces']):
                 continue
+
+        # Public for cross-assembly reasons only. Counted, not listed: the count is
+        # reported on the coverage page so the omission is stated rather than hidden.
+        if entry['name'] in tiers['hidden'] or entry['name'] in tiers['internal']:
+            excluded += 1
+            continue
+
+        entry['headline'] = entry['name'] in tiers['headline']
+        entry['extensionPoint'] = entry['name'] in tiers['extensionPoints']
         group = assign_group(entry, rules, fallback)
         groups.setdefault(group, []).append(entry)
 
@@ -264,9 +346,9 @@ def main(api_path, config_path, out_dir, product):
 
     total_types = sum(len(v) for v in groups.values())
     io.open(os.path.join(out_dir, 'index.md'), 'w', encoding='utf-8', newline='\n').write(
-        render_index(groups, order, product, total_types))
+        render_index(groups, order, product, total_types, tiers, excluded))
     io.open(os.path.join(out_dir, 'coverage.md'), 'w', encoding='utf-8', newline='\n').write(
-        render_coverage(groups, order, product, api))
+        render_coverage(groups, order, product, api, excluded))
 
     for group in order:
         entries = groups.get(group)
@@ -276,8 +358,8 @@ def main(api_path, config_path, out_dir, product):
         io.open(path, 'w', encoding='utf-8', newline='\n').write(
             render_group(group, entries, product))
 
-    print('%s: %d types across %d areas' % (product, total_types, len(
-        [g for g in order if groups.get(g)])))
+    print('%s: %d types across %d areas (%d excluded as non-public-facing)' % (
+        product, total_types, len([g for g in order if groups.get(g)]), excluded))
     for group in order:
         if groups.get(group):
             have = sum(1 for e in groups[group] if e['doc']['summary'])
@@ -285,4 +367,6 @@ def main(api_path, config_path, out_dir, product):
 
 
 if __name__ == '__main__':
-    main(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
+    # api.json config.json out_dir product [tiers.json]
+    main(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4],
+         sys.argv[5] if len(sys.argv) > 5 else None)
