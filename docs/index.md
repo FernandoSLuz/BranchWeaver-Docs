@@ -7,18 +7,16 @@ hide:
 
 # BranchWeaver
 
-<p class="tagline">Deterministic branching maps for Unity. Generate route maps, overworld
-webs, and chapter gates from rules &mdash; then traverse, save, and present them without
-writing rendering code.</p>
+<p class="tagline">Deterministic branching maps for Unity. Generate route maps, overworld webs,
+and chapter gates from rules &mdash; then traverse, save, and present them without writing
+rendering code.</p>
 
 </div>
 
-![The Wayfarer sample rendered with the Slate Nocturne style](assets/images/hero-wayfarer.png){ .shot }
-
-/// caption
-The Wayfarer sample, Slate Nocturne style. Nodes, routes, rings, and glow are drawn by a
-signed-distance-field shader &mdash; no textures ship with the package.
-///
+<figure markdown>
+  ![The Wayfarer sample rendered with the Slate Nocturne style](assets/images/hero-wayfarer.png){ .shot }
+  <figcaption>The Wayfarer sample, Slate Nocturne style. Nodes, routes, rings and glow are signed-distance-field shapes drawn by one unlit shader, so they stay crisp at any zoom and need no post-processing. The backdrop art and the traveller belong to the sample scene, not to the map.</figcaption>
+</figure>
 
 ---
 
@@ -28,58 +26,61 @@ signed-distance-field shader &mdash; no textures ship with the package.
 
 <div markdown>
 
-### :material-rocket-launch: I want to see it work
+### See it work
 
-Open a sample, walk a map, generate your own from rules. No code.
+Open both shipped samples and walk a map with mouse, keyboard, or touch.
 
-[Your first map :material-arrow-right:](tutorials/first-map.md)
-
-</div>
-
-<div markdown>
-
-### :material-palette: I want it to match my game
-
-Pick a style, make it yours, put the map exactly where you want it on screen.
-
-[Styling your map :material-arrow-right:](tutorials/styling-your-map.md)
+[Install and run the samples](tutorials/install-and-samples.md)
 
 </div>
 
 <div markdown>
 
-### :material-code-braces: I want to wire it up
+### Generate from rules
 
-Traversal events, payloads, saving, and generating without the controller.
+Generate a map from a seed, reproduce it exactly, and audit a range of seeds.
 
-[Integrate at runtime :material-arrow-right:](how-to/runtime-integration.md)
+[Generate a map in Map Studio](tutorials/generate-a-map.md)
 
 </div>
 
 <div markdown>
 
-### :material-book-open-variant: I need to look something up
+### Match your game
 
-244 public types, grouped by what they are for and filterable as you type.
+Copy a shipped style into an asset you own and edit it against a live preview.
 
-[API reference :material-arrow-right:](reference/index.md)
+[Restyle your map](tutorials/restyle-your-map.md)
+
+</div>
+
+<div markdown>
+
+### Wire it up
+
+Traversal events, payloads, save slots, and generating a graph with no scene.
+
+[Drive traversal from code](how-to/drive-traversal-from-code.md)
 
 </div>
 
 </div>
-
----
 
 ## What it does
 
-You give BranchWeaver **rules** &mdash; how many layers, how wide, which node types may
-connect to which. It gives you a **graph**, deterministic from a seed. A **session** owns
-traversal; a **presenter** draws it; a **style** decides how it looks.
+You give BranchWeaver **rules**: how many layers, how wide each layer may be, which node
+types may sit where, and how many edges may leave or enter a node. It gives you a
+**graph**, deterministic from a seed. A **session** owns traversal, a **presenter** draws
+what the session reports, and a **style** decides how that drawing looks.
 
-The same `(rules, seed)` pair always produces the same map, on every machine and platform.
-That is structural rather than promised: `BranchWeaver.Core` is compiled with
-`noEngineReferences: true`, so it cannot reach `UnityEngine.Random`, `Time`, or a
-`GameObject` even by accident.
+The same rules and seed always produce the same graph, on every machine and platform. That is
+structural rather than promised: `BranchWeaver.Core` is compiled with `noEngineReferences: true`,
+so it cannot reach `UnityEngine.Random`, `Time`, or a `GameObject` even by accident.
+
+BranchWeaver does not own encounters, rewards, scenes, or quests. It reports what the
+player did and leaves those decisions to your code.
+
+### In code
 
 === "Rules to graph"
 
@@ -110,49 +111,31 @@ That is structural rather than promised: `BranchWeaver.Core` is compiled with
 === "Restyling it"
 
     ```csharp
-    presenter.ApplyStyle(nightStyle);   // rebuilds every live view
+    presenter.ApplyStyle(nightStyle);   // pushed to every live view
 
     // A style can never change the map. It is presentation only.
     ```
 
----
-
-## Four shipped styles
-
-Every look is drawn procedurally from numbers in a `MapStylePreset`. None of them ship a
-texture or a font, and any of them becomes yours with one click in the Style Browser.
-
-<div class="grid-2" markdown>
-
-<figure markdown>
-  ![Slate Nocturne](assets/images/style-slate-nocturne.png){ .shot }
-  <figcaption><strong>Slate Nocturne</strong> &mdash; the default. Dark slate, cyan routes, amber focus ring.</figcaption>
-</figure>
-
-<figure markdown>
-  ![Parchment Atlas](assets/images/style-parchment-atlas.png){ .shot }
-  <figcaption><strong>Parchment Atlas</strong> &mdash; warm paper, inked circles, dashed routes.</figcaption>
-</figure>
-
-<figure markdown>
-  ![Neon Circuit](assets/images/style-neon-circuit.png){ .shot }
-  <figcaption><strong>Neon Circuit</strong> &mdash; hex nodes, heavy halos, routes that flow toward reachable nodes.</figcaption>
-</figure>
-
-<figure markdown>
-  ![Minimal Mono](assets/images/style-minimal-mono.png){ .shot }
-  <figcaption><strong>Minimal Mono</strong> &mdash; light, flat, hairline routes. The neutral base.</figcaption>
-</figure>
-
-</div>
-
----
-
 ## Requirements
 
-- Unity **2022.3 LTS** or newer
-- Built-in render pipeline, URP, or HDRP &mdash; no render-pipeline package required
-- No third-party dependencies, no DRM, no telemetry, no online activation
+| Item | Detail |
+| --- | --- |
+| Unity | 2022.3.62f1 is the verified editor version |
+| Required package | uGUI (`com.unity.ugui`), present in standard Unity projects |
+| Optional package | `com.unity.inputsystem`, which compiles the typed input bridge in |
+| Render pipeline | Built-in, URP, or HDRP; no render-pipeline package is required |
+| Dependencies | No paid dependency, no DLL, no DRM, no telemetry, no network service |
+
+!!! note "Other editor versions"
+    Versions, platforms, and pipelines beyond that baseline are treated as pending rather
+    than assumed. The evidence and the pending list ship in the package, at
+    `Assets/BranchWeaver/Documentation/Compatibility-and-Release.md`.
 
 !!! info "Documentation only"
     This site documents BranchWeaver. The product source is not published here.
+
+## Next
+
+- [Install and run the samples](tutorials/install-and-samples.md) &mdash; the shortest route from import to a map you can walk.
+- [Core concepts](explanation/architecture.md) &mdash; the pipeline stages and which stage decides what.
+- [API reference](reference/index.md) &mdash; every public type, grouped by what it is for and filterable as you type.

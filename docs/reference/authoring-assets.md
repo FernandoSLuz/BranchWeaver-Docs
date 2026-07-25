@@ -1,185 +1,9 @@
 # Authoring assets
 
-28 types in this area.
+17 types in this area.
 
 !!! abstract "On this page"
-    [AuthoringDiagnosticCodes](#authoringdiagnosticcodes) &middot; [BlueprintEdgeAuthoring](#blueprintedgeauthoring) &middot; [BlueprintEdgeOverrideAuthoring](#blueprintedgeoverrideauthoring) &middot; [BlueprintNodeAuthoring](#blueprintnodeauthoring) &middot; [CompiledMapNodeType](#compiledmapnodetype) &middot; [CompiledMapTheme](#compiledmaptheme) &middot; [ForbiddenAdjacencyAuthoring](#forbiddenadjacencyauthoring) &middot; [ForcedNodeAuthoring](#forcednodeauthoring) &middot; [LayerRangeAuthoring](#layerrangeauthoring) &middot; [MapAuthoringCompiler](#mapauthoringcompiler) &middot; [MapBlueprintAsset](#mapblueprintasset) &middot; [MapBlueprintCompilation](#mapblueprintcompilation) &middot; [MapConstraintAsset](#mapconstraintasset) &middot; [MapEdgeGeometryKind](#mapedgegeometrykind) &middot; [MapFlowDirection](#mapflowdirection) &middot; [MapLayoutOrientation](#maplayoutorientation) &middot; [MapNodeTypeAsset](#mapnodetypeasset) &middot; [MapNodeTypeCompilation](#mapnodetypecompilation) &middot; [MapPropertyAuthoring](#mappropertyauthoring) &middot; [MapRulesAsset](#maprulesasset) &middot; [MapRulesCompilation](#maprulescompilation) &middot; [MapThemeAsset](#mapthemeasset) &middot; [MapThemeCompilation](#mapthemecompilation) &middot; [MapThemeLimits](#mapthemelimits) &middot; [NodeTypeWeightAuthoring](#nodetypeweightauthoring) &middot; [NodeTypeWeightOverrideAuthoring](#nodetypeweightoverrideauthoring) &middot; [QuotaAuthoring](#quotaauthoring) &middot; [ZoneAuthoring](#zoneauthoring)
-
-## AuthoringDiagnosticCodes
-
-```csharp
-public static class AuthoringDiagnosticCodes
-```
-
-`BranchWeaver.Authoring` &middot; <small>Runtime/Authoring/AuthoringCompilation.cs</small>
-
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
-
----
-
-## BlueprintEdgeAuthoring
-
-```csharp
-public sealed class BlueprintEdgeAuthoring
-```
-
-`BranchWeaver.Authoring` &middot; <small>Runtime/Authoring/MapBlueprintAsset.cs</small>
-
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
-
-**Constructors**
-
-`public BlueprintEdgeAuthoring()`
-
-:   &mdash;
-
-`public BlueprintEdgeAuthoring(string id, string sourceId, string targetId)`
-
-:   &mdash;
-
-**Properties**
-
-`public string Id`
-
-:   &mdash;
-
-`public string SourceId`
-
-:   &mdash;
-
-`public string TargetId`
-
-:   &mdash;
-
----
-
-## BlueprintEdgeOverrideAuthoring
-
-```csharp
-public sealed class BlueprintEdgeOverrideAuthoring
-```
-
-`BranchWeaver.Authoring` &middot; <small>Runtime/Authoring/MapBlueprintAsset.cs</small>
-
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
-
-**Constructors**
-
-`public BlueprintEdgeOverrideAuthoring()`
-
-:   &mdash;
-
-`public BlueprintEdgeOverrideAuthoring(string id, EdgeOverrideDisposition disposition,)`
-
-:   &mdash;
-
-**Properties**
-
-`public EdgeOverrideDisposition Disposition`
-
-:   &mdash;
-
-`public string OverrideId`
-
-:   &mdash;
-
-`public string PinnedEdgeId`
-
-:   &mdash;
-
-`public int SourceLayer`
-
-:   &mdash;
-
-`public int SourceOrdinal`
-
-:   &mdash;
-
-`public int TargetLayer`
-
-:   &mdash;
-
-`public int TargetOrdinal`
-
-:   &mdash;
-
----
-
-## BlueprintNodeAuthoring
-
-```csharp
-public sealed class BlueprintNodeAuthoring
-```
-
-`BranchWeaver.Authoring` &middot; <small>Runtime/Authoring/MapBlueprintAsset.cs</small>
-
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
-
-**Constructors**
-
-`public BlueprintNodeAuthoring()`
-
-:   &mdash;
-
-`public BlueprintNodeAuthoring()`
-
-:   &mdash;
-
-`public BlueprintNodeAuthoring()`
-
-:   &mdash;
-
-**Properties**
-
-`public string Id`
-
-:   &mdash;
-
-`public bool IdentityPinned`
-
-:   &mdash;
-
-`public int Layer`
-
-:   &mdash;
-
-`public bool Locked`
-
-:   &mdash;
-
-`public int NormalizedX`
-
-:   &mdash;
-
-`public int NormalizedY`
-
-:   &mdash;
-
-`public int Ordinal`
-
-:   &mdash;
-
-`public string PayloadId`
-
-:   &mdash;
-
-`public PinnedNodeFields PinnedFields`
-
-:   &mdash;
-
-`public IReadOnlyList<MapPropertyAuthoring> Properties`
-
-:   &mdash;
-
-`public string TypeId`
-
-:   &mdash;
-
----
+    [CompiledMapNodeType](#compiledmapnodetype) &middot; [CompiledMapTheme](#compiledmaptheme) &middot; [MapAuthoringCompiler](#mapauthoringcompiler) &middot; [MapBlueprintAsset](#mapblueprintasset) &middot; [MapBlueprintCompilation](#mapblueprintcompilation) &middot; [MapConstraintAsset](#mapconstraintasset) &middot; [MapEdgeGeometryKind](#mapedgegeometrykind) &middot; [MapFlowDirection](#mapflowdirection) &middot; [MapLayoutOrientation](#maplayoutorientation) &middot; [MapNodeTypeAsset](#mapnodetypeasset) &middot; [MapNodeTypeCompilation](#mapnodetypecompilation) &middot; [MapPropertyAuthoring](#mappropertyauthoring) &middot; [MapRulesAsset](#maprulesasset) &middot; [MapRulesCompilation](#maprulescompilation) &middot; [MapThemeAsset](#mapthemeasset) &middot; [MapThemeCompilation](#mapthemecompilation) &middot; [MapThemeLimits](#mapthemelimits)
 
 ## CompiledMapNodeType
 
@@ -187,7 +11,7 @@ public sealed class BlueprintNodeAuthoring
 public sealed class CompiledMapNodeType
 ```
 
-`BranchWeaver.Authoring` &middot; <small>Runtime/Authoring/MapNodeTypeAsset.cs</small>
+`BranchWeaver.Authoring` &middot; <small>BranchWeaver/Runtime/Authoring/MapNodeTypeAsset.cs</small>
 
 !!! warning "Not yet documented"
     This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
@@ -280,7 +104,7 @@ public sealed class CompiledMapNodeType
 public sealed class CompiledMapTheme
 ```
 
-`BranchWeaver.Authoring` &middot; <small>Runtime/Authoring/RuntimeCompilation.cs</small>
+`BranchWeaver.Authoring` &middot; <small>BranchWeaver/Runtime/Authoring/RuntimeCompilation.cs</small>
 
 !!! warning "Not yet documented"
     This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
@@ -343,128 +167,15 @@ public sealed class CompiledMapTheme
 
 ---
 
-## ForbiddenAdjacencyAuthoring
-
-```csharp
-public sealed class ForbiddenAdjacencyAuthoring
-```
-
-`BranchWeaver.Authoring` &middot; <small>Runtime/Authoring/MapRulesAsset.cs</small>
-
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
-
-**Constructors**
-
-`public ForbiddenAdjacencyAuthoring()`
-
-:   &mdash;
-
-`public ForbiddenAdjacencyAuthoring(string ruleId, MapNodeTypeAsset first, MapNodeTypeAsset second, ForbiddenAdjacencyDirection direction)`
-
-:   &mdash;
-
-**Properties**
-
-`public ForbiddenAdjacencyDirection Direction`
-
-:   &mdash;
-
-`public MapNodeTypeAsset FirstType`
-
-:   &mdash;
-
-`public string RuleId`
-
-:   &mdash;
-
-`public MapNodeTypeAsset SecondType`
-
-:   &mdash;
-
----
-
-## ForcedNodeAuthoring
-
-```csharp
-public sealed class ForcedNodeAuthoring
-```
-
-`BranchWeaver.Authoring` &middot; <small>Runtime/Authoring/MapRulesAsset.cs</small>
-
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
-
-**Constructors**
-
-`public ForcedNodeAuthoring()`
-
-:   &mdash;
-
-`public ForcedNodeAuthoring(string ruleId, int layer, int ordinal, MapNodeTypeAsset type)`
-
-:   &mdash;
-
-**Properties**
-
-`public int Layer`
-
-:   &mdash;
-
-`public int Ordinal`
-
-:   &mdash;
-
-`public string RuleId`
-
-:   &mdash;
-
-`public MapNodeTypeAsset Type`
-
-:   &mdash;
-
----
-
-## LayerRangeAuthoring
-
-```csharp
-public sealed class LayerRangeAuthoring
-```
-
-`BranchWeaver.Authoring` &middot; <small>Runtime/Authoring/MapRulesAsset.cs</small>
-
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
-
-**Constructors**
-
-`public LayerRangeAuthoring()`
-
-:   &mdash;
-
-`public LayerRangeAuthoring(int minimum, int maximum)`
-
-:   &mdash;
-
-**Properties**
-
-`public int Maximum`
-
-:   &mdash;
-
-`public int Minimum`
-
-:   &mdash;
-
----
-
 ## MapAuthoringCompiler
+
+:material-star: **Start here**
 
 ```csharp
 public sealed class MapAuthoringCompiler
 ```
 
-`BranchWeaver.Authoring` &middot; <small>Runtime/Authoring/MapAuthoringCompiler.cs</small>
+`BranchWeaver.Authoring` &middot; <small>BranchWeaver/Runtime/Authoring/MapAuthoringCompiler.cs</small>
 
 !!! warning "Not yet documented"
     This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
@@ -491,11 +202,13 @@ public sealed class MapAuthoringCompiler
 
 ## MapBlueprintAsset
 
+:material-star: **Start here**
+
 ```csharp
 public sealed class MapBlueprintAsset : ScriptableObject
 ```
 
-`BranchWeaver.Authoring` &middot; <small>Runtime/Authoring/MapBlueprintAsset.cs</small>
+`BranchWeaver.Authoring` &middot; <small>BranchWeaver/Runtime/Authoring/MapBlueprintAsset.cs</small>
 
 !!! warning "Not yet documented"
     This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
@@ -576,7 +289,7 @@ public sealed class MapBlueprintAsset : ScriptableObject
 public sealed class MapBlueprintCompilation
 ```
 
-`BranchWeaver.Authoring` &middot; <small>Runtime/Authoring/AuthoringCompilation.cs</small>
+`BranchWeaver.Authoring` &middot; <small>BranchWeaver/Runtime/Authoring/AuthoringCompilation.cs</small>
 
 !!! warning "Not yet documented"
     This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
@@ -633,11 +346,13 @@ public sealed class MapBlueprintCompilation
 
 ## MapConstraintAsset
 
+:material-puzzle: **Extension point** &mdash; implement this yourself to change behaviour
+
 ```csharp
 public abstract class MapConstraintAsset : ScriptableObject
 ```
 
-`BranchWeaver.Authoring` &middot; <small>Runtime/Authoring/MapConstraintAsset.cs</small>
+`BranchWeaver.Authoring` &middot; <small>BranchWeaver/Runtime/Authoring/MapConstraintAsset.cs</small>
 
 !!! warning "Not yet documented"
     This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
@@ -656,7 +371,7 @@ public abstract class MapConstraintAsset : ScriptableObject
 public enum MapEdgeGeometryKind
 ```
 
-`BranchWeaver.Authoring` &middot; <small>Runtime/Authoring/MapThemeAsset.cs</small>
+`BranchWeaver.Authoring` &middot; <small>BranchWeaver/Runtime/Authoring/MapThemeAsset.cs</small>
 
 !!! warning "Not yet documented"
     This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
@@ -669,7 +384,7 @@ public enum MapEdgeGeometryKind
 public enum MapFlowDirection
 ```
 
-`BranchWeaver.Authoring` &middot; <small>Runtime/Authoring/MapStyleTokens.cs</small>
+`BranchWeaver.Authoring` &middot; <small>BranchWeaver/Runtime/Authoring/MapStyleTokens.cs</small>
 
 Which screen direction the map's progress runs in.
 
@@ -694,7 +409,7 @@ direction change is still the same run, drawn the other way round.
 public enum MapLayoutOrientation
 ```
 
-`BranchWeaver.Authoring` &middot; <small>Runtime/Authoring/MapThemeAsset.cs</small>
+`BranchWeaver.Authoring` &middot; <small>BranchWeaver/Runtime/Authoring/MapThemeAsset.cs</small>
 
 !!! warning "Not yet documented"
     This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
@@ -703,11 +418,13 @@ public enum MapLayoutOrientation
 
 ## MapNodeTypeAsset
 
+:material-star: **Start here**
+
 ```csharp
 public sealed class MapNodeTypeAsset : ScriptableObject
 ```
 
-`BranchWeaver.Authoring` &middot; <small>Runtime/Authoring/MapNodeTypeAsset.cs</small>
+`BranchWeaver.Authoring` &middot; <small>BranchWeaver/Runtime/Authoring/MapNodeTypeAsset.cs</small>
 
 !!! warning "Not yet documented"
     This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
@@ -800,7 +517,7 @@ public sealed class MapNodeTypeAsset : ScriptableObject
 public sealed class MapNodeTypeCompilation
 ```
 
-`BranchWeaver.Authoring` &middot; <small>Runtime/Authoring/AuthoringCompilation.cs</small>
+`BranchWeaver.Authoring` &middot; <small>BranchWeaver/Runtime/Authoring/AuthoringCompilation.cs</small>
 
 !!! warning "Not yet documented"
     This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
@@ -833,7 +550,7 @@ public sealed class MapNodeTypeCompilation
 public sealed class MapPropertyAuthoring
 ```
 
-`BranchWeaver.Authoring` &middot; <small>Runtime/Authoring/MapPropertyAuthoring.cs</small>
+`BranchWeaver.Authoring` &middot; <small>BranchWeaver/Runtime/Authoring/MapPropertyAuthoring.cs</small>
 
 !!! warning "Not yet documented"
     This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
@@ -874,11 +591,13 @@ public sealed class MapPropertyAuthoring
 
 ## MapRulesAsset
 
+:material-star: **Start here**
+
 ```csharp
 public sealed class MapRulesAsset : ScriptableObject
 ```
 
-`BranchWeaver.Authoring` &middot; <small>Runtime/Authoring/MapRulesAsset.cs</small>
+`BranchWeaver.Authoring` &middot; <small>BranchWeaver/Runtime/Authoring/MapRulesAsset.cs</small>
 
 !!! warning "Not yet documented"
     This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
@@ -963,7 +682,7 @@ public sealed class MapRulesAsset : ScriptableObject
 public sealed class MapRulesCompilation
 ```
 
-`BranchWeaver.Authoring` &middot; <small>Runtime/Authoring/AuthoringCompilation.cs</small>
+`BranchWeaver.Authoring` &middot; <small>BranchWeaver/Runtime/Authoring/AuthoringCompilation.cs</small>
 
 !!! warning "Not yet documented"
     This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
@@ -996,11 +715,13 @@ public sealed class MapRulesCompilation
 
 ## MapThemeAsset
 
+:material-star: **Start here**
+
 ```csharp
 public sealed class MapThemeAsset : ScriptableObject
 ```
 
-`BranchWeaver.Authoring` &middot; <small>Runtime/Authoring/MapThemeAsset.cs</small>
+`BranchWeaver.Authoring` &middot; <small>BranchWeaver/Runtime/Authoring/MapThemeAsset.cs</small>
 
 !!! warning "Not yet documented"
     This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
@@ -1069,7 +790,7 @@ public sealed class MapThemeAsset : ScriptableObject
 public sealed class MapThemeCompilation
 ```
 
-`BranchWeaver.Authoring` &middot; <small>Runtime/Authoring/RuntimeCompilation.cs</small>
+`BranchWeaver.Authoring` &middot; <small>BranchWeaver/Runtime/Authoring/RuntimeCompilation.cs</small>
 
 !!! warning "Not yet documented"
     This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
@@ -1102,170 +823,10 @@ public sealed class MapThemeCompilation
 public static class MapThemeLimits
 ```
 
-`BranchWeaver.Authoring` &middot; <small>Runtime/Authoring/AuthoringCompilation.cs</small>
+`BranchWeaver.Authoring` &middot; <small>BranchWeaver/Runtime/Authoring/AuthoringCompilation.cs</small>
 
 !!! warning "Not yet documented"
     This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
-
----
-
-## NodeTypeWeightAuthoring
-
-```csharp
-public sealed class NodeTypeWeightAuthoring
-```
-
-`BranchWeaver.Authoring` &middot; <small>Runtime/Authoring/MapRulesAsset.cs</small>
-
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
-
-**Constructors**
-
-`public NodeTypeWeightAuthoring()`
-
-:   &mdash;
-
-`public NodeTypeWeightAuthoring(MapNodeTypeAsset type, int weight)`
-
-:   &mdash;
-
-**Properties**
-
-`public MapNodeTypeAsset Type`
-
-:   &mdash;
-
-`public int Weight`
-
-:   &mdash;
-
----
-
-## NodeTypeWeightOverrideAuthoring
-
-```csharp
-public sealed class NodeTypeWeightOverrideAuthoring
-```
-
-`BranchWeaver.Authoring` &middot; <small>Runtime/Authoring/MapRulesAsset.cs</small>
-
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
-
-**Constructors**
-
-`public NodeTypeWeightOverrideAuthoring()`
-
-:   &mdash;
-
-`public NodeTypeWeightOverrideAuthoring(MapNodeTypeAsset type, int weight)`
-
-:   &mdash;
-
-**Properties**
-
-`public MapNodeTypeAsset Type`
-
-:   &mdash;
-
-`public int Weight`
-
-:   &mdash;
-
----
-
-## QuotaAuthoring
-
-```csharp
-public sealed class QuotaAuthoring
-```
-
-`BranchWeaver.Authoring` &middot; <small>Runtime/Authoring/MapRulesAsset.cs</small>
-
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
-
-**Constructors**
-
-`public QuotaAuthoring()`
-
-:   &mdash;
-
-`public QuotaAuthoring(string ruleId, MapNodeTypeAsset type, string zoneId, int minimum, int maximum)`
-
-:   &mdash;
-
-**Properties**
-
-`public int Maximum`
-
-:   &mdash;
-
-`public int Minimum`
-
-:   &mdash;
-
-`public string RuleId`
-
-:   &mdash;
-
-`public MapNodeTypeAsset Type`
-
-:   &mdash;
-
-`public string ZoneId`
-
-:   &mdash;
-
----
-
-## ZoneAuthoring
-
-```csharp
-public sealed class ZoneAuthoring
-```
-
-`BranchWeaver.Authoring` &middot; <small>Runtime/Authoring/MapRulesAsset.cs</small>
-
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
-
-**Constructors**
-
-`public ZoneAuthoring()`
-
-:   &mdash;
-
-`public ZoneAuthoring(string id, int first, int last, IEnumerable<MapNodeTypeAsset> permitted,)`
-
-:   &mdash;
-
-**Properties**
-
-`public int FirstLayer`
-
-:   &mdash;
-
-`public IReadOnlyList<MapNodeTypeAsset> ForbiddenTypes`
-
-:   &mdash;
-
-`public int LastLayer`
-
-:   &mdash;
-
-`public IReadOnlyList<MapNodeTypeAsset> PermittedTypes`
-
-:   &mdash;
-
-`public string StableId`
-
-:   &mdash;
-
-`public IReadOnlyList<NodeTypeWeightOverrideAuthoring> WeightOverrides`
-
-:   &mdash;
 
 ---
 

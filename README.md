@@ -12,17 +12,25 @@ traverse, save, and present them without writing rendering code.
 
 Read these in order. Each one ends where the next begins.
 
-| # | Guide | You will be able to |
+| # | Tutorial | You will be able to |
 | --- | --- | --- |
-| 1 | **[Getting started](docs/01-getting-started.md)** | Open the samples, generate a map, walk it |
-| 2 | **[Core concepts](docs/02-core-concepts.md)** | Explain rules, graph, session, presenter, and why they are separate |
-| 3 | **[Authoring maps](docs/03-authoring-maps.md)** | Create node types, rules, and hand-authored blueprints |
-| 4 | **[Styles and presets](docs/04-styles-and-presets.md)** | Make the map look like *your* game |
-| 5 | **[Runtime integration](docs/05-runtime-integration.md)** | Drive it from your own code and save progress |
-| 6 | **[Troubleshooting](docs/06-troubleshooting.md)** | Fix the errors you are most likely to hit |
-| - | **[API reference](docs/api-reference.md)** | Look up any public type or member |
+| 1 | **[Install and run the samples](docs/tutorials/install-and-samples.md)** | Open both samples and walk a generated map |
+| 2 | **[Generate a map in Map Studio](docs/tutorials/generate-a-map.md)** | Write rules, reproduce a map from its seed, audit a seed range |
+| 3 | **[Add a map to your scene](docs/tutorials/add-a-map-to-your-scene.md)** | Build a working map hierarchy in a scene you own |
+| 4 | **[Restyle your map](docs/tutorials/restyle-your-map.md)** | Make the map look like *your* game |
 
-**If you have 10 minutes:** guide 1, then the "five-minute" section of guide 4.
+Then, as you need them:
+
+| Guide | You will be able to |
+| --- | --- |
+| **[Core concepts](docs/explanation/architecture.md)** | Explain rules, graph, session, presenter, and why they are separate |
+| **[Write map rules](docs/how-to/write-map-rules.md)** | Shape a rule set, and read it when generation fails |
+| **[Drive traversal from code](docs/how-to/drive-traversal-from-code.md)** | Handle traversal events, payloads, and progression state |
+| **[Save and load progress](docs/how-to/save-and-load.md)** | Write and read save slots, and plan migrations |
+| **[Troubleshooting](docs/how-to/troubleshooting.md)** | Fix the errors you are most likely to hit |
+| **[API reference](docs/reference/index.md)** | Look up any public type or member |
+
+**If you have 10 minutes:** tutorial 1, then the five-minute loop in tutorial 4.
 
 ---
 

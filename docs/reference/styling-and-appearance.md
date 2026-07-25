@@ -1,85 +1,9 @@
 # Styling and appearance
 
-28 types in this area.
+19 types in this area.
 
 !!! abstract "On this page"
-    [CanvasMapNodeStyling](#canvasmapnodestyling) &middot; [CompiledMapNodeStates](#compiledmapnodestates) &middot; [CompiledMapStyle](#compiledmapstyle) &middot; [IMapStyledView](#imapstyledview) &middot; [MapBackdropTokens](#mapbackdroptokens) &middot; [MapEasing](#mapeasing) &middot; [MapEdgeCap](#mapedgecap) &middot; [MapEdgeStyleTokens](#mapedgestyletokens) &middot; [MapFillMode](#mapfillmode) &middot; [MapFitMode](#mapfitmode) &middot; [MapFramingTokens](#mapframingtokens) &middot; [MapMaterialPool](#mapmaterialpool) &middot; [MapMotionTokens](#mapmotiontokens) &middot; [MapNodeShape](#mapnodeshape) &middot; [MapNodeStateStyle](#mapnodestatestyle) &middot; [MapNodeStyleTokens](#mapnodestyletokens) &middot; [MapPaletteTokens](#mappalettetokens) &middot; [MapStyleBrowserWindow](#mapstylebrowserwindow) &middot; [MapStyleDefaults](#mapstyledefaults) &middot; [MapStylePreset](#mapstylepreset) &middot; [MapStylePresetEditor](#mapstylepreseteditor) &middot; [MapStylePreviewRenderer](#mapstylepreviewrenderer) &middot; [MapStyleRuntime](#mapstyleruntime) &middot; [MapSurfaceGraphic](#mapsurfacegraphic) &middot; [MapSurfaceMode](#mapsurfacemode) &middot; [MapSurfaceRequest](#mapsurfacerequest) &middot; [MapSurfaceTokens](#mapsurfacetokens) &middot; [MapTypographyTokens](#maptypographytokens)
-
-## CanvasMapNodeStyling
-
-```csharp
-public static class CanvasMapNodeStyling
-```
-
-`BranchWeaver.Presentation.Canvas` &middot; <small>Runtime/Presentation/Canvas/CanvasMapNodeStyling.cs</small>
-
-Turns a node's compiled type, visual state, and fog state into the surface
-request that draws it.
-
-Keeping this a pure function of its inputs means the same mapping drives the
-runtime views, the Map Studio graph, and the Style Browser previews, so what
-an author sees while editing is what ships. It also makes the mapping
-directly testable without a canvas.
-
-**Methods**
-
-`public static MapSurfaceRequest BuildBackdrop(CompiledMapStyle style)`
-
-:   Builds the surface request for the map backdrop.
-
-`public static MapSurfaceRequest BuildEdgeSegment()`
-
-:   Builds the surface request for one straight edge segment.
-
-`public static MapSurfaceRequest BuildNode()`
-
-:   Builds the surface request for one node.
-
----
-
-## CompiledMapNodeStates
-
-```csharp
-public sealed class CompiledMapNodeStates
-```
-
-`BranchWeaver.Authoring` &middot; <small>Runtime/Authoring/MapStylePreset.cs</small>
-
-The resolved per-state node treatments for one style.
-
-**Constructors**
-
-`public CompiledMapNodeStates()`
-
-:   &mdash;
-
-**Properties**
-
-`public MapNodeStateStyle Available`
-
-:   &mdash;
-
-`public MapNodeStateStyle Completed`
-
-:   &mdash;
-
-`public MapNodeStateStyle Current`
-
-:   &mdash;
-
-`public MapNodeStateStyle Hidden`
-
-:   &mdash;
-
-`public MapNodeStateStyle Locked`
-
-:   &mdash;
-
-`public MapNodeStateStyle Visited`
-
-:   &mdash;
-
----
+    [CompiledMapStyle](#compiledmapstyle) &middot; [IMapStyledView](#imapstyledview) &middot; [MapBackdropTokens](#mapbackdroptokens) &middot; [MapEasing](#mapeasing) &middot; [MapEdgeCap](#mapedgecap) &middot; [MapEdgeStyleTokens](#mapedgestyletokens) &middot; [MapFillMode](#mapfillmode) &middot; [MapFitMode](#mapfitmode) &middot; [MapFramingTokens](#mapframingtokens) &middot; [MapMotionTokens](#mapmotiontokens) &middot; [MapNodeShape](#mapnodeshape) &middot; [MapNodeStateStyle](#mapnodestatestyle) &middot; [MapNodeStyleTokens](#mapnodestyletokens) &middot; [MapPaletteTokens](#mappalettetokens) &middot; [MapStyleDefaults](#mapstyledefaults) &middot; [MapStylePreset](#mapstylepreset) &middot; [MapSurfaceGraphic](#mapsurfacegraphic) &middot; [MapSurfaceTokens](#mapsurfacetokens) &middot; [MapTypographyTokens](#maptypographytokens)
 
 ## CompiledMapStyle
 
@@ -87,7 +11,7 @@ The resolved per-state node treatments for one style.
 public sealed class CompiledMapStyle
 ```
 
-`BranchWeaver.Authoring` &middot; <small>Runtime/Authoring/MapStylePreset.cs</small>
+`BranchWeaver.Authoring` &middot; <small>BranchWeaver/Runtime/Authoring/MapStylePreset.cs</small>
 
 The immutable style the views read. Built either from a
 `apStylePreset` asset or from `apStyleDefaults`,
@@ -160,11 +84,13 @@ assigned.
 
 ## IMapStyledView
 
+:material-puzzle: **Extension point** &mdash; implement this yourself to change behaviour
+
 ```csharp
 public interface IMapStyledView
 ```
 
-`BranchWeaver.Runtime` &middot; <small>Runtime/Runtime/MapStyledViewContracts.cs</small>
+`BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapStyledViewContracts.cs</small>
 
 Implemented by a view that can be dressed by a map style and advanced by a
 visual clock.
@@ -181,7 +107,7 @@ simply renders unstyled, exactly as before styles existed.
 public struct MapBackdropTokens
 ```
 
-`BranchWeaver.Authoring` &middot; <small>Runtime/Authoring/MapStyleTokens.cs</small>
+`BranchWeaver.Authoring` &middot; <small>BranchWeaver/Runtime/Authoring/MapStyleTokens.cs</small>
 
 The backdrop drawn behind the map.
 
@@ -216,6 +142,7 @@ The backdrop drawn behind the map.
 `public MapBackdropTokens Sanitized()`
 
 :   Clamps every token into its supported range.
+    - **Returns** &mdash; A clamped copy; this instance is left as it was. The nested surface tokens are sanitized with it.
 
 ---
 
@@ -225,7 +152,7 @@ The backdrop drawn behind the map.
 public enum MapEasing
 ```
 
-`BranchWeaver.Authoring` &middot; <small>Runtime/Authoring/MapStyleTokens.cs</small>
+`BranchWeaver.Authoring` &middot; <small>BranchWeaver/Runtime/Authoring/MapStyleTokens.cs</small>
 
 Easing curve for a styled transition.
 
@@ -245,7 +172,7 @@ Easing curve for a styled transition.
 public enum MapEdgeCap
 ```
 
-`BranchWeaver.Authoring` &middot; <small>Runtime/Authoring/MapStyleTokens.cs</small>
+`BranchWeaver.Authoring` &middot; <small>BranchWeaver/Runtime/Authoring/MapStyleTokens.cs</small>
 
 End treatment for a drawn edge.
 
@@ -263,7 +190,7 @@ End treatment for a drawn edge.
 public struct MapEdgeStyleTokens
 ```
 
-`BranchWeaver.Authoring` &middot; <small>Runtime/Authoring/MapStyleTokens.cs</small>
+`BranchWeaver.Authoring` &middot; <small>BranchWeaver/Runtime/Authoring/MapStyleTokens.cs</small>
 
 How routes between nodes are drawn.
 
@@ -318,6 +245,7 @@ distance-field stroke instead.
 `public MapEdgeStyleTokens Sanitized()`
 
 :   Clamps every token into its supported range.
+    - **Returns** &mdash; A clamped copy; this instance is left as it was. An available width scale of zero or less becomes 1.
 
 ---
 
@@ -327,7 +255,7 @@ distance-field stroke instead.
 public enum MapFillMode
 ```
 
-`BranchWeaver.Authoring` &middot; <small>Runtime/Authoring/MapStyleTokens.cs</small>
+`BranchWeaver.Authoring` &middot; <small>BranchWeaver/Runtime/Authoring/MapStyleTokens.cs</small>
 
 How a surface fills its area.
 
@@ -345,7 +273,7 @@ How a surface fills its area.
 public enum MapFitMode
 ```
 
-`BranchWeaver.Authoring` &middot; <small>Runtime/Authoring/MapStyleTokens.cs</small>
+`BranchWeaver.Authoring` &middot; <small>BranchWeaver/Runtime/Authoring/MapStyleTokens.cs</small>
 
 How the map is fitted into the area it is given.
 
@@ -364,7 +292,7 @@ How the map is fitted into the area it is given.
 public struct MapFramingTokens
 ```
 
-`BranchWeaver.Authoring` &middot; <small>Runtime/Authoring/MapStyleTokens.cs</small>
+`BranchWeaver.Authoring` &middot; <small>BranchWeaver/Runtime/Authoring/MapStyleTokens.cs</small>
 
 Where the map sits inside the area it is given, and how far the player may
 pan and zoom.
@@ -442,57 +370,7 @@ the camera so a player cannot lose the map off-screen.
 `public MapFramingTokens Sanitized()`
 
 :   Clamps every token into its supported range.
-
----
-
-## MapMaterialPool
-
-```csharp
-public sealed class MapMaterialPool : MonoBehaviour
-```
-
-`BranchWeaver.Runtime` &middot; <small>Runtime/Runtime/MapStyleRuntime.cs</small>
-
-Reference-counted material pool for map surfaces, owned by a component
-rather than by static state.
-
-A static cache would survive a domain reload and a scene unload and then
-hand out destroyed materials. Anchoring the pool to the presenter's
-hierarchy gives every material a real owner: when the map goes away, so do
-its materials.
-
-The shader is loaded from Resources rather than found by name so it
-survives build shader stripping without the buyer editing Always Included
-Shaders. If it cannot load, callers fall back to their default material,
-which draws a plain quad instead of a magenta error surface.
-
-**Properties**
-
-`public int CachedMaterialCount`
-
-:   Live cached material count; useful in tests and profiling.
-
-`public bool IsShaderAvailable`
-
-:   True when the map surface shader is available.
-
-**Methods**
-
-`public Material Acquire(MapSurfaceRequest request)`
-
-:   Returns a material for `request`, sharing an existing one when the parameters match exactly.
-
-`public void Clear()`
-
-:   Destroys every pooled material. Safe to call repeatedly.
-
-`public static MapMaterialPool EnsureFor(Component owner)`
-
-:   Finds the pool owning `owner`, creating one on the nearest canvas root, or on the owner's own root, when absent.
-
-`public void Release(Material material)`
-
-:   Drops one reference to a pooled material.
+    - **Returns** &mdash; A clamped copy; this instance is left as it was. A fixed scale of zero or less becomes 1, and the direction, fit mode, and pan and zoom switches are carried across untouched.
 
 ---
 
@@ -502,7 +380,7 @@ which draws a plain quad instead of a magenta error surface.
 public struct MapMotionTokens
 ```
 
-`BranchWeaver.Authoring` &middot; <small>Runtime/Authoring/MapStyleTokens.cs</small>
+`BranchWeaver.Authoring` &middot; <small>BranchWeaver/Runtime/Authoring/MapStyleTokens.cs</small>
 
 Transition timings. Every duration scales by `otionScale`.
 
@@ -537,14 +415,18 @@ Transition timings. Every duration scales by `otionScale`.
 `public static float Ease(MapEasing easing, float t)`
 
 :   Evaluates `easing` at normalized time.
+    - `t` &mdash; Normalized time. Clamped into 0-1 before evaluating.
+    - **Returns** &mdash; The eased fraction: 0 at the start and exactly 1 at the end. `apEasing.BackOut` rises above 1 in between, so a caller interpolating with it must tolerate overshoot.
 
 `public MapMotionTokens Sanitized()`
 
 :   Clamps every token into its supported range.
+    - **Returns** &mdash; A clamped copy; this instance is left as it was. `educeMotion` and `asing` are carried across untouched.
 
 `public float Scale(float seconds)`
 
 :   The effective duration for `seconds` under this style.
+    - **Returns** &mdash; Zero while `educeMotion` is set, otherwise `seconds` times `otionScale`. Never negative.
 
 ---
 
@@ -554,7 +436,7 @@ Transition timings. Every duration scales by `otionScale`.
 public enum MapNodeShape
 ```
 
-`BranchWeaver.Authoring` &middot; <small>Runtime/Authoring/MapStyleTokens.cs</small>
+`BranchWeaver.Authoring` &middot; <small>BranchWeaver/Runtime/Authoring/MapStyleTokens.cs</small>
 
 Silhouette drawn for a map node.
 
@@ -574,7 +456,7 @@ Silhouette drawn for a map node.
 public struct MapNodeStateStyle
 ```
 
-`BranchWeaver.Authoring` &middot; <small>Runtime/Authoring/MapStyleTokens.cs</small>
+`BranchWeaver.Authoring` &middot; <small>BranchWeaver/Runtime/Authoring/MapStyleTokens.cs</small>
 
 Per-state treatment layered over the shared node style.
 
@@ -617,10 +499,12 @@ without touching a single node type asset.
 `public static MapNodeStateStyle Plain(bool showLabel)`
 
 :   A plain state treatment at full brightness and opacity.
+    - **Returns** &mdash; A treatment at the authored size with no glow and no ring, showing the label only when `showLabel` is set.
 
 `public MapNodeStateStyle Sanitized()`
 
 :   Clamps every token into its supported range.
+    - **Returns** &mdash; A clamped copy; this instance is left as it was. A scale of zero or less becomes 1, so zeroing the scale does not shrink a node away.
 
 ---
 
@@ -630,7 +514,7 @@ without touching a single node type asset.
 public struct MapNodeStyleTokens
 ```
 
-`BranchWeaver.Authoring` &middot; <small>Runtime/Authoring/MapStyleTokens.cs</small>
+`BranchWeaver.Authoring` &middot; <small>BranchWeaver/Runtime/Authoring/MapStyleTokens.cs</small>
 
 Shape and size shared by every node before per-state treatment.
 
@@ -665,6 +549,7 @@ Shape and size shared by every node before per-state treatment.
 `public MapNodeStyleTokens Sanitized()`
 
 :   Clamps every token into its supported range.
+    - **Returns** &mdash; A clamped copy; this instance is left as it was. The nested surface tokens are sanitized with it.
 
 ---
 
@@ -674,7 +559,7 @@ Shape and size shared by every node before per-state treatment.
 public struct MapPaletteTokens
 ```
 
-`BranchWeaver.Authoring` &middot; <small>Runtime/Authoring/MapStyleTokens.cs</small>
+`BranchWeaver.Authoring` &middot; <small>BranchWeaver/Runtime/Authoring/MapStyleTokens.cs</small>
 
 The semantic colour roles a style assigns once and reuses everywhere.
 
@@ -734,55 +619,13 @@ focus rings, and labels together.
 
 ---
 
-## MapStyleBrowserWindow
-
-```csharp
-public sealed class MapStyleBrowserWindow : EditorWindow
-```
-
-`BranchWeaver.Editor.Styles` &middot; <small>Editor/Styles/MapStyleBrowserWindow.cs</small>
-
-Browse the shipped map styles, preview them with the real shader, and turn
-any of them into an editable asset in one click.
-
-This window exists because the package previously offered no way to discover
-or create a look: an author had to create a blank theme and fill in two
-colour fields with no preview. "Create editable copy" is the intended entry
-point for authoring a custom style.
-
-**Fields**
-
-`public MapStylePreset Asset`
-
-:   &mdash;
-
-`public bool IsShipped`
-
-:   &mdash;
-
-`public CompiledMapStyle Style`
-
-:   &mdash;
-
-**Methods**
-
-`public static void Open()`
-
-:   &mdash;
-
-`public void Refresh()`
-
-:   Rebuilds the list from shipped styles plus project assets.
-
----
-
 ## MapStyleDefaults
 
 ```csharp
 public static class MapStyleDefaults
 ```
 
-`BranchWeaver.Authoring` &middot; <small>Runtime/Authoring/MapStyleDefaults.cs</small>
+`BranchWeaver.Authoring` &middot; <small>BranchWeaver/Runtime/Authoring/MapStyleDefaults.cs</small>
 
 The shipped map styles, defined in code rather than as serialized assets.
 
@@ -951,11 +794,13 @@ The Style Browser turns any of these into an editable
 
 ## MapStylePreset
 
+:material-star: **Start here**
+
 ```csharp
 public sealed class MapStylePreset : ScriptableObject
 ```
 
-`BranchWeaver.Authoring` &middot; <small>Runtime/Authoring/MapStylePreset.cs</small>
+`BranchWeaver.Authoring` &middot; <small>BranchWeaver/Runtime/Authoring/MapStylePreset.cs</small>
 
 Everything the map draws itself with, in one asset: palette, node shape and
 treatment, per-state emphasis, edge stroke, backdrop, typography, motion,
@@ -996,131 +841,13 @@ saved blueprints keep working untouched.
 
 ---
 
-## MapStylePresetEditor
-
-```csharp
-public sealed class MapStylePresetEditor : UnityEditor.Editor
-```
-
-`BranchWeaver.Editor.Styles` &middot; <small>Editor/Styles/MapStylePresetEditor.cs</small>
-
-Inspector for `apStylePreset` with a live preview above the
-fields.
-
-Editing a colour or a corner radius and seeing the result immediately is the
-difference between a customization surface an author will actually use and a
-wall of numbers they will not. The preview is drawn with the shipped shader
-through the shipped token mapping, so what is shown here is what ships.
-
-**Methods**
-
-`public override bool HasPreviewGUI()`
-
-:   &mdash;
-
-`public override void OnInspectorGUI()`
-
-:   &mdash;
-
-`public override void OnPreviewGUI(Rect rect, GUIStyle background)`
-
-:   &mdash;
-
----
-
-## MapStylePreviewRenderer
-
-```csharp
-public sealed class MapStylePreviewRenderer : IDisposable
-```
-
-`BranchWeaver.Editor.Styles` &middot; <small>Editor/Styles/MapStylePreviewRenderer.cs</small>
-
-Draws map style previews in editor windows and inspectors using the same
-shader and the same token mapping the runtime views use.
-
-Reusing the real shader matters: a preview drawn with editor primitives
-would drift from the shipped look, and an author who picks a style from a
-lying thumbnail has been misled. Node colours, shapes, glow, rings, edge
-caps, and dashes all come from `anvasMapNodeStyling`, so the
-preview and the running map cannot diverge.
-
-This is an instance type rather than a static helper so its material has a
-real owner: a static material would survive a reload with Domain Reload
-disabled and then be handed out destroyed. Owners create one in
-`OnEnable` and `ispose` it in `OnDisable`.
-
-**Properties**
-
-`public bool CanRenderSurfaces`
-
-:   True when the map surface shader is available.
-
-**Methods**
-
-`public void Dispose()`
-
-:   Releases the preview material.
-
-`public void DrawMapPreview(Rect rect, CompiledMapStyle style)`
-
-:   Draws a small sample map: backdrop, a branching set of routes, and one node per visual state. Enough to judge a style without entering play mode.
-
-`public void DrawNode()`
-
-:   Draws one node in a given visual state.
-
-`public void DrawPalette(Rect rect, MapPaletteTokens palette)`
-
-:   Draws the palette as a row of swatches.
-
-`public void DrawSurface(Rect rect, MapSurfaceRequest request)`
-
-:   Draws one surface request into `rect`.
-
----
-
-## MapStyleRuntime
-
-```csharp
-public static class MapStyleRuntime
-```
-
-`BranchWeaver.Runtime` &middot; <small>Runtime/Runtime/MapStyleRuntime.cs</small>
-
-Bridges an authored `ompiledMapStyle` to runtime visual state.
-
-The visual-state enum belongs to this assembly, so the mapping lives here
-rather than on the style itself; that keeps BranchWeaver.Authoring free of
-any dependency on the runtime assembly.
-
-**Methods**
-
-`public static float FogOpacity(MapFogState fog)`
-
-:   The opacity multiplier a fog state contributes, layered on top of the per-state opacity so fog and state emphasis compose rather than fight.
-
-`public static void ResolveNodeColors()`
-
-:   Resolves the final node colours for a state: the node type's identity colour adjusted by the style's brightness and opacity, plus the second gradient stop derived from the style's spread.
-
-`public static Color Shift(Color value, float amount)`
-
-:   Lightens (positive) or darkens (negative) without changing alpha.
-
-`public static MapNodeStateStyle StateStyle(CompiledMapStyle style, MapNodeVisualState state)`
-
-:   The per-state treatment for one runtime visual state.
-
----
-
 ## MapSurfaceGraphic
 
 ```csharp
 public sealed class MapSurfaceGraphic : Image
 ```
 
-`BranchWeaver.Presentation.Canvas` &middot; <small>Runtime/Presentation/Canvas/MapSurfaceGraphic.cs</small>
+`BranchWeaver.Presentation.Canvas` &middot; <small>BranchWeaver/Runtime/Presentation/Canvas/MapSurfaceGraphic.cs</small>
 
 Draws one styled map surface as a uGUI graphic through the BranchWeaver map
 surface shader. Nodes, focus rings, edge strokes, and the backdrop are all
@@ -1164,188 +891,13 @@ sprite, type, or border behaviour is inherited.
 
 ---
 
-## MapSurfaceMode
-
-```csharp
-public enum MapSurfaceMode
-```
-
-`BranchWeaver.Runtime` &middot; <small>Runtime/Runtime/MapStyleRuntime.cs</small>
-
-What a map surface material draws.
-
-| Value | Meaning |
-| --- | --- |
-| `Shape` | A node, ring, or backdrop shape. |
-| `Edge` | One straight edge segment with caps and optional dashes. |
-
----
-
-## MapSurfaceRequest
-
-```csharp
-public struct MapSurfaceRequest
-```
-
-`BranchWeaver.Runtime` &middot; <small>Runtime/Runtime/MapStyleRuntime.cs</small>
-
-The complete parameter set for one map surface material. Two surfaces with
-identical parameters share a material and therefore batch together, which
-keeps a map of many same-looking nodes cheap.
-
-**Fields**
-
-`public float ArrowLength`
-
-:   &mdash;
-
-`public bool CapEnd`
-
-:   &mdash;
-
-`public float CornerRadius`
-
-:   &mdash;
-
-`public float DashGap`
-
-:   &mdash;
-
-`public float DashLength`
-
-:   &mdash;
-
-`public float DashOffset`
-
-:   &mdash;
-
-`public MapEdgeCap EdgeCap`
-
-:   &mdash;
-
-`public float EdgeLength`
-
-:   &mdash;
-
-`public float EdgeWidth`
-
-:   &mdash;
-
-`public Vector2 Extent`
-
-:   &mdash;
-
-`public MapFillMode FillMode`
-
-:   &mdash;
-
-`public Color FillPrimary`
-
-:   &mdash;
-
-`public Color FillSecondary`
-
-:   &mdash;
-
-`public Color GlowColor`
-
-:   &mdash;
-
-`public float GlowIntensity`
-
-:   &mdash;
-
-`public float GlowRadius`
-
-:   &mdash;
-
-`public float GradientAngleDegrees`
-
-:   &mdash;
-
-`public Color GridColor`
-
-:   &mdash;
-
-`public float GridLineWidth`
-
-:   &mdash;
-
-`public float GridSpacing`
-
-:   &mdash;
-
-`public MapSurfaceMode Mode`
-
-:   &mdash;
-
-`public Color RingColor`
-
-:   &mdash;
-
-`public float RingGap`
-
-:   &mdash;
-
-`public float RingWidth`
-
-:   &mdash;
-
-`public Color ShadowColor`
-
-:   &mdash;
-
-`public Vector2 ShadowOffset`
-
-:   &mdash;
-
-`public float ShadowRadius`
-
-:   &mdash;
-
-`public MapNodeShape Shape`
-
-:   &mdash;
-
-`public Vector2 Size`
-
-:   &mdash;
-
-`public Color StrokeColor`
-
-:   &mdash;
-
-`public float StrokeWidth`
-
-:   &mdash;
-
-`public float VignetteSoftness`
-
-:   &mdash;
-
-`public float VignetteStrength`
-
-:   &mdash;
-
-**Methods**
-
-`public void ApplyTo(Material material)`
-
-:   Writes every request value onto a material.
-
-`public string Key()`
-
-:   A stable key over every value that reaches the material. Lengths and sizes quantize to whole pixels and the dash offset to 1/4 pixel, so a flowing edge does not allocate a new material every frame.
-
----
-
 ## MapSurfaceTokens
 
 ```csharp
 public struct MapSurfaceTokens
 ```
 
-`BranchWeaver.Authoring` &middot; <small>Runtime/Authoring/MapStyleTokens.cs</small>
+`BranchWeaver.Authoring` &middot; <small>BranchWeaver/Runtime/Authoring/MapStyleTokens.cs</small>
 
 Fill, stroke, glow, and shadow for a drawn surface. Nodes and the backdrop
 both resolve to one of these.
@@ -1397,6 +949,7 @@ both resolve to one of these.
 `public MapSurfaceTokens Sanitized()`
 
 :   Clamps every token into its supported range.
+    - **Returns** &mdash; A clamped copy; this instance is left as it was. The gradient angle wraps into 0-360 rather than clamping, so 370 degrees becomes 10.
 
 ---
 
@@ -1406,7 +959,7 @@ both resolve to one of these.
 public struct MapTypographyTokens
 ```
 
-`BranchWeaver.Authoring` &middot; <small>Runtime/Authoring/MapStyleTokens.cs</small>
+`BranchWeaver.Authoring` &middot; <small>BranchWeaver/Runtime/Authoring/MapStyleTokens.cs</small>
 
 Label sizing and treatment. Fonts stay optional so none is redistributed.
 
@@ -1441,10 +994,13 @@ Label sizing and treatment. Fonts stay optional so none is redistributed.
 `public int ResolveLabelSize(float nodeSize)`
 
 :   The label size for a node of `nodeSize` pixels.
+    - `nodeSize` &mdash; Node edge length in presentation pixels.
+    - **Returns** &mdash; `abelSize` when `abelSizeFromNode` is zero or less, otherwise that fraction of `nodeSize` rounded to the nearest pixel. Never below 6 either way.
 
 `public MapTypographyTokens Sanitized()`
 
 :   Clamps every token into its supported range.
+    - **Returns** &mdash; A clamped copy; this instance is left as it was. The font reference is carried across untouched, empty or not.
 
 ---
 

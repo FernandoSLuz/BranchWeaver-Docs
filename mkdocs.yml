@@ -4,6 +4,18 @@ site_description: >-
   chapter gates from rules, traverse and save them, and present them without writing
   rendering code.
 site_url: https://fernandosluz.github.io/BranchWeaver-Docs/
+# Defaults log these at INFO, which --strict does not fail on: a page dropped from the
+# nav or a broken #anchor would pass a green strict build. Promoted to warnings so the
+# build actually enforces what it appears to.
+validation:
+  nav:
+    omitted_files: warn
+    not_found: warn
+  links:
+    not_found: warn
+    anchors: warn
+    unrecognized_links: warn
+
 repo_url: https://github.com/FernandoSLuz/BranchWeaver-Docs
 repo_name: BranchWeaver-Docs
 edit_uri: edit/main/docs/
@@ -102,14 +114,27 @@ extra:
 nav:
   - Home: index.md
   - Tutorials:
-      - Your first map: tutorials/first-map.md
-      - Styling your map: tutorials/styling-your-map.md
+      - 1. Install and run the samples: tutorials/install-and-samples.md
+      - 2. Generate a map in Map Studio: tutorials/generate-a-map.md
+      - 3. Add a map to your scene: tutorials/add-a-map-to-your-scene.md
+      - 4. Restyle your map: tutorials/restyle-your-map.md
   - How-to:
-      - Author maps: how-to/author-maps.md
-      - Integrate at runtime: how-to/runtime-integration.md
+      - Create node types: how-to/create-node-types.md
+      - Write map rules: how-to/write-map-rules.md
+      - Author a map by hand: how-to/author-by-hand.md
+      - Shape and colour nodes: how-to/style-nodes.md
+      - Emphasise node states: how-to/style-node-states.md
+      - Style edges and the backdrop: how-to/style-edges-and-backdrop.md
+      - Place the map on screen: how-to/place-the-map-on-screen.md
+      - Control what the player can see: how-to/reveal-and-fog.md
+      - Drive traversal from code: how-to/drive-traversal-from-code.md
+      - Save and load progress: how-to/save-and-load.md
+      - Input, focus, and camera framing: how-to/input-and-navigation.md
       - Troubleshooting: how-to/troubleshooting.md
   - Explanation:
-      - Architecture: explanation/architecture.md
+      - Core concepts: explanation/architecture.md
+      - Determinism, seeds, and fingerprints: explanation/determinism.md
+      - Style, theme, and the presenter boundary: explanation/style-and-theme.md
   - API reference:
       - Overview: reference/index.md
       - Getting a map: reference/getting-a-map.md

@@ -8,7 +8,7 @@
 public sealed class MapDevelopmentOverlay : MonoBehaviour
 ```
 
-`BranchWeaver.DevTools` &middot; <small>DevTools/MapDevelopmentOverlay.cs</small>
+`BranchWeaver.DevTools` &middot; <small>BranchWeaver/DevTools/MapDevelopmentOverlay.cs</small>
 
 !!! warning "Not yet documented"
     This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
@@ -23,11 +23,13 @@ public sealed class MapDevelopmentOverlay : MonoBehaviour
 
 ## MapDiagnostic
 
+:material-star: **Start here**
+
 ```csharp
 public sealed class MapDiagnostic
 ```
 
-`BranchWeaver.Core` &middot; <small>Runtime/Core/Diagnostics.cs</small>
+`BranchWeaver.Core` &middot; <small>BranchWeaver/Runtime/Core/Diagnostics.cs</small>
 
 !!! warning "Not yet documented"
     This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
@@ -82,11 +84,13 @@ public sealed class MapDiagnostic
 
 ## StableId
 
+:material-star: **Start here**
+
 ```csharp
 public readonly struct StableId : IEquatable<StableId>, IComparable<StableId>
 ```
 
-`BranchWeaver.Core` &middot; <small>Runtime/Core/StableId.cs</small>
+`BranchWeaver.Core` &middot; <small>BranchWeaver/Runtime/Core/StableId.cs</small>
 
 A stable, serialization-safe identifier. Valid characters are lowercase ASCII letters,
 digits, period, underscore, and hyphen.

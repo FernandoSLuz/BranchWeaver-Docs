@@ -11,7 +11,7 @@
 public sealed class MapDataPayload : IEquatable<MapDataPayload>
 ```
 
-`BranchWeaver.Core` &middot; <small>Runtime/Core/Traversal/MapDataPayload.cs</small>
+`BranchWeaver.Core` &middot; <small>BranchWeaver/Runtime/Core/Traversal/MapDataPayload.cs</small>
 
 Generic tagged data for traversal results and customer-owned save metadata. It is
 deliberately distinct from node-authored MapNodePayload.
@@ -58,7 +58,7 @@ deliberately distinct from node-authored MapNodePayload.
 public sealed class MapNodeCompletion : IEquatable<MapNodeCompletion>
 ```
 
-`BranchWeaver.Core` &middot; <small>Runtime/Core/Traversal/MapProgressionState.cs</small>
+`BranchWeaver.Core` &middot; <small>BranchWeaver/Runtime/Core/Traversal/MapProgressionState.cs</small>
 
 !!! warning "Not yet documented"
     This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
@@ -97,11 +97,13 @@ public sealed class MapNodeCompletion : IEquatable<MapNodeCompletion>
 
 ## MapProgressionState
 
+:material-star: **Start here**
+
 ```csharp
 public sealed class MapProgressionState : IEquatable<MapProgressionState>
 ```
 
-`BranchWeaver.Core` &middot; <small>Runtime/Core/Traversal/MapProgressionState.cs</small>
+`BranchWeaver.Core` &middot; <small>BranchWeaver/Runtime/Core/Traversal/MapProgressionState.cs</small>
 
 An immutable traversal snapshot. Route history retains traversal order.
 
@@ -171,11 +173,13 @@ An immutable traversal snapshot. Route history retains traversal order.
 
 ## MapSession
 
+:material-star: **Start here**
+
 ```csharp
 public sealed class MapSession
 ```
 
-`BranchWeaver.Core` &middot; <small>Runtime/Core/Traversal/MapSession.cs</small>
+`BranchWeaver.Core` &middot; <small>BranchWeaver/Runtime/Core/Traversal/MapSession.cs</small>
 
 Standalone traversal orchestration over immutable graph and progression snapshots. The
 ordered event list returned by a transition is authoritative. Optional callbacks run only
@@ -225,11 +229,13 @@ after the new state is committed; callback exceptions become warnings and never 
 
 ## MapTransitionEvent
 
+:material-star: **Start here**
+
 ```csharp
 public sealed class MapTransitionEvent
 ```
 
-`BranchWeaver.Core` &middot; <small>Runtime/Core/Traversal/MapTransition.cs</small>
+`BranchWeaver.Core` &middot; <small>BranchWeaver/Runtime/Core/Traversal/MapTransition.cs</small>
 
 !!! warning "Not yet documented"
     This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
@@ -274,7 +280,7 @@ public sealed class MapTransitionEvent
 public enum MapTransitionEventKind
 ```
 
-`BranchWeaver.Core` &middot; <small>Runtime/Core/Traversal/MapTransition.cs</small>
+`BranchWeaver.Core` &middot; <small>BranchWeaver/Runtime/Core/Traversal/MapTransition.cs</small>
 
 !!! warning "Not yet documented"
     This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
@@ -294,7 +300,7 @@ public enum MapTransitionEventKind
 public enum MapTransitionFailureKind
 ```
 
-`BranchWeaver.Core` &middot; <small>Runtime/Core/Traversal/MapTransition.cs</small>
+`BranchWeaver.Core` &middot; <small>BranchWeaver/Runtime/Core/Traversal/MapTransition.cs</small>
 
 !!! warning "Not yet documented"
     This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
@@ -319,7 +325,7 @@ public enum MapTransitionFailureKind
 public sealed class MapTransitionResult
 ```
 
-`BranchWeaver.Core` &middot; <small>Runtime/Core/Traversal/MapTransition.cs</small>
+`BranchWeaver.Core` &middot; <small>BranchWeaver/Runtime/Core/Traversal/MapTransition.cs</small>
 
 !!! warning "Not yet documented"
     This type has no summary comment in the source. Its name and signature are accurate; the description is missing.

@@ -1,17 +1,19 @@
 # Graph, layout and geometry
 
-11 types in this area.
+10 types in this area.
 
 !!! abstract "On this page"
-    [IMapLayoutStrategy](#imaplayoutstrategy) &middot; [LayeredMapLayoutStrategy](#layeredmaplayoutstrategy) &middot; [MapEdge](#mapedge) &middot; [MapEdgeGeometry](#mapedgegeometry) &middot; [MapGraph](#mapgraph) &middot; [MapLayout](#maplayout) &middot; [MapLayoutNode](#maplayoutnode) &middot; [MapLayoutOrientation](#maplayoutorientation) &middot; [MapLayoutRequest](#maplayoutrequest) &middot; [MapNode](#mapnode) &middot; [NormalizedMapPosition](#normalizedmapposition)
+    [IMapLayoutStrategy](#imaplayoutstrategy) &middot; [LayeredMapLayoutStrategy](#layeredmaplayoutstrategy) &middot; [MapEdge](#mapedge) &middot; [MapGraph](#mapgraph) &middot; [MapLayout](#maplayout) &middot; [MapLayoutNode](#maplayoutnode) &middot; [MapLayoutOrientation](#maplayoutorientation) &middot; [MapLayoutRequest](#maplayoutrequest) &middot; [MapNode](#mapnode) &middot; [NormalizedMapPosition](#normalizedmapposition)
 
 ## IMapLayoutStrategy
+
+:material-puzzle: **Extension point** &mdash; implement this yourself to change behaviour
 
 ```csharp
 public interface IMapLayoutStrategy
 ```
 
-`BranchWeaver.Core` &middot; <small>Runtime/Core/Layout/MapLayout.cs</small>
+`BranchWeaver.Core` &middot; <small>BranchWeaver/Runtime/Core/Layout/MapLayout.cs</small>
 
 !!! warning "Not yet documented"
     This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
@@ -24,7 +26,7 @@ public interface IMapLayoutStrategy
 public sealed class LayeredMapLayoutStrategy : IMapLayoutStrategy
 ```
 
-`BranchWeaver.Core` &middot; <small>Runtime/Core/Layout/MapLayout.cs</small>
+`BranchWeaver.Core` &middot; <small>BranchWeaver/Runtime/Core/Layout/MapLayout.cs</small>
 
 !!! warning "Not yet documented"
     This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
@@ -47,7 +49,7 @@ public sealed class LayeredMapLayoutStrategy : IMapLayoutStrategy
 public readonly struct MapEdge : IEquatable<MapEdge>, IComparable<MapEdge>
 ```
 
-`BranchWeaver.Core` &middot; <small>Runtime/Core/MapGraph.cs</small>
+`BranchWeaver.Core` &middot; <small>BranchWeaver/Runtime/Core/MapGraph.cs</small>
 
 !!! warning "Not yet documented"
     This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
@@ -96,32 +98,15 @@ public readonly struct MapEdge : IEquatable<MapEdge>, IComparable<MapEdge>
 
 ---
 
-## MapEdgeGeometry
-
-```csharp
-public static class MapEdgeGeometry
-```
-
-`BranchWeaver.Runtime` &middot; <small>Runtime/Runtime/MapEdgeGeometry.cs</small>
-
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
-
-**Methods**
-
-`public static IReadOnlyList<NormalizedMapPosition> Sample()`
-
-:   &mdash;
-
----
-
 ## MapGraph
+
+:material-star: **Start here**
 
 ```csharp
 public sealed class MapGraph
 ```
 
-`BranchWeaver.Core` &middot; <small>Runtime/Core/MapGraph.cs</small>
+`BranchWeaver.Core` &middot; <small>BranchWeaver/Runtime/Core/MapGraph.cs</small>
 
 An immutable graph snapshot. Constructor inputs are defensively copied, and all exposed
 collections are read-only views over private arrays.
@@ -192,7 +177,7 @@ collections are read-only views over private arrays.
 public sealed class MapLayout
 ```
 
-`BranchWeaver.Core` &middot; <small>Runtime/Core/Layout/MapLayout.cs</small>
+`BranchWeaver.Core` &middot; <small>BranchWeaver/Runtime/Core/Layout/MapLayout.cs</small>
 
 !!! warning "Not yet documented"
     This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
@@ -227,7 +212,7 @@ public sealed class MapLayout
 public readonly struct MapLayoutNode : IEquatable<MapLayoutNode>, IComparable<MapLayoutNode>
 ```
 
-`BranchWeaver.Core` &middot; <small>Runtime/Core/Layout/MapLayout.cs</small>
+`BranchWeaver.Core` &middot; <small>BranchWeaver/Runtime/Core/Layout/MapLayout.cs</small>
 
 !!! warning "Not yet documented"
     This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
@@ -274,7 +259,7 @@ public readonly struct MapLayoutNode : IEquatable<MapLayoutNode>, IComparable<Ma
 public enum MapLayoutOrientation
 ```
 
-`BranchWeaver.Core` &middot; <small>Runtime/Core/Layout/MapLayout.cs</small>
+`BranchWeaver.Core` &middot; <small>BranchWeaver/Runtime/Core/Layout/MapLayout.cs</small>
 
 !!! warning "Not yet documented"
     This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
@@ -292,7 +277,7 @@ public enum MapLayoutOrientation
 public readonly struct MapLayoutRequest
 ```
 
-`BranchWeaver.Core` &middot; <small>Runtime/Core/Layout/MapLayout.cs</small>
+`BranchWeaver.Core` &middot; <small>BranchWeaver/Runtime/Core/Layout/MapLayout.cs</small>
 
 !!! warning "Not yet documented"
     This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
@@ -337,11 +322,13 @@ public readonly struct MapLayoutRequest
 
 ## MapNode
 
+:material-star: **Start here**
+
 ```csharp
 public sealed class MapNode
 ```
 
-`BranchWeaver.Core` &middot; <small>Runtime/Core/MapGraph.cs</small>
+`BranchWeaver.Core` &middot; <small>BranchWeaver/Runtime/Core/MapGraph.cs</small>
 
 !!! warning "Not yet documented"
     This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
@@ -390,7 +377,7 @@ public sealed class MapNode
 public readonly struct NormalizedMapPosition : IEquatable<NormalizedMapPosition>
 ```
 
-`BranchWeaver.Core` &middot; <small>Runtime/Core/MapGeometry.cs</small>
+`BranchWeaver.Core` &middot; <small>BranchWeaver/Runtime/Core/MapGeometry.cs</small>
 
 An integer-normalized map position. The conventional valid range is 0..Scale on each axis.
 Values are not clamped so validators can report malformed imported data without losing it.

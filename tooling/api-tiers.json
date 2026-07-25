@@ -1,5 +1,5 @@
 {
- "_comment": "API surface tiers for BranchWeaver, decided by reading every type and challenging every proposed removal. published = shown in the reference; headline = the types a new buyer meets first; hidden = public for cross-assembly reasons only, excluded from the reference and marked non-browsable; internal = no longer public.",
+ "_comment": "API surface tiers for BranchWeaver, decided by reading every type and challenging every proposed removal. published = shown in the reference; headline = the types a new buyer meets first; hidden = public for cross-assembly reasons only, excluded from the reference and marked non-browsable; internal = no longer public. Types the narrative documentation links to were promoted out of hidden: if a guide points at it, it is API.",
  "headline": [
   "CanvasMapPresenter",
   "IMapEdgeView",
@@ -42,10 +42,8 @@
   "BlueprintNodeAuthoring",
   "BranchWeaverSampleKind",
   "CanvasMapEdgeFactory",
-  "CanvasMapEdgeView",
   "CanvasMapNodeFactory",
   "CanvasMapNodeStyling",
-  "CanvasMapNodeView",
   "CompiledMapNodeStates",
   "DeterministicRandomState",
   "ForbiddenAdjacencyAuthoring",
@@ -64,14 +62,11 @@
   "MapRulesValidator",
   "MapRuntimeDiagnosticCodes",
   "MapRuntimeRendererSelection",
-  "MapRuntimeStateDeriver",
-  "MapSaveV1ToV2Migration",
   "MapSerializedEventBridge",
   "MapSetupConfigurationCodes",
   "MapSetupConfigurationResult",
   "MapSetupConfigurator",
   "MapSetupDiagnosticCodes",
-  "MapSetupHierarchyBinding",
   "MapSetupValidationRequest",
   "MapSetupValidator",
   "MapSetupWizard",
@@ -94,7 +89,6 @@
   "MapStylePresetEditor",
   "MapStylePreviewRenderer",
   "MapStyleRuntime",
-  "MapSurfaceGraphic",
   "MapSurfaceMode",
   "MapSurfaceRequest",
   "MapTouchGestureInterpreter",
@@ -105,12 +99,10 @@
   "NodeTypeWeightAuthoring",
   "NodeTypeWeightOverrideAuthoring",
   "NullMapAudioCueAdapter",
-  "PassthroughLocalizationAdapter",
   "ProceduralNodeSprite",
   "QuotaAuthoring",
   "SampleMapBuildResult",
   "SampleMapCatalog",
-  "SampleSceneBootstrap",
   "SampleSceneMenuItems",
   "SampleTraveler",
   "SampleViewFit",
@@ -118,8 +110,6 @@
   "WorldMapEdgeFactory",
   "WorldMapEdgeView",
   "WorldMapNodeFactory",
-  "WorldMapNodeView",
-  "XorShift32Random",
   "ZoneAuthoring"
  ],
  "internal": [
@@ -155,5 +145,17 @@
   "IRouteMarkerPresenter",
   "MapConstraintAsset",
   "MapPresenterBase"
+ ],
+ "_promoted": [
+  "CanvasMapEdgeView",
+  "CanvasMapNodeView",
+  "MapRuntimeStateDeriver",
+  "MapSaveV1ToV2Migration",
+  "MapSetupHierarchyBinding",
+  "MapSurfaceGraphic",
+  "PassthroughLocalizationAdapter",
+  "SampleSceneBootstrap",
+  "WorldMapNodeView",
+  "XorShift32Random"
  ]
 }

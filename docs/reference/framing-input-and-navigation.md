@@ -1,9 +1,9 @@
 # Framing, input and navigation
 
-9 types in this area.
+6 types in this area.
 
 !!! abstract "On this page"
-    [InputSystemMapInputBridge](#inputsystemmapinputbridge) &middot; [MapAspectClass](#mapaspectclass) &middot; [MapFrameResult](#mapframeresult) &middot; [MapFrameUtility](#mapframeutility) &middot; [MapSafeAreaController](#mapsafeareacontroller) &middot; [MapViewportFrame](#mapviewportframe) &middot; [MapViewportResult](#mapviewportresult) &middot; [MapViewportUtility](#mapviewportutility) &middot; [MapWorldViewportUtility](#mapworldviewportutility)
+    [InputSystemMapInputBridge](#inputsystemmapinputbridge) &middot; [MapAspectClass](#mapaspectclass) &middot; [MapFrameResult](#mapframeresult) &middot; [MapSafeAreaController](#mapsafeareacontroller) &middot; [MapViewportFrame](#mapviewportframe) &middot; [MapViewportResult](#mapviewportresult)
 
 ## InputSystemMapInputBridge
 
@@ -11,7 +11,7 @@
 public sealed class InputSystemMapInputBridge : MonoBehaviour
 ```
 
-`BranchWeaver.Integrations.InputSystem` &middot; <small>Runtime/Integrations/InputSystem/InputSystemMapInputBridge.cs</small>
+`BranchWeaver.Integrations.InputSystem` &middot; <small>BranchWeaver/Runtime/Integrations/InputSystem/InputSystemMapInputBridge.cs</small>
 
 Optional PlayerInput UnityEvent bridge compiled only when com.unity.inputsystem is installed.
 
@@ -83,7 +83,7 @@ Optional PlayerInput UnityEvent bridge compiled only when com.unity.inputsystem 
 public enum MapAspectClass
 ```
 
-`BranchWeaver.Runtime` &middot; <small>Runtime/Runtime/MapViewport.cs</small>
+`BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapViewport.cs</small>
 
 !!! warning "Not yet documented"
     This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
@@ -106,7 +106,7 @@ public enum MapAspectClass
 public readonly struct MapFrameResult
 ```
 
-`BranchWeaver.Runtime` &middot; <small>Runtime/Runtime/MapViewportFrame.cs</small>
+`BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapViewportFrame.cs</small>
 
 The resolved on-screen placement of a map: the rectangle it may occupy, the
 scale that fits its content into that rectangle, and the pan limits that
@@ -152,32 +152,13 @@ keep it reachable.
 
 ---
 
-## MapFrameUtility
-
-```csharp
-public static class MapFrameUtility
-```
-
-`BranchWeaver.Runtime` &middot; <small>Runtime/Runtime/MapViewportFrame.cs</small>
-
-Pure framing maths, separated from the component so it can be tested
-without a scene, a canvas, or a device.
-
-**Methods**
-
-`public static MapFrameResult Resolve()`
-
-:   Resolves the area, scale, and pan limits for a map. `availablePixels` is the full rectangle the map is allowed to consider, normally the canvas rect or the screen. `safeAreaPixels` is the device safe area in the same space; pass the full rectangle when there is none.
-
----
-
 ## MapSafeAreaController
 
 ```csharp
 public sealed class MapSafeAreaController : MonoBehaviour
 ```
 
-`BranchWeaver.Runtime` &middot; <small>Runtime/Runtime/MapViewport.cs</small>
+`BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapViewport.cs</small>
 
 !!! warning "Not yet documented"
     This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
@@ -202,7 +183,7 @@ public sealed class MapSafeAreaController : MonoBehaviour
 public sealed class MapViewportFrame : MonoBehaviour
 ```
 
-`BranchWeaver.Runtime` &middot; <small>Runtime/Runtime/MapViewportFrame.cs</small>
+`BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapViewportFrame.cs</small>
 
 Places a map on screen: reserves margins for your own interface, fits the
 content, insets into the device safe area, and clamps pan and zoom.
@@ -253,7 +234,7 @@ asset rather than by hand-positioning transforms.
 public readonly struct MapViewportResult
 ```
 
-`BranchWeaver.Runtime` &middot; <small>Runtime/Runtime/MapViewport.cs</small>
+`BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapViewport.cs</small>
 
 !!! warning "Not yet documented"
     This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
@@ -275,52 +256,6 @@ public readonly struct MapViewportResult
 :   &mdash;
 
 `public Rect NormalizedSafeArea`
-
-:   &mdash;
-
----
-
-## MapViewportUtility
-
-```csharp
-public static class MapViewportUtility
-```
-
-`BranchWeaver.Runtime` &middot; <small>Runtime/Runtime/MapViewport.cs</small>
-
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
-
-**Methods**
-
-`public static MapAspectClass Classify(int width, int height)`
-
-:   &mdash;
-
-`public static MapViewportResult Evaluate(int screenWidth, int screenHeight, Rect safeAreaPixels)`
-
-:   &mdash;
-
----
-
-## MapWorldViewportUtility
-
-```csharp
-public static class MapWorldViewportUtility
-```
-
-`BranchWeaver.Runtime` &middot; <small>Runtime/Runtime/MapWorldViewportUtility.cs</small>
-
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
-
-**Methods**
-
-`public static Rect Intersect(Rect first, Rect second)`
-
-:   &mdash;
-
-`public static bool TryGetPresentationBounds(Camera camera, Transform contentParent, Rect safeAreaPixels,)`
 
 :   &mdash;
 

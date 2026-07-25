@@ -252,11 +252,19 @@ def render_coverage(groups, order, product, api, excluded=0):
     out.append('| Public members | %d | %d | %d%% |' % (
         doc_members, members, round(100.0 * doc_members / max(1, members))))
     out.append('')
+    out.append('Measured over the %d types this reference publishes.' % total)
+    out.append('')
     if excluded:
-        out.append('Measured over the %d types this reference publishes. A further %d are '
-                   'public in the source and deliberately excluded as cross-assembly '
-                   'plumbing; documenting them would raise a percentage without helping '
-                   'anyone.' % (total, excluded))
+        out.append('## What is excluded, and why')
+        out.append('')
+        out.append('A further **%d** public types are left out. They are public only because '
+                   '`internal` is per-assembly in C# and this package spans several '
+                   'assemblies, so publishing them would describe plumbing as API. They carry '
+                   '`[EditorBrowsable(Never)]` in the source.' % excluded)
+        out.append('')
+        out.append('Coverage is reported over the published surface for the same reason: '
+                   'documenting the excluded types would raise this percentage without '
+                   'helping anyone read the package.')
         out.append('')
     out.append('## By area')
     out.append('')

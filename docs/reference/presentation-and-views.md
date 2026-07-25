@@ -1,69 +1,9 @@
 # Presentation and views
 
-64 types in this area.
+48 types in this area.
 
 !!! abstract "On this page"
-    [CanvasMapCoordinateUtility](#canvasmapcoordinateutility) &middot; [CanvasMapEdgeFactory](#canvasmapedgefactory) &middot; [CanvasMapEdgeView](#canvasmapedgeview) &middot; [CanvasMapNodeFactory](#canvasmapnodefactory) &middot; [CanvasMapNodeView](#canvasmapnodeview) &middot; [CanvasMapPresenter](#canvasmappresenter) &middot; [DefaultMapNodeHitTester](#defaultmapnodehittester) &middot; [IMapAudioCueAdapter](#imapaudiocueadapter) &middot; [IMapBackgroundPresenter](#imapbackgroundpresenter) &middot; [IMapDevelopmentHost](#imapdevelopmenthost) &middot; [IMapEdgeAvailabilityView](#imapedgeavailabilityview) &middot; [IMapEdgeTransitionView](#imapedgetransitionview) &middot; [IMapEdgeView](#imapedgeview) &middot; [IMapEdgeViewFactory](#imapedgeviewfactory) &middot; [IMapFocusIndicatorPresenter](#imapfocusindicatorpresenter) &middot; [IMapFocusView](#imapfocusview) &middot; [IMapInputSource](#imapinputsource) &middot; [IMapLocalizationAdapter](#imaplocalizationadapter) &middot; [IMapNodeHitState](#imapnodehitstate) &middot; [IMapNodeHitTester](#imapnodehittester) &middot; [IMapNodeTransitionView](#imapnodetransitionview) &middot; [IMapNodeView](#imapnodeview) &middot; [IMapNodeViewFactory](#imapnodeviewfactory) &middot; [IMapPresentationHost](#imappresentationhost) &middot; [IMapPresentationTransitionAdapter](#imappresentationtransitionadapter) &middot; [IMapViewFactoryLifetime](#imapviewfactorylifetime) &middot; [IPlayerPawnPresenter](#iplayerpawnpresenter) &middot; [IRouteMarkerPresenter](#iroutemarkerpresenter) &middot; [InputSystemSignalAdapter](#inputsystemsignaladapter) &middot; [LegacyMapInputSource](#legacymapinputsource) &middot; [MapCameraResolver](#mapcameraresolver) &middot; [MapDevelopmentCommandResult](#mapdevelopmentcommandresult) &middot; [MapDevelopmentFailureKind](#mapdevelopmentfailurekind) &middot; [MapEdgeViewData](#mapedgeviewdata) &middot; [MapFogSettings](#mapfogsettings) &middot; [MapFogState](#mapfogstate) &middot; [MapInputController](#mapinputcontroller) &middot; [MapInputFrame](#mapinputframe) &middot; [MapNavigationDirection](#mapnavigationdirection) &middot; [MapNavigationModel](#mapnavigationmodel) &middot; [MapNodeRuntimeState](#mapnoderuntimestate) &middot; [MapNodeViewData](#mapnodeviewdata) &middot; [MapNodeVisualState](#mapnodevisualstate) &middot; [MapPresentationMetrics](#mappresentationmetrics) &middot; [MapPresenterBase](#mappresenterbase) &middot; [MapRuntimeContent](#mapruntimecontent) &middot; [MapRuntimeDiagnosticCodes](#mapruntimediagnosticcodes) &middot; [MapRuntimeStateDeriver](#mapruntimestatederiver) &middot; [MapRuntimeStateSnapshot](#mapruntimestatesnapshot) &middot; [MapSelectionResult](#mapselectionresult) &middot; [MapSerializedEventBridge](#mapserializedeventbridge) &middot; [MapSetupHierarchyBinding](#mapsetuphierarchybinding) &middot; [MapTouchGestureInterpreter](#maptouchgestureinterpreter) &middot; [MapTouchPhase](#maptouchphase) &middot; [MapTouchSample](#maptouchsample) &middot; [MapTraversalController](#maptraversalcontroller) &middot; [NullMapAudioCueAdapter](#nullmapaudiocueadapter) &middot; [PassthroughLocalizationAdapter](#passthroughlocalizationadapter) &middot; [ProceduralNodeSprite](#proceduralnodesprite) &middot; [WorldMapEdgeFactory](#worldmapedgefactory) &middot; [WorldMapEdgeView](#worldmapedgeview) &middot; [WorldMapNodeFactory](#worldmapnodefactory) &middot; [WorldMapNodeView](#worldmapnodeview) &middot; [WorldMapPresenter](#worldmappresenter)
-
-## CanvasMapCoordinateUtility
-
-```csharp
-public static class CanvasMapCoordinateUtility
-```
-
-`BranchWeaver.Presentation.Canvas` &middot; <small>Runtime/Presentation/Canvas/CanvasMapViews.cs</small>
-
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
-
-**Methods**
-
-`public static Vector2 ToAnchoredPosition(RectTransform content, NormalizedMapPosition position)`
-
-:   &mdash;
-
----
-
-## CanvasMapEdgeFactory
-
-```csharp
-public sealed class CanvasMapEdgeFactory : IMapEdgeViewFactory, IMapViewFactoryLifetime
-```
-
-`BranchWeaver.Presentation.Canvas` &middot; <small>Runtime/Presentation/Canvas/CanvasMapViews.cs</small>
-
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
-
-**Properties**
-
-`public int CreatedCount`
-
-:   &mdash;
-
-`public int ReleasedCount`
-
-:   &mdash;
-
-`public int ReusedCount`
-
-:   &mdash;
-
-**Methods**
-
-`public IMapEdgeView Create(Transform parent)`
-
-:   &mdash;
-
-`public void Dispose()`
-
-:   &mdash;
-
-`public void Release(IMapEdgeView view)`
-
-:   &mdash;
-
----
+    [CanvasMapEdgeView](#canvasmapedgeview) &middot; [CanvasMapNodeView](#canvasmapnodeview) &middot; [CanvasMapPresenter](#canvasmappresenter) &middot; [DefaultMapNodeHitTester](#defaultmapnodehittester) &middot; [IMapAudioCueAdapter](#imapaudiocueadapter) &middot; [IMapBackgroundPresenter](#imapbackgroundpresenter) &middot; [IMapDevelopmentHost](#imapdevelopmenthost) &middot; [IMapEdgeAvailabilityView](#imapedgeavailabilityview) &middot; [IMapEdgeTransitionView](#imapedgetransitionview) &middot; [IMapEdgeView](#imapedgeview) &middot; [IMapEdgeViewFactory](#imapedgeviewfactory) &middot; [IMapFocusIndicatorPresenter](#imapfocusindicatorpresenter) &middot; [IMapFocusView](#imapfocusview) &middot; [IMapInputSource](#imapinputsource) &middot; [IMapLocalizationAdapter](#imaplocalizationadapter) &middot; [IMapNodeHitState](#imapnodehitstate) &middot; [IMapNodeHitTester](#imapnodehittester) &middot; [IMapNodeTransitionView](#imapnodetransitionview) &middot; [IMapNodeView](#imapnodeview) &middot; [IMapNodeViewFactory](#imapnodeviewfactory) &middot; [IMapPresentationTransitionAdapter](#imappresentationtransitionadapter) &middot; [IMapViewFactoryLifetime](#imapviewfactorylifetime) &middot; [IPlayerPawnPresenter](#iplayerpawnpresenter) &middot; [IRouteMarkerPresenter](#iroutemarkerpresenter) &middot; [InputSystemSignalAdapter](#inputsystemsignaladapter) &middot; [LegacyMapInputSource](#legacymapinputsource) &middot; [MapDevelopmentCommandResult](#mapdevelopmentcommandresult) &middot; [MapDevelopmentFailureKind](#mapdevelopmentfailurekind) &middot; [MapEdgeViewData](#mapedgeviewdata) &middot; [MapFogSettings](#mapfogsettings) &middot; [MapFogState](#mapfogstate) &middot; [MapInputController](#mapinputcontroller) &middot; [MapInputFrame](#mapinputframe) &middot; [MapNavigationDirection](#mapnavigationdirection) &middot; [MapNavigationModel](#mapnavigationmodel) &middot; [MapNodeRuntimeState](#mapnoderuntimestate) &middot; [MapNodeViewData](#mapnodeviewdata) &middot; [MapNodeVisualState](#mapnodevisualstate) &middot; [MapPresenterBase](#mappresenterbase) &middot; [MapRuntimeContent](#mapruntimecontent) &middot; [MapRuntimeStateDeriver](#mapruntimestatederiver) &middot; [MapRuntimeStateSnapshot](#mapruntimestatesnapshot) &middot; [MapSelectionResult](#mapselectionresult) &middot; [MapSetupHierarchyBinding](#mapsetuphierarchybinding) &middot; [MapTraversalController](#maptraversalcontroller) &middot; [PassthroughLocalizationAdapter](#passthroughlocalizationadapter) &middot; [WorldMapNodeView](#worldmapnodeview) &middot; [WorldMapPresenter](#worldmappresenter)
 
 ## CanvasMapEdgeView
 
@@ -71,7 +11,7 @@ public sealed class CanvasMapEdgeFactory : IMapEdgeViewFactory, IMapViewFactoryL
 public sealed class CanvasMapEdgeView : MonoBehaviour, IMapEdgeView, IMapEdgeTransitionView, IMapStyledView, IMapEdgeAvailabilityView
 ```
 
-`BranchWeaver.Presentation.Canvas` &middot; <small>Runtime/Presentation/Canvas/CanvasMapViews.cs</small>
+`BranchWeaver.Presentation.Canvas` &middot; <small>BranchWeaver/Runtime/Presentation/Canvas/CanvasMapViews.cs</small>
 
 !!! warning "Not yet documented"
     This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
@@ -142,54 +82,13 @@ public sealed class CanvasMapEdgeView : MonoBehaviour, IMapEdgeView, IMapEdgeTra
 
 ---
 
-## CanvasMapNodeFactory
-
-```csharp
-public sealed class CanvasMapNodeFactory : IMapNodeViewFactory, IMapViewFactoryLifetime
-```
-
-`BranchWeaver.Presentation.Canvas` &middot; <small>Runtime/Presentation/Canvas/CanvasMapViews.cs</small>
-
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
-
-**Properties**
-
-`public int CreatedCount`
-
-:   &mdash;
-
-`public int ReleasedCount`
-
-:   &mdash;
-
-`public int ReusedCount`
-
-:   &mdash;
-
-**Methods**
-
-`public IMapNodeView Create(BranchWeaver.Authoring.CompiledMapNodeType nodeType, Transform parent)`
-
-:   &mdash;
-
-`public void Dispose()`
-
-:   &mdash;
-
-`public void Release(IMapNodeView view)`
-
-:   &mdash;
-
----
-
 ## CanvasMapNodeView
 
 ```csharp
 public sealed class CanvasMapNodeView : MonoBehaviour, IMapNodeView, IMapNodeHitState, IMapNodeTransitionView, IMapFocusView, IMapStyledView
 ```
 
-`BranchWeaver.Presentation.Canvas` &middot; <small>Runtime/Presentation/Canvas/CanvasMapViews.cs</small>
+`BranchWeaver.Presentation.Canvas` &middot; <small>BranchWeaver/Runtime/Presentation/Canvas/CanvasMapViews.cs</small>
 
 !!! warning "Not yet documented"
     This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
@@ -278,11 +177,13 @@ public sealed class CanvasMapNodeView : MonoBehaviour, IMapNodeView, IMapNodeHit
 
 ## CanvasMapPresenter
 
+:material-star: **Start here**
+
 ```csharp
 public sealed class CanvasMapPresenter : MapPresenterBase
 ```
 
-`BranchWeaver.Presentation.Canvas` &middot; <small>Runtime/Presentation/Canvas/CanvasMapPresenter.cs</small>
+`BranchWeaver.Presentation.Canvas` &middot; <small>BranchWeaver/Runtime/Presentation/Canvas/CanvasMapPresenter.cs</small>
 
 !!! warning "Not yet documented"
     This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
@@ -295,52 +196,75 @@ public sealed class CanvasMapPresenter : MapPresenterBase
 public sealed class DefaultMapNodeHitTester : MonoBehaviour, IMapNodeHitTester
 ```
 
-`BranchWeaver.Runtime` &middot; <small>Runtime/Runtime/MapInput.cs</small>
+`BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapInput.cs</small>
 
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
+The shipped hit tester. It considers the active `MapNodeView`
+components on this object and its children, and covers both presentation styles:
+Canvas views by rectangle, World2D views by renderer bounds. Candidates are
+visited topmost first, so an overlapping node cannot steal a press. A view that
+also implements `MapNodeHitState` decides its own eligibility;
+otherwise a view whose renderers are all disabled is skipped.
 
 **Properties**
 
 `public Camera EventCamera`
 
-:   &mdash;
+:   The camera screen positions are interpreted through. When it is null the tester resolves one itself: `amera.main`, else the first active camera in a stable order.
 
 **Methods**
 
 `public void BindCamera(Camera value)`
 
-:   &mdash;
+:   Sets the camera used for World2D views and for canvases that render through a camera. Screen-space-overlay canvases never need one. Pass null to return to automatic resolution.
 
 `public bool TryHit(Vector2 screenPosition, out StableId nodeId)`
 
-:   &mdash;
+:   Finds the topmost node view containing a screen position. It allocates a candidate list and queries the hierarchy per call, which is why the controller only calls it on frames that carry a press.
+    - `screenPosition` &mdash; Pointer position in screen pixels.
+    - `nodeId` &mdash; The node hit, or `default` when nothing was hit.
+    - **Returns** &mdash; True when a node was hit.
 
 ---
 
 ## IMapAudioCueAdapter
 
+:material-puzzle: **Extension point** &mdash; implement this yourself to change behaviour
+
 ```csharp
 public interface IMapAudioCueAdapter
 ```
 
-`BranchWeaver.Runtime` &middot; <small>Runtime/Runtime/MapRuntimeContracts.cs</small>
+`BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapRuntimeContracts.cs</small>
 
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
+Plays the cue ids authored on node types, so the package never has to know which
+audio system a project uses.
+
+The traversal controller calls it while dispatching a transition: once when a
+node is entered and once when it is completed, and only for a node type that
+declares a cue id which parses as a stable id. An exception is caught and
+surfaced as a callback-failed warning instead of rolling the transition back,
+and driving traversal from inside the call is refused as a nested operation.
 
 ---
 
 ## IMapBackgroundPresenter
 
+:material-puzzle: **Extension point** &mdash; implement this yourself to change behaviour
+
 ```csharp
 public interface IMapBackgroundPresenter
 ```
 
-`BranchWeaver.Runtime` &middot; <small>Runtime/Runtime/MapRuntimeContracts.cs</small>
+`BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapRuntimeContracts.cs</small>
 
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
+Optional hook for drawing whatever sits behind the map: a backdrop image, a
+parallax layer, a shader quad.
+
+Called once at the end of every presented pass, not every frame, and always
+with the theme currently in force — so an implementation must tolerate being
+handed the same theme repeatedly and should do nothing when it has not changed.
+A background presenter that also implements `MapStyledView`
+receives the map's style the same way views do.
 
 ---
 
@@ -350,20 +274,28 @@ public interface IMapBackgroundPresenter
 public interface IMapDevelopmentHost
 ```
 
-`BranchWeaver.Runtime` &middot; <small>Runtime/Runtime/MapRuntimeContracts.cs</small>
+`BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapRuntimeContracts.cs</small>
 
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
+The command surface behind the development overlay: reveal, unlock, teleport,
+reset, force a result, regenerate, and copy the generation manifest.
+
+Every command here mutates a run outside the normal traversal rules, so it is for
+authoring and debugging only, never gameplay. The whole interface exists only in
+a build that defines BRANCHWEAVER_DEVTOOLS, which is what keeps it out of a
+shipping build. Each command answers with a result rather than throwing, and one
+command cannot run while another is dispatching callbacks.
 
 ---
 
 ## IMapEdgeAvailabilityView
 
+:material-puzzle: **Extension point** &mdash; implement this yourself to change behaviour
+
 ```csharp
 public interface IMapEdgeAvailabilityView
 ```
 
-`BranchWeaver.Runtime` &middot; <small>Runtime/Runtime/MapStyledViewContracts.cs</small>
+`BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapStyledViewContracts.cs</small>
 
 Implemented by an edge view that can emphasize routes leading to a
 reachable node.
@@ -375,193 +307,268 @@ styling without also having to reason about availability, and vice versa.
 
 ## IMapEdgeTransitionView
 
+:material-puzzle: **Extension point** &mdash; implement this yourself to change behaviour
+
 ```csharp
 public interface IMapEdgeTransitionView
 ```
 
-`BranchWeaver.Runtime` &middot; <small>Runtime/Runtime/MapRuntimeContracts.cs</small>
+`BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapRuntimeContracts.cs</small>
 
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
+Optional on an `MapEdgeView`: the edge counterpart of
+`MapNodeTransitionView`, driven in the same order and under the same
+condition that no `MapPresentationTransitionAdapter` is installed.
+
+An edge only ever transitions between fog states. When one is implemented the
+presenter stops toggling the edge active on a fog change and leaves visibility to
+the animation, so a transition to hidden must end with the edge invisible.
 
 ---
 
 ## IMapEdgeView
 
+:material-star: **Start here** &middot; :material-puzzle: **Extension point** &mdash; implement this yourself to change behaviour
+
 ```csharp
 public interface IMapEdgeView
 ```
 
-`BranchWeaver.Runtime` &middot; <small>Runtime/Runtime/MapRuntimeContracts.cs</small>
+`BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapRuntimeContracts.cs</small>
 
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
+The contract for anything that draws a single map edge. Implement it to draw
+routes your own way — a line renderer, a UI mesh, a chain of sprites — and hand
+instances to the presenter through an `MapEdgeViewFactory`.
+
+Unlike a node view, an edge view really is deactivated when fog hides it, so
+`etActive` must be reversible rather than a teardown.
 
 ---
 
 ## IMapEdgeViewFactory
 
+:material-star: **Start here** &middot; :material-puzzle: **Extension point** &mdash; implement this yourself to change behaviour
+
 ```csharp
 public interface IMapEdgeViewFactory
 ```
 
-`BranchWeaver.Runtime` &middot; <small>Runtime/Runtime/MapRuntimeContracts.cs</small>
+`BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapRuntimeContracts.cs</small>
 
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
+Creates and recycles the edge views a presenter draws with — the same seam as
+`MapNodeViewFactory`, for routes instead of nodes. Edges have no
+per-type art, so one factory serves every edge on the map.
 
 ---
 
 ## IMapFocusIndicatorPresenter
 
+:material-puzzle: **Extension point** &mdash; implement this yourself to change behaviour
+
 ```csharp
 public interface IMapFocusIndicatorPresenter
 ```
 
-`BranchWeaver.Runtime` &middot; <small>Runtime/Runtime/MapRuntimeContracts.cs</small>
+`BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapRuntimeContracts.cs</small>
 
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
+Optional hook for one shared focus indicator drawn at the focused node, as an
+alternative to every node styling its own focus.
+
+Called when focus moves, once per presented pass, and once more when the
+presenter clears the map — that last call arrives with an empty node id and a
+null layout and means "hide yourself", so an implementation must handle it.
 
 ---
 
 ## IMapFocusView
 
+:material-puzzle: **Extension point** &mdash; implement this yourself to change behaviour
+
 ```csharp
 public interface IMapFocusView
 ```
 
-`BranchWeaver.Runtime` &middot; <small>Runtime/Runtime/MapRuntimeContracts.cs</small>
+`BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapRuntimeContracts.cs</small>
 
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
+Optional on an `MapNodeView`: lets a view show keyboard or gamepad
+focus.
+
+The presenter drives it when focus moves and again on each presented pass for
+nodes that did not otherwise change, so an implementation must be cheap and
+must tolerate being told the same value repeatedly. A node hidden by fog is
+never reported as focused.
 
 ---
 
 ## IMapInputSource
 
+:material-puzzle: **Extension point** &mdash; implement this yourself to change behaviour
+
 ```csharp
 public interface IMapInputSource
 ```
 
-`BranchWeaver.Runtime` &middot; <small>Runtime/Runtime/MapInput.cs</small>
+`BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapInput.cs</small>
 
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
+Supplies the map with input frames. Implement this to drive a map from any input
+stack — legacy Input, Input System, a recorded replay, a test — without the
+package taking a dependency on it.
 
 ---
 
 ## IMapLocalizationAdapter
 
+:material-puzzle: **Extension point** &mdash; implement this yourself to change behaviour
+
 ```csharp
 public interface IMapLocalizationAdapter
 ```
 
-`BranchWeaver.Runtime` &middot; <small>Runtime/Runtime/MapRuntimeContracts.cs</small>
+`BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapRuntimeContracts.cs</small>
 
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
+Bridges node labels and tooltips to whatever localization system a project
+already uses. Without one, the text authored on the node type is shown as-is.
+
+`esolve` is called twice for every node the presenter binds, so it
+must be cheap, and nothing guards it: an exception thrown from it abandons the
+presentation pass part-way through.
 
 ---
 
 ## IMapNodeHitState
 
+:material-puzzle: **Extension point** &mdash; implement this yourself to change behaviour
+
 ```csharp
 public interface IMapNodeHitState
 ```
 
-`BranchWeaver.Runtime` &middot; <small>Runtime/Runtime/MapRuntimeContracts.cs</small>
+`BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapRuntimeContracts.cs</small>
 
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
+Optional on an `MapNodeView`: lets the view decide for itself
+whether it can be clicked.
+
+Implementing it replaces the default hit tester's own guess, which is drawn
+from the view's rect or renderers. That cuts both ways: a view that reports
+true for a node hidden by fog makes that node clickable, so the usual rule is
+to report false for anything the player must not be able to reach.
 
 ---
 
 ## IMapNodeHitTester
 
+:material-puzzle: **Extension point** &mdash; implement this yourself to change behaviour
+
 ```csharp
 public interface IMapNodeHitTester
 ```
 
-`BranchWeaver.Runtime` &middot; <small>Runtime/Runtime/MapInput.cs</small>
+`BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapInput.cs</small>
 
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
+Resolves a screen position to a map node. Implement this when node views are
+drawn in a way the shipped tester cannot see, such as a custom mesh or an
+off-hierarchy renderer.
 
 ---
 
 ## IMapNodeTransitionView
 
+:material-puzzle: **Extension point** &mdash; implement this yourself to change behaviour
+
 ```csharp
 public interface IMapNodeTransitionView
 ```
 
-`BranchWeaver.Runtime` &middot; <small>Runtime/Runtime/MapRuntimeContracts.cs</small>
+`BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapRuntimeContracts.cs</small>
 
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
+Optional on an `MapNodeView`: lets a view animate its own state
+changes, which is how the shipped node views cross-fade.
+
+Consulted only while no `MapPresentationTransitionAdapter` is
+installed. The presenter drives it in a fixed order:
+`repareForBind` before a bind that changes state, then
+`eginTransition` after that bind, then
+`dvanceTransition` once a frame on an unscaled delta so that
+pausing the game does not freeze the map. Reaching the destination is the
+view's own responsibility; nothing polls it to check that it got there.
 
 ---
 
 ## IMapNodeView
 
+:material-star: **Start here** &middot; :material-puzzle: **Extension point** &mdash; implement this yourself to change behaviour
+
 ```csharp
 public interface IMapNodeView
 ```
 
-`BranchWeaver.Runtime` &middot; <small>Runtime/Runtime/MapRuntimeContracts.cs</small>
+`BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapRuntimeContracts.cs</small>
 
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
+The contract for anything that draws a single map node. Implement it to render
+nodes your own way — a prefab, a sprite, a UI element — and hand instances to
+the presenter through an `MapNodeViewFactory`.
+
+An implementation must report `odeId` from the data it was bound
+with and keep `ransform` non-null for its lifetime: input
+resolves a click to a node through those two members and nothing else. Beyond
+them the presenter never inspects the object, so a view is free to render
+however it likes.
 
 ---
 
 ## IMapNodeViewFactory
 
+:material-star: **Start here** &middot; :material-puzzle: **Extension point** &mdash; implement this yourself to change behaviour
+
 ```csharp
 public interface IMapNodeViewFactory
 ```
 
-`BranchWeaver.Runtime` &middot; <small>Runtime/Runtime/MapRuntimeContracts.cs</small>
+`BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapRuntimeContracts.cs</small>
 
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
+Creates and recycles the node views a presenter draws with. This is the main
+seam for bringing your own art: pass a factory to
+`apPresenterBase.Configure` and the presenter never constructs a
+node view itself.
 
----
-
-## IMapPresentationHost
-
-```csharp
-public interface IMapPresentationHost
-```
-
-`BranchWeaver.Runtime` &middot; <small>Runtime/Runtime/MapRuntimeContracts.cs</small>
-
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
+`reate` must return a view already parented under the transform it
+was given, because the presenter does not reparent it, and one that is safe to
+bind immediately. Pooling is expected rather than exceptional: the presenter
+releases views it no longer needs, and asks for a replacement view for the same
+node when that node's compiled type changes enough to need different art.
 
 ---
 
 ## IMapPresentationTransitionAdapter
 
+:material-puzzle: **Extension point** &mdash; implement this yourself to change behaviour
+
 ```csharp
 public interface IMapPresentationTransitionAdapter
 ```
 
-`BranchWeaver.Runtime` &middot; <small>Runtime/Runtime/MapRuntimeContracts.cs</small>
+`BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapRuntimeContracts.cs</small>
 
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
+Takes over every node and edge state transition for the whole map, as an
+alternative to letting each view animate itself.
+
+Installing one switches the per-view path off completely: the presenter then
+never calls `MapNodeTransitionView` or
+`MapEdgeTransitionView`, and never advances a view's animation. The
+adapter therefore owns its own clock and must carry its animations to completion
+itself. Durations come from the theme and can be zero, which means "apply the
+destination immediately".
 
 ---
 
 ## IMapViewFactoryLifetime
 
+:material-puzzle: **Extension point** &mdash; implement this yourself to change behaviour
+
 ```csharp
 public interface IMapViewFactoryLifetime : IDisposable
 ```
 
-`BranchWeaver.Runtime` &middot; <small>Runtime/Runtime/MapRuntimeContracts.cs</small>
+`BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapRuntimeContracts.cs</small>
 
 Optional lifetime contract used only for factories created and owned by a presenter.
 
@@ -569,27 +576,39 @@ Optional lifetime contract used only for factories created and owned by a presen
 
 ## IPlayerPawnPresenter
 
+:material-puzzle: **Extension point** &mdash; implement this yourself to change behaviour
+
 ```csharp
 public interface IPlayerPawnPresenter
 ```
 
-`BranchWeaver.Runtime` &middot; <small>Runtime/Runtime/MapRuntimeContracts.cs</small>
+`BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapRuntimeContracts.cs</small>
 
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
+Optional hook for drawing the traveller's own marker on the map.
+
+Called once at the end of every presented pass. The current node is empty
+whenever the traveller is between nodes — before the first node is entered, and
+again after each one is completed — so an implementation needs an answer for
+"nowhere", usually hiding the pawn.
 
 ---
 
 ## IRouteMarkerPresenter
 
+:material-puzzle: **Extension point** &mdash; implement this yourself to change behaviour
+
 ```csharp
 public interface IRouteMarkerPresenter
 ```
 
-`BranchWeaver.Runtime` &middot; <small>Runtime/Runtime/MapRuntimeContracts.cs</small>
+`BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapRuntimeContracts.cs</small>
 
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
+Optional hook for marking the route already walked: footprints, a trail, a drawn
+line.
+
+Called once at the end of every presented pass with the whole visited list, so
+an implementation must render the entire route each time rather than assuming
+only the last step is new.
 
 ---
 
@@ -599,7 +618,7 @@ public interface IRouteMarkerPresenter
 public sealed class InputSystemSignalAdapter : MonoBehaviour, IMapInputSource
 ```
 
-`BranchWeaver.Runtime` &middot; <small>Runtime/Runtime/MapInput.cs</small>
+`BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapInput.cs</small>
 
 Package-neutral bridge for Input System PlayerInput UnityEvents. Wire public signal
 methods from PlayerInput without adding a BranchWeaver compile-time package dependency.
@@ -608,39 +627,40 @@ methods from PlayerInput without adding a BranchWeaver compile-time package depe
 
 `public MapInputFrame Capture()`
 
-:   &mdash;
+:   Builds the frame from the signals received since the last call and clears the one-shot ones: submit, pointer press, pan and zoom. Navigation, pointer position and pinch state survive, because they describe a held control rather than an event.
 
 `public void EndPinch()`
 
-:   &mdash;
+:   Ends the pinch so pointer presses activate nodes again. Nothing else clears the flag: without this call the map keeps ignoring taps.
 
 `public void SignalNavigate(Vector2 value)`
 
-:   &mdash;
+:   Sets the directional axis. It persists until changed, so send `ector2.zero` when the control is released or focus keeps repeating in that direction.
 
 `public void SignalPan(Vector2 delta)`
 
-:   &mdash;
+:   Adds to the pan delta accumulated for the next captured frame. Pass a per-event delta, never an absolute position.
 
 `public void SignalPinch(float scaleDelta)`
 
-:   &mdash;
+:   Reports an in-progress pinch. It marks the pinch active and drops any pending pointer press, so pinching never selects a node; call `ndPinch` when the gesture finishes.
+    - `scaleDelta` &mdash; Pinch scale factor for this event: 1 leaves the zoom alone, 1.1 zooms in a tenth. The adapter accumulates `scaleDelta - 1` into the frame's zoom delta.
 
 `public void SignalPointer(Vector2 value)`
 
-:   &mdash;
+:   Records the pointer position in screen pixels and marks the frame as having a pointer. The position persists between frames; only the press is an edge.
 
 `public void SignalPointerPress()`
 
-:   &mdash;
+:   Marks a pointer press for the next captured frame. Ignored while a pinch is running, so a second finger cannot select a node.
 
 `public void SignalSubmit()`
 
-:   &mdash;
+:   Requests activation of the focused node on the next captured frame. `apture` clears it, so one call is one submit.
 
 `public void SignalZoom(float delta)`
 
-:   &mdash;
+:   Adds to the zoom delta accumulated for the next captured frame.
 
 ---
 
@@ -650,35 +670,21 @@ methods from PlayerInput without adding a BranchWeaver compile-time package depe
 public sealed class LegacyMapInputSource : IMapInputSource
 ```
 
-`BranchWeaver.Runtime` &middot; <small>Runtime/Runtime/MapInput.cs</small>
+`BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapInput.cs</small>
 
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
+Input source for Unity's legacy Input Manager: axes for navigation, Return, Space
+or the Submit button for activation, the mouse for pointing, middle-drag to pan
+and the wheel to zoom, with touches folded in as tap, drag-pan and pinch-zoom.
+`apInputController` falls back to this when no other source is bound,
+so the project needs the legacy input backend enabled and the "Horizontal",
+"Vertical", "Submit", "Mouse X" and "Mouse Y" entries present in its input
+settings.
 
 **Methods**
 
 `public MapInputFrame Capture()`
 
-:   &mdash;
-
----
-
-## MapCameraResolver
-
-```csharp
-public static class MapCameraResolver
-```
-
-`BranchWeaver.Runtime` &middot; <small>Runtime/Runtime/MapInput.cs</small>
-
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
-
-**Methods**
-
-`public static Camera Resolve(Camera explicitCamera)`
-
-:   &mdash;
+:   Reads one frame from `nput`. While any finger is down the touch pointer replaces the mouse pointer and touch pan and zoom add to the mouse values; with no touches the gesture state is cleared, so a lifted finger cannot leak a delta into the next frame.
 
 ---
 
@@ -688,20 +694,21 @@ public static class MapCameraResolver
 public sealed class MapDevelopmentCommandResult
 ```
 
-`BranchWeaver.Runtime` &middot; <small>Runtime/Runtime/MapRuntimeContracts.cs</small>
+`BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapRuntimeContracts.cs</small>
 
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
+The outcome of one development command: success, optionally carrying a value, or
+a refusal with a reason fit to show in a debug overlay. Exists only in a build
+that defines BRANCHWEAVER_DEVTOOLS.
 
 **Properties**
 
 `public MapDevelopmentFailureKind FailureKind`
 
-:   &mdash;
+:   Why the command was refused, or `apDevelopmentFailureKind.None` on success.
 
 `public string Message`
 
-:   &mdash;
+:   The reason to show the operator. Never null; empty on success.
 
 `public bool Succeeded`
 
@@ -709,17 +716,17 @@ public sealed class MapDevelopmentCommandResult
 
 `public string Value`
 
-:   &mdash;
+:   Data returned by the commands that produce some — today the copied generation manifest. Never null; empty for every other success and for all failures.
 
 **Methods**
 
 `public static MapDevelopmentCommandResult Failure(MapDevelopmentFailureKind kind, string message)`
 
-:   &mdash;
+:   Records a refusal, with the reason to show the operator.
 
 `public static MapDevelopmentCommandResult Success(string value = null)`
 
-:   &mdash;
+:   Records a success, optionally carrying data in `alue`.
 
 ---
 
@@ -729,10 +736,10 @@ public sealed class MapDevelopmentCommandResult
 public enum MapDevelopmentFailureKind
 ```
 
-`BranchWeaver.Runtime` &middot; <small>Runtime/Runtime/MapRuntimeContracts.cs</small>
+`BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapRuntimeContracts.cs</small>
 
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
+Why a development command was refused. Exists only in a build that defines
+BRANCHWEAVER_DEVTOOLS.
 
 | Value | Meaning |
 | --- | --- |
@@ -740,31 +747,41 @@ public enum MapDevelopmentFailureKind
 | `NotInitialized` | &mdash; |
 | `InvalidNode` | &mdash; |
 | `RejectedTransition` | &mdash; |
-| `Unsupported` | &mdash; |
+| `Unsupported` | The host cannot service this command at all, such as a regeneration request when no regeneration handler is registered. |
 | `InvalidPayload` | &mdash; |
 
 ---
 
 ## MapEdgeViewData
 
+:material-star: **Start here**
+
 ```csharp
 public readonly struct MapEdgeViewData
 ```
 
-`BranchWeaver.Runtime` &middot; <small>Runtime/Runtime/MapRuntimeContracts.cs</small>
+`BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapRuntimeContracts.cs</small>
 
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
+Everything an edge view needs to draw one route in one presented state: the
+graph edge, the sampled path along it, the colour to draw it in, and its fog
+state.
+
+Immutable and passed by value. Both point lists are wrapped read-only on
+construction — copied unless they are already a
+`eadOnlyCollection{T}` — so a caller may keep reusing its own
+buffers without a bound view seeing them change underneath it.
 
 **Constructors**
 
 `public MapEdgeViewData(MapEdge edge, IReadOnlyList<NormalizedMapPosition> points, Color color)`
 
-:   &mdash;
+:   Builds edge data with no presentation-space path: the view converts `points` itself, and the edge is treated as fully visible rather than fogged.
 
 `public MapEdgeViewData()`
 
-:   &mdash;
+:   The full form the presenter builds, with the path already converted to presentation units.
+    - `points` &mdash; The path in normalized layout space, source endpoint first.
+    - `presentationPoints` &mdash; The same path in presentation units, one entry per `points` entry. Pass null to leave the conversion to the view.
 
 **Properties**
 
@@ -782,11 +799,11 @@ public readonly struct MapEdgeViewData
 
 `public IReadOnlyList<NormalizedMapPosition> Points`
 
-:   &mdash;
+:   The sampled path in normalized layout space, running from the edge's source endpoint to its target.
 
 `public IReadOnlyList<Vector2> PresentationPoints`
 
-:   &mdash;
+:   The same path in presentation units, one entry per `oints` entry, or null when it was not supplied. A view given null converts `oints` itself.
 
 ---
 
@@ -796,7 +813,7 @@ public readonly struct MapEdgeViewData
 public struct MapFogSettings
 ```
 
-`BranchWeaver.Runtime` &middot; <small>Runtime/Runtime/MapRuntimeState.cs</small>
+`BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapRuntimeState.cs</small>
 
 How far ahead of the traveller the map is revealed.
 
@@ -841,29 +858,39 @@ save correctly instead of needing a migration.
 public enum MapFogState
 ```
 
-`BranchWeaver.Runtime` &middot; <small>Runtime/Runtime/MapRuntimeState.cs</small>
+`BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapRuntimeState.cs</small>
 
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
+How visible a node is, derived from its `apNodeVisualState`: a hidden
+node reports `idden`, a locked one `immed`, and anything
+the traveller has reached or can reach `isible`. The built-in
+presenters give a route the more hidden of its two endpoints' states.
 
 | Value | Meaning |
 | --- | --- |
-| `Hidden` | &mdash; |
-| `Dimmed` | &mdash; |
-| `Visible` | &mdash; |
+| `Hidden` | Not shown. |
+| `Dimmed` | Shown, but held back; the built-in views draw it at reduced opacity. |
+| `Visible` | Shown at full strength. |
 
 ---
 
 ## MapInputController
 
+:material-star: **Start here**
+
 ```csharp
 public sealed class MapInputController : MonoBehaviour, ISerializationCallbackReceiver
 ```
 
-`BranchWeaver.Runtime` &middot; <small>Runtime/Runtime/MapInput.cs</small>
+`BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapInput.cs</small>
 
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
+The component that turns input frames into map interaction: it moves focus between
+nodes, submits the focused or pressed node to a `apTraversalController`,
+and pans and zooms the content transform inside the theme's zoom limits while
+keeping the focused node in view. Frames come from any `MapInputSource`
+and presses are resolved by any `MapNodeHitTester`, so a project can
+change input stack or presentation style without touching the map. It stays inert
+until a traversal controller is initialized and a layout is available: ticks before
+that are dropped, not queued.
 
 **Properties**
 
@@ -889,7 +916,7 @@ public sealed class MapInputController : MonoBehaviour, ISerializationCallbackRe
 
 `public Vector2 Pan`
 
-:   &mdash;
+:   Current pan offset, already clamped so the map cannot be dragged out of reach. A Canvas map measures it in the content parent's local units; a world map in hundredths of them, matching the anchored-position and world scales the component writes.
 
 `public MapPresenterBase Presenter`
 
@@ -905,67 +932,80 @@ public sealed class MapInputController : MonoBehaviour, ISerializationCallbackRe
 
 `public float Zoom`
 
-:   &mdash;
+:   Current zoom multiplier written to the content transform's scale. It starts at 1 and every tick clamps it into the theme's minimum and maximum zoom.
 
 **Events**
 
 `public event Action<StableId> FocusChanged`
 
-:   &mdash;
+:   Raised when the focused node changes, including when focus is lost — the argument is then an empty `tableId`. The presenter has already been told about the new focus by the time handlers run.
 
 **Methods**
 
 `public void BindCamera(Camera value)`
 
-:   &mdash;
+:   Sets the camera used to interpret screen positions for zoom anchoring and world viewport maths, and forgets any camera the component resolved on its own. Pass null to return to automatic resolution.
 
 `public void BindDefaultHitTester(DefaultMapNodeHitTester hitTester)`
 
-:   &mdash;
+:   Makes this tester resolve pointer presses and stores it in the serialized field, so the binding survives a domain reload. It replaces any tester passed to `onfigure` or `indPresenter`.
 
 `public void BindInputSignals(InputSystemSignalAdapter signals)`
 
-:   &mdash;
+:   Makes this signal adapter the input source and stores it in the serialized field. The directional hold-repeat state is reset, so a direction held on the previous source cannot repeat straight into the new one.
 
 `public void BindPresenter()`
 
-:   &mdash;
+:   Binds the controller to a presenter and follows it: the presenter's current layout is adopted, later layout changes are tracked, and focus is published back to the presenter. The layout subscription is released when the component is disabled and taken again when it is enabled, so a presenter swapped while disabled needs re-binding.
+    - `presenter` &mdash; Supplies the layout and receives focus updates.
+    - `contentTransform` &mdash; The transform pan and zoom are written to. Null means the map is not moved at all.
+    - `source` &mdash; Where frames come from. Null leaves the component to fall back to its serialized signal adapter, or to legacy Input, on the next update.
+    - `hitTester` &mdash; Resolves pointer presses to nodes. Null falls back to the serialized `efaultMapNodeHitTester`, then to one found among the children.
 
 `public void Configure()`
 
-:   &mdash;
+:   Wires the controller to a layout directly, with no presenter: it drops any presenter binding and its layout-change subscription, recovers focus from the traversal state, and applies the current pan and zoom to the content transform. Prefer `indPresenter` when a `apPresenterBase` owns the layout, because only that path follows later layout changes.
+    - `layout` &mdash; The layout whose node positions drive spatial navigation and framing.
+    - `source` &mdash; Where frames come from. Null leaves the component to fall back to its serialized signal adapter, or to legacy Input, on the next update.
+    - `hitTester` &mdash; Resolves pointer presses to nodes. Null leaves pointer selection off until a tester is bound or the component is re-enabled.
+    - `contentTransform` &mdash; The transform pan and zoom are written to. Null means the map is not moved at all.
 
 `public void ConfigureNavigationRepeat(float initialDelaySeconds, float intervalSeconds)`
 
-:   &mdash;
+:   Sets the hold-repeat cadence for directional navigation. A new direction always moves focus immediately; the next move waits the initial delay, and further moves follow at the interval. Calling this also cancels the current hold.
+    - `initialDelaySeconds` &mdash; Seconds a direction is held before it starts repeating. Negative values are clamped to zero.
+    - `intervalSeconds` &mdash; Seconds between repeats once repeating starts. Values below 0.01 are raised to 0.01.
 
 `public void OnAfterDeserialize()`
 
-:   &mdash;
+:   Unity serialization callback. It rebuilds the cached source and hit tester from the serialized fields and forgets any automatically resolved camera, so a domain reload cannot leave the controller pointing at dead references. Unity calls it; you should not.
 
 `public void OnBeforeSerialize()`
 
-:   &mdash;
+:   Unity serialization callback. It does nothing: the controller has no runtime state worth flattening.
 
 `public void SetLayout(MapLayout layout)`
 
-:   &mdash;
+:   Swaps the layout that spatial navigation and framing work from, then recovers focus, brings it into view, and re-applies the transform. A null layout clears focus and leaves the controller inert until a layout is set again.
 
 `public void SetSource(IMapInputSource source)`
 
-:   &mdash;
+:   Replaces the input source, cancels the current directional hold, and re-checks focus. Passing null makes the next update fall back to the serialized signal adapter, or to legacy Input when there is none.
 
 `public void Tick(MapInputFrame frame)`
 
-:   &mdash;
+:   Applies one input frame, choosing the zoom anchor itself — the pointer when the frame carries one, otherwise the focused node — and only when the zoom would actually change. Navigation repeat runs on unscaled time, so a paused game still repeats at the same rate. The component already ticks itself every update from its bound source, so call this directly only when you drive input yourself. Frames that arrive before the traversal controller is initialized, or while no layout is set, are dropped.
 
 `public void Tick(MapInputFrame frame, Vector2 anchorLocal)`
 
-:   &mdash;
+:   Applies one input frame around an explicit zoom anchor, timing navigation repeat with unscaled delta time.
+    - `anchorLocal` &mdash; The point that stays still while the zoom changes, in the same units as `an`.
 
 `public void Tick(MapInputFrame frame, Vector2 anchorLocal, float deltaSeconds)`
 
-:   &mdash;
+:   Applies one input frame around an explicit zoom anchor with a caller-supplied time step. Use this to drive the map from a fixed step or a test.
+    - `anchorLocal` &mdash; The point that stays still while the zoom changes, in the same units as `an`.
+    - `deltaSeconds` &mdash; Time since the previous tick. It advances the directional hold-repeat clock only; pan and zoom come from the frame's deltas, so the step never scales movement.
 
 ---
 
@@ -975,54 +1015,65 @@ public sealed class MapInputController : MonoBehaviour, ISerializationCallbackRe
 public readonly struct MapInputFrame
 ```
 
-`BranchWeaver.Runtime` &middot; <small>Runtime/Runtime/MapInput.cs</small>
+`BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapInput.cs</small>
 
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
+One update's worth of map input, reduced to the six signals the controller acts
+on: a directional axis, a submit request, a pointer, pan and zoom deltas, and a
+pinch flag. Everything here describes that update alone, so a frame is meant to
+be applied once — feeding the same frame twice pans, zooms, and submits twice.
 
 **Constructors**
 
 `public MapInputFrame()`
 
-:   &mdash;
+:   Creates a frame and infers `asPointerPosition`: it is true when the pointer is pressed, a pinch is running, or the position is not the screen origin. Use the other constructor when a source knows better, for instance a mouse resting exactly at (0, 0).
+    - `navigation` &mdash; Directional intent; see `avigation` for the threshold applied.
+    - `pointerPosition` &mdash; Pointer position in screen pixels.
+    - `panDelta` &mdash; Pan movement for this frame, not an absolute offset.
+    - `zoomDelta` &mdash; Zoom change for this frame, not an absolute zoom.
 
 `public MapInputFrame()`
 
-:   &mdash;
+:   Creates a frame with `hasPointerPosition` stated outright, for sources that know whether a pointer exists this frame.
+    - `navigation` &mdash; Directional intent; see `avigation` for the threshold applied.
+    - `pointerPosition` &mdash; Pointer position in screen pixels.
+    - `panDelta` &mdash; Pan movement for this frame, not an absolute offset.
+    - `zoomDelta` &mdash; Zoom change for this frame, not an absolute zoom.
+    - `hasPointerPosition` &mdash; False when no pointer exists, which makes the controller anchor zoom on the focused node instead.
 
 **Properties**
 
 `public bool HasPointerPosition`
 
-:   &mdash;
+:   Whether `ointerPosition` is usable this frame. It decides the zoom anchor: with a pointer the map zooms around it, without one it zooms around the focused node.
 
 `public Vector2 Navigation`
 
-:   &mdash;
+:   Directional intent, normally -1..1 per axis. The controller follows the dominant axis and ignores both axes below 0.5, so a stick, a d-pad, and key axes all behave the same.
 
 `public Vector2 PanDelta`
 
-:   &mdash;
+:   Pan movement for this frame in the source's own units; the controller scales it by its pan sensitivity and adds it to `apInputController.Pan`.
 
 `public bool PinchActive`
 
-:   &mdash;
+:   True while a two-finger pinch is in progress. The controller suppresses pointer activation on those frames, so a pinch cannot select a node.
 
 `public Vector2 PointerPosition`
 
-:   &mdash;
+:   Pointer position in screen pixels, meaningful only while `asPointerPosition` is set.
 
 `public bool PointerPressed`
 
-:   &mdash;
+:   Set for the one frame the source reports a press or tap. The controller hit-tests at `ointerPosition` and submits the node it finds.
 
 `public bool Submit`
 
-:   &mdash;
+:   Set for the one frame activation was requested; the controller then submits the focused node. Ignored when a pointer press already activated a node in the same frame, so a tap never selects twice.
 
 `public float ZoomDelta`
 
-:   &mdash;
+:   Zoom change for this frame, added to the current zoom after the controller's zoom sensitivity. Wheel sources report the wheel delta, pinch sources the scale factor minus one.
 
 ---
 
@@ -1032,7 +1083,7 @@ public readonly struct MapInputFrame
 public enum MapNavigationDirection
 ```
 
-`BranchWeaver.Runtime` &middot; <small>Runtime/Runtime/MapNavigation.cs</small>
+`BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapNavigation.cs</small>
 
 !!! warning "Not yet documented"
     This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
@@ -1052,7 +1103,7 @@ public enum MapNavigationDirection
 public sealed class MapNavigationModel
 ```
 
-`BranchWeaver.Runtime` &middot; <small>Runtime/Runtime/MapNavigation.cs</small>
+`BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapNavigation.cs</small>
 
 !!! warning "Not yet documented"
     This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
@@ -1089,16 +1140,18 @@ public sealed class MapNavigationModel
 public readonly struct MapNodeRuntimeState : IComparable<MapNodeRuntimeState>
 ```
 
-`BranchWeaver.Runtime` &middot; <small>Runtime/Runtime/MapRuntimeState.cs</small>
+`BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapRuntimeState.cs</small>
 
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
+One node's derived display state: the visual state a presenter styles it with, plus
+the fog state that decides whether it can be seen at all. An immutable value read
+out of a `apRuntimeStateSnapshot`; it is never updated in place, so a
+copy keeps reporting the revision it was taken from.
 
 **Constructors**
 
 `public MapNodeRuntimeState(StableId nodeId, MapNodeVisualState visualState, MapFogState fogState)`
 
-:   &mdash;
+:   Pairs a node with the visual and fog state derived for it.
 
 **Properties**
 
@@ -1118,36 +1171,49 @@ public readonly struct MapNodeRuntimeState : IComparable<MapNodeRuntimeState>
 
 `public int CompareTo(MapNodeRuntimeState other)`
 
-:   &mdash;
+:   Orders by `odeId` alone, ignoring both states. This is what gives a snapshot's node list an order that depends on the graph and not on progress.
 
 ---
 
 ## MapNodeViewData
 
+:material-star: **Start here**
+
 ```csharp
 public readonly struct MapNodeViewData
 ```
 
-`BranchWeaver.Runtime` &middot; <small>Runtime/Runtime/MapRuntimeContracts.cs</small>
+`BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapRuntimeContracts.cs</small>
 
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
+Everything a node view needs to draw one node in one presented state: the
+graph node, where it sits, its compiled type, and its visual and fog state.
+
+Immutable and passed by value, so a view may keep a copy but must not expect
+that copy to change. The presenter rebuilds the data and calls
+`MapNodeView.Bind` again when the node's presented state changes,
+which is why a view never has to poll the graph or the traversal state.
 
 **Constructors**
 
 `public MapNodeViewData()`
 
-:   &mdash;
+:   Builds view data without presentation metrics: the label and tooltip are taken straight off `nodeType` unlocalized, the node size is a nominal default, and `asPresentationPosition` stays false so the view places and sizes the node from `position` itself.
+    - `nodeType` &mdash; The compiled type this node draws as; null leaves the label and tooltip empty.
 
 `public MapNodeViewData()`
 
-:   &mdash;
+:   The full form the presenter builds: placement and size are already resolved into presentation units, and the label and tooltip have already been through the localization adapter.
+    - `presentationPosition` &mdash; Where to draw the node, in presentation units.
+    - `nodeSize` &mdash; Unstyled node size, in the same units as `presentationPosition`.
+    - `hasPresentationPosition` &mdash; False to tell the view that `presentationPosition` and `nodeSize` are not authoritative and it should place and size the node itself.
+    - `displayLabel` &mdash; Localized label; null is stored as an empty string, which asks the view to draw no label.
+    - `tooltip` &mdash; Localized tooltip; null is stored as an empty string.
 
 **Properties**
 
 `public string DisplayLabel`
 
-:   &mdash;
+:   Node label, already localized. Never null; empty asks the view to draw no label.
 
 `public MapFogState FogState`
 
@@ -1155,7 +1221,7 @@ public readonly struct MapNodeViewData
 
 `public bool HasPresentationPosition`
 
-:   &mdash;
+:   False when this data was built without presentation metrics, in which case the view must place and size the node from `osition` itself instead of trusting `resentationPosition`.
 
 `public MapNode Node`
 
@@ -1163,7 +1229,7 @@ public readonly struct MapNodeViewData
 
 `public float NodeSize`
 
-:   &mdash;
+:   Node size in the same presentation units as `resentationPosition`. This is the unstyled base size: a style scales it per visual state, so it is not necessarily the size drawn.
 
 `public CompiledMapNodeType NodeType`
 
@@ -1175,11 +1241,11 @@ public readonly struct MapNodeViewData
 
 `public Vector2 PresentationPosition`
 
-:   &mdash;
+:   Where to draw the node, in presentation units. Meaningful only when `asPresentationPosition` is true.
 
 `public string Tooltip`
 
-:   &mdash;
+:   Node tooltip, already localized. Never null; empty when the node type declares none.
 
 `public MapNodeVisualState VisualState`
 
@@ -1193,62 +1259,35 @@ public readonly struct MapNodeViewData
 public enum MapNodeVisualState
 ```
 
-`BranchWeaver.Runtime` &middot; <small>Runtime/Runtime/MapRuntimeState.cs</small>
+`BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapRuntimeState.cs</small>
 
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
+How one node reads to the player, and the state a presenter styles that node with.
+
+A node can satisfy several of these at once, so the state that wins is the first
+match in a fixed order: completed, current, available, visited, locked, hidden.
+Like fog, this is derived from progression rather than stored, so it can never
+disagree with the save it came from.
 
 | Value | Meaning |
 | --- | --- |
-| `Hidden` | &mdash; |
-| `Locked` | &mdash; |
-| `Available` | &mdash; |
-| `Current` | &mdash; |
-| `Visited` | &mdash; |
-| `Completed` | &mdash; |
-
----
-
-## MapPresentationMetrics
-
-```csharp
-public sealed class MapPresentationMetrics
-```
-
-`BranchWeaver.Runtime` &middot; <small>Runtime/Runtime/MapPresentationMetrics.cs</small>
-
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
-
-**Properties**
-
-`public Vector2 ContentSize`
-
-:   &mdash;
-
-`public float NodeSize`
-
-:   &mdash;
-
-**Methods**
-
-`public static MapPresentationMetrics Create(MapGraph graph, CompiledMapTheme theme)`
-
-:   &mdash;
-
-`public Vector2 ToPresentationPosition(NormalizedMapPosition position)`
-
-:   &mdash;
+| `Hidden` | Not discovered yet: not drawn, and skipped by focus and hit-testing. |
+| `Locked` | Discovered but not reachable yet, so it is drawn dimmed rather than hidden. |
+| `Available` | Reachable now: the traveller may enter this node. |
+| `Current` | The node the traveller is on, entered but not yet completed. |
+| `Visited` | Reached earlier with no completion recorded; a completed node reports `ompleted`. |
+| `Completed` | Reached and finished, with its completion result recorded in the progression. |
 
 ---
 
 ## MapPresenterBase
 
+:material-puzzle: **Extension point** &mdash; implement this yourself to change behaviour
+
 ```csharp
 public abstract class MapPresenterBase : MonoBehaviour, IMapPresentationHost
 ```
 
-`BranchWeaver.Runtime` &middot; <small>Runtime/Runtime/MapPresenterBase.cs</small>
+`BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapPresenterBase.cs</small>
 
 !!! warning "Not yet documented"
     This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
@@ -1343,11 +1382,13 @@ public abstract class MapPresenterBase : MonoBehaviour, IMapPresentationHost
 
 ## MapRuntimeContent
 
+:material-star: **Start here**
+
 ```csharp
 public sealed class MapRuntimeContent
 ```
 
-`BranchWeaver.Runtime` &middot; <small>Runtime/Runtime/MapRuntimeContent.cs</small>
+`BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapRuntimeContent.cs</small>
 
 !!! warning "Not yet documented"
     This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
@@ -1376,26 +1417,13 @@ public sealed class MapRuntimeContent
 
 ---
 
-## MapRuntimeDiagnosticCodes
-
-```csharp
-public static class MapRuntimeDiagnosticCodes
-```
-
-`BranchWeaver.Runtime` &middot; <small>Runtime/Runtime/MapRuntimeContracts.cs</small>
-
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
-
----
-
 ## MapRuntimeStateDeriver
 
 ```csharp
 public static class MapRuntimeStateDeriver
 ```
 
-`BranchWeaver.Runtime` &middot; <small>Runtime/Runtime/MapRuntimeState.cs</small>
+`BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapRuntimeState.cs</small>
 
 !!! warning "Not yet documented"
     This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
@@ -1418,7 +1446,7 @@ public static class MapRuntimeStateDeriver
 public sealed class MapRuntimeStateSnapshot
 ```
 
-`BranchWeaver.Runtime` &middot; <small>Runtime/Runtime/MapRuntimeState.cs</small>
+`BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapRuntimeState.cs</small>
 
 !!! warning "Not yet documented"
     This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
@@ -1453,10 +1481,14 @@ public sealed class MapRuntimeStateSnapshot
 public sealed class MapSelectionResult
 ```
 
-`BranchWeaver.Runtime` &middot; <small>Runtime/Runtime/MapRuntimeContracts.cs</small>
+`BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapRuntimeContracts.cs</small>
 
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
+The outcome of asking the controller to move to a node.
+
+It separates a request that never reached the traversal session — an unknown
+node, a node that is not available, or a controller already dispatching
+callbacks — from one that did, where `ransition` carries the
+session's accept or reject.
 
 **Properties**
 
@@ -1466,72 +1498,26 @@ public sealed class MapSelectionResult
 
 `public bool Succeeded`
 
-:   &mdash;
+:   True only when a move was attempted and the session accepted it, so an ignored request never reads as a success.
 
 `public MapTransitionResult Transition`
 
-:   &mdash;
+:   The session's result for the move, or null when the request never reached the session.
 
 `public bool WasAvailable`
 
-:   &mdash;
+:   Whether the node was available when the request arrived. False on a request that was dropped without being attempted.
 
 **Methods**
 
 `public static MapSelectionResult Attempted(StableId nodeId, bool wasAvailable, MapTransitionResult transition)`
 
-:   &mdash;
+:   Records a request that reached the session, carrying the result it produced.
+    - `transition` &mdash; The session's accept or reject for the move; `ucceeded` follows it.
 
 `public static MapSelectionResult Ignored(StableId nodeId)`
 
-:   &mdash;
-
----
-
-## MapSerializedEventBridge
-
-```csharp
-public sealed class MapSerializedEventBridge
-```
-
-`BranchWeaver.Runtime` &middot; <small>Runtime/Runtime/MapTraversalController.cs</small>
-
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
-
-**Properties**
-
-`public IList<MapUnityEvent> AvailabilityChanged`
-
-:   &mdash;
-
-`public IList<MapUnityEvent> MapCompleted`
-
-:   &mdash;
-
-`public IList<MapUnityEvent> MapGenerated`
-
-:   &mdash;
-
-`public IList<MapStringUnityEvent> NodeCompleted`
-
-:   &mdash;
-
-`public IList<MapStringUnityEvent> NodeEntered`
-
-:   &mdash;
-
-`public IList<MapStringUnityEvent> NodeSelectionRequested`
-
-:   &mdash;
-
-`public IList<MapUnityEvent> SaveRequested`
-
-:   &mdash;
-
-`public IList<MapUnityEvent> ValidationFailed`
-
-:   &mdash;
+:   Records a request that was dropped before the session saw it: `ransition` stays null and `ucceeded` is false.
 
 ---
 
@@ -1541,7 +1527,7 @@ public sealed class MapSerializedEventBridge
 public sealed class MapSetupHierarchyBinding : MonoBehaviour
 ```
 
-`BranchWeaver.Runtime` &middot; <small>Runtime/Runtime/MapSetupHierarchyBinding.cs</small>
+`BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapSetupHierarchyBinding.cs</small>
 
 Durable identity for scene objects created and owned by the BranchWeaver setup wizard.
 
@@ -1579,86 +1565,15 @@ Durable identity for scene objects created and owned by the BranchWeaver setup w
 
 ---
 
-## MapTouchGestureInterpreter
-
-```csharp
-public sealed class MapTouchGestureInterpreter
-```
-
-`BranchWeaver.Runtime` &middot; <small>Runtime/Runtime/MapInput.cs</small>
-
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
-
-**Methods**
-
-`public MapInputFrame Process(IReadOnlyList<MapTouchSample> touches)`
-
-:   &mdash;
-
----
-
-## MapTouchPhase
-
-```csharp
-public enum MapTouchPhase
-```
-
-`BranchWeaver.Runtime` &middot; <small>Runtime/Runtime/MapInput.cs</small>
-
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
-
-| Value | Meaning |
-| --- | --- |
-| `Began` | &mdash; |
-| `Moved` | &mdash; |
-| `Stationary` | &mdash; |
-| `Ended` | &mdash; |
-| `Cancelled` | &mdash; |
-
----
-
-## MapTouchSample
-
-```csharp
-public readonly struct MapTouchSample
-```
-
-`BranchWeaver.Runtime` &middot; <small>Runtime/Runtime/MapInput.cs</small>
-
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
-
-**Constructors**
-
-`public MapTouchSample(int fingerId, Vector2 position, MapTouchPhase phase)`
-
-:   &mdash;
-
-**Properties**
-
-`public int FingerId`
-
-:   &mdash;
-
-`public MapTouchPhase Phase`
-
-:   &mdash;
-
-`public Vector2 Position`
-
-:   &mdash;
-
----
-
 ## MapTraversalController
+
+:material-star: **Start here**
 
 ```csharp
 public sealed class MapTraversalController : MonoBehaviour, IMapDevelopmentHost
 ```
 
-`BranchWeaver.Runtime` &middot; <small>Runtime/Runtime/MapTraversalController.cs</small>
+`BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapTraversalController.cs</small>
 
 !!! warning "Not yet documented"
     This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
@@ -1839,32 +1754,13 @@ public sealed class MapTraversalController : MonoBehaviour, IMapDevelopmentHost
 
 ---
 
-## NullMapAudioCueAdapter
-
-```csharp
-public sealed class NullMapAudioCueAdapter : IMapAudioCueAdapter
-```
-
-`BranchWeaver.Runtime` &middot; <small>Runtime/Runtime/MapRuntimeContracts.cs</small>
-
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
-
-**Methods**
-
-`public void Play(StableId cueId)`
-
-:   &mdash;
-
----
-
 ## PassthroughLocalizationAdapter
 
 ```csharp
 public sealed class PassthroughLocalizationAdapter : IMapLocalizationAdapter
 ```
 
-`BranchWeaver.Runtime` &middot; <small>Runtime/Runtime/MapRuntimeContracts.cs</small>
+`BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapRuntimeContracts.cs</small>
 
 !!! warning "Not yet documented"
     This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
@@ -1877,201 +1773,13 @@ public sealed class PassthroughLocalizationAdapter : IMapLocalizationAdapter
 
 ---
 
-## ProceduralNodeSprite
-
-```csharp
-public static class ProceduralNodeSprite
-```
-
-`BranchWeaver.Runtime` &middot; <small>Runtime/Runtime/ProceduralNodeSprite.cs</small>
-
-Generates shared rounded-square node sprites at runtime so icon-less node types render
-as calm rounded marks instead of hard white squares. Sprites are cached per
-(size, corner radius) pair and stay owned by the cache for the lifetime of the process;
-callers must not destroy them. The sprite is one world unit wide (pixelsPerUnit = size)
-so it drops into the existing 1x1 fallback-sprite sizing, and it stays readable
-(no makeNoLongerReadable) so tests can inspect pixel coverage.
-
-**Methods**
-
-`public static Sprite GetRounded(int sizePx, float cornerRadiusFraction)`
-
-:   &mdash;
-
----
-
-## WorldMapEdgeFactory
-
-```csharp
-public sealed class WorldMapEdgeFactory : IMapEdgeViewFactory, IMapViewFactoryLifetime
-```
-
-`BranchWeaver.Presentation.World2D` &middot; <small>Runtime/Presentation/World2D/WorldMapViews.cs</small>
-
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
-
-**Constructors**
-
-`public WorldMapEdgeFactory()`
-
-:   &mdash;
-
-`public WorldMapEdgeFactory(GameObject prefab)`
-
-:   &mdash;
-
-**Properties**
-
-`public int CreatedCount`
-
-:   &mdash;
-
-`public int ReleasedCount`
-
-:   &mdash;
-
-`public int ReusedCount`
-
-:   &mdash;
-
-**Methods**
-
-`public IMapEdgeView Create(Transform parent)`
-
-:   &mdash;
-
-`public void Dispose()`
-
-:   &mdash;
-
-`public void Release(IMapEdgeView view)`
-
-:   &mdash;
-
----
-
-## WorldMapEdgeView
-
-```csharp
-public sealed class WorldMapEdgeView : MonoBehaviour, IMapEdgeView, IMapEdgeTransitionView
-```
-
-`BranchWeaver.Presentation.World2D` &middot; <small>Runtime/Presentation/World2D/WorldMapViews.cs</small>
-
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
-
-**Properties**
-
-`public StableId EdgeId`
-
-:   &mdash;
-
-`public bool IsTransitioning`
-
-:   &mdash;
-
-`public Material OwnedMaterial`
-
-:   &mdash;
-
-`public IReadOnlyList<NormalizedMapPosition> Points`
-
-:   &mdash;
-
-`public Transform Transform`
-
-:   &mdash;
-
-**Methods**
-
-`public void AdvanceTransition(float deltaSeconds)`
-
-:   &mdash;
-
-`public void BeginTransition(MapFogState fromFog, MapFogState toFog, float durationSeconds)`
-
-:   &mdash;
-
-`public void Bind(MapEdgeViewData data)`
-
-:   &mdash;
-
-`public void CancelTransition(bool applyTerminalState)`
-
-:   &mdash;
-
-`public void ConfigureOwnedDefaultMaterial()`
-
-:   &mdash;
-
-`public void DisposeOwnedResources()`
-
-:   &mdash;
-
-`public void PrepareForBind()`
-
-:   &mdash;
-
-`public void RestoreAfterUnchangedBind()`
-
-:   &mdash;
-
-`public void SetActive(bool active)`
-
-:   &mdash;
-
----
-
-## WorldMapNodeFactory
-
-```csharp
-public sealed class WorldMapNodeFactory : IMapNodeViewFactory, IMapViewFactoryLifetime
-```
-
-`BranchWeaver.Presentation.World2D` &middot; <small>Runtime/Presentation/World2D/WorldMapViews.cs</small>
-
-!!! warning "Not yet documented"
-    This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
-
-**Properties**
-
-`public int CreatedCount`
-
-:   &mdash;
-
-`public int ReleasedCount`
-
-:   &mdash;
-
-`public int ReusedCount`
-
-:   &mdash;
-
-**Methods**
-
-`public IMapNodeView Create(BranchWeaver.Authoring.CompiledMapNodeType nodeType, Transform parent)`
-
-:   &mdash;
-
-`public void Dispose()`
-
-:   &mdash;
-
-`public void Release(IMapNodeView view)`
-
-:   &mdash;
-
----
-
 ## WorldMapNodeView
 
 ```csharp
 public sealed class WorldMapNodeView : MonoBehaviour, IMapNodeView, IMapNodeHitState, IMapNodeTransitionView, IMapFocusView
 ```
 
-`BranchWeaver.Presentation.World2D` &middot; <small>Runtime/Presentation/World2D/WorldMapViews.cs</small>
+`BranchWeaver.Presentation.World2D` &middot; <small>BranchWeaver/Runtime/Presentation/World2D/WorldMapViews.cs</small>
 
 !!! warning "Not yet documented"
     This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
@@ -2152,11 +1860,13 @@ public sealed class WorldMapNodeView : MonoBehaviour, IMapNodeView, IMapNodeHitS
 
 ## WorldMapPresenter
 
+:material-star: **Start here**
+
 ```csharp
 public sealed class WorldMapPresenter : MapPresenterBase
 ```
 
-`BranchWeaver.Presentation.World2D` &middot; <small>Runtime/Presentation/World2D/WorldMapPresenter.cs</small>
+`BranchWeaver.Presentation.World2D` &middot; <small>BranchWeaver/Runtime/Presentation/World2D/WorldMapPresenter.cs</small>
 
 !!! warning "Not yet documented"
     This type has no summary comment in the source. Its name and signature are accurate; the description is missing.
