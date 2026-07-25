@@ -1,41 +1,9 @@
 # Styling and appearance
 
-22 types in this area.
+21 types in this area.
 
 !!! abstract "On this page"
-    [CanvasMapNodeStyling](#canvasmapnodestyling) &middot; [CompiledMapStyle](#compiledmapstyle) &middot; [IMapStyledView](#imapstyledview) &middot; [MapBackdropTokens](#mapbackdroptokens) &middot; [MapEasing](#mapeasing) &middot; [MapEdgeCap](#mapedgecap) &middot; [MapEdgeStyleTokens](#mapedgestyletokens) &middot; [MapFillMode](#mapfillmode) &middot; [MapFitMode](#mapfitmode) &middot; [MapFramingTokens](#mapframingtokens) &middot; [MapMotionTokens](#mapmotiontokens) &middot; [MapNodeShape](#mapnodeshape) &middot; [MapNodeStateStyle](#mapnodestatestyle) &middot; [MapNodeStyleTokens](#mapnodestyletokens) &middot; [MapPaletteTokens](#mappalettetokens) &middot; [MapStyleDefaults](#mapstyledefaults) &middot; [MapStylePreset](#mapstylepreset) &middot; [MapStyleRuntime](#mapstyleruntime) &middot; [MapSurfaceGraphic](#mapsurfacegraphic) &middot; [MapSurfaceRequest](#mapsurfacerequest) &middot; [MapSurfaceTokens](#mapsurfacetokens) &middot; [MapTypographyTokens](#maptypographytokens)
-
-## CanvasMapNodeStyling
-
-```csharp
-public static class CanvasMapNodeStyling
-```
-
-`BranchWeaver.Presentation.Canvas` &middot; <small>BranchWeaver/Runtime/Presentation/Canvas/CanvasMapNodeStyling.cs</small>
-
-Turns a node's compiled type, visual state, and fog state into the surface
-request that draws it.
-
-Keeping this a pure function of its inputs means the same mapping drives the
-runtime views, the Map Studio graph, and the Style Browser previews, so what
-an author sees while editing is what ships. It also makes the mapping
-directly testable without a canvas.
-
-**Methods**
-
-`public static MapSurfaceRequest BuildBackdrop(CompiledMapStyle style)`
-
-:   Builds the surface request for the map backdrop.
-
-`public static MapSurfaceRequest BuildEdgeSegment()`
-
-:   Builds the surface request for one straight edge segment.
-
-`public static MapSurfaceRequest BuildNode()`
-
-:   Builds the surface request for one node.
-
----
+    [CompiledMapStyle](#compiledmapstyle) &middot; [IMapStyledView](#imapstyledview) &middot; [MapBackdropTokens](#mapbackdroptokens) &middot; [MapEasing](#mapeasing) &middot; [MapEdgeCap](#mapedgecap) &middot; [MapEdgeStyleTokens](#mapedgestyletokens) &middot; [MapFillMode](#mapfillmode) &middot; [MapFitMode](#mapfitmode) &middot; [MapFramingTokens](#mapframingtokens) &middot; [MapMotionTokens](#mapmotiontokens) &middot; [MapNodeShape](#mapnodeshape) &middot; [MapNodeStateStyle](#mapnodestatestyle) &middot; [MapNodeStyleTokens](#mapnodestyletokens) &middot; [MapPaletteTokens](#mappalettetokens) &middot; [MapStyleDefaults](#mapstyledefaults) &middot; [MapStylePreset](#mapstylepreset) &middot; [MapStyleRuntime](#mapstyleruntime) &middot; [MapSurfaceGraphic](#mapsurfacegraphic) &middot; [MapSurfaceRequest](#mapsurfacerequest) &middot; [MapSurfaceTokens](#mapsurfacetokens) &middot; [MapTypographyTokens](#maptypographytokens)
 
 ## CompiledMapStyle
 

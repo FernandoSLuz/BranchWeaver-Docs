@@ -143,7 +143,6 @@
  ],
  "_promoted": [
   "CanvasMapEdgeView",
-  "CanvasMapNodeStyling",
   "CanvasMapNodeView",
   "MapFrameUtility",
   "MapRuntimeStateDeriver",
@@ -152,6 +151,7 @@
   "MapStyleRuntime",
   "MapSurfaceGraphic",
   "MapSurfaceRequest",
+  "MapSurfaceStyling",
   "PassthroughLocalizationAdapter",
   "SampleSceneBootstrap",
   "WorldMapEdgeView",

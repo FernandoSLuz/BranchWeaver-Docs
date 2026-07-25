@@ -124,7 +124,7 @@ than one: `Grid Spacing` above zero **and** a palette `Grid Color` with alpha ab
     over whatever is behind it — which is why the sample scenes supply their own scenic
     image. To draw the styled backdrop in a scene, pass a background presenter that
     implements both `IMapBackgroundPresenter` and `IMapStyledView` to `Configure`, and hand
-    `CanvasMapNodeStyling.BuildBackdrop(style)` to a `MapSurfaceGraphic`.
+    `MapSurfaceStyling.BuildBackdrop(style)` to a `MapSurfaceGraphic`.
 
 If nodes render as plain rectangles with no shading anywhere, that is the shader failing to
 load rather than a setting on this page: see

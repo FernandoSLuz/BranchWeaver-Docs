@@ -94,7 +94,6 @@ The types a new project meets first.
 | [`MapThemeAsset`](authoring-assets.md#mapthemeasset) | class | Authoring assets | The authored asset that decides how a generated map is laid out and drawn: layer and node spacing, which axis the layers run along, how edges are shaped, the two colours the built-... |
 | [`MapThemeCompilation`](authoring-assets.md#mapthemecompilation) | class | Authoring assets | The result of compiling one `MapThemeAsset`: the immutable theme on success, and in every case the diagnostics the compiler gathered. |
 | [`MapThemeLimits`](authoring-assets.md#mapthemelimits) | class | Authoring assets | The ceilings a map theme is compiled against. |
-| [`CanvasMapNodeStyling`](styling-and-appearance.md#canvasmapnodestyling) | class | Styling and appearance | Turns a node's compiled type, visual state, and fog state into the surface request that draws it. |
 | [`CompiledMapStyle`](styling-and-appearance.md#compiledmapstyle) | class | Styling and appearance | The immutable style the views read. |
 | [`IMapStyledView`](styling-and-appearance.md#imapstyledview) | interface | Styling and appearance | Implemented by a view that can be dressed by a map style and advanced by a visual clock. |
 | [`MapBackdropTokens`](styling-and-appearance.md#mapbackdroptokens) | struct | Styling and appearance | The backdrop drawn behind the map. |
@@ -161,6 +160,7 @@ The types a new project meets first.
 | [`MapRuntimeStateSnapshot`](presentation-and-views.md#mapruntimestatesnapshot) | class | Presentation and views | The whole map's derived display state for one progression revision: one entry per node, sorted by node ID and addressable by ID. |
 | [`MapSelectionResult`](presentation-and-views.md#mapselectionresult) | class | Presentation and views | The outcome of asking the controller to move to a node. |
 | [`MapSetupHierarchyBinding`](presentation-and-views.md#mapsetuphierarchybinding) | class | Presentation and views | Durable identity for scene objects created and owned by the BranchWeaver setup wizard. |
+| [`MapSurfaceStyling`](presentation-and-views.md#mapsurfacestyling) | class | Presentation and views | Turns a node's compiled type, visual state, and fog state into the surface request that draws it. |
 | [`MapTraversalController`](presentation-and-views.md#maptraversalcontroller) | class | Presentation and views | The scene component that owns one traversal run: it holds the graph, the progression, and the compiled content, applies every move through a `MapSession`, and reports what happened... |
 | [`PassthroughLocalizationAdapter`](presentation-and-views.md#passthroughlocalizationadapter) | class | Presentation and views | The `IMapLocalizationAdapter` used when a project has no localization system wired up: it returns the authored fallback text unchanged, falling back to the key itself when no text ... |
 | [`WorldMapEdgeView`](presentation-and-views.md#worldmapedgeview) | class | Presentation and views | Draws one edge between two map nodes as a world-space line, and is the edge view the World2D presentation builds by default. |

@@ -1,9 +1,9 @@
 # Presentation and views
 
-50 types in this area.
+51 types in this area.
 
 !!! abstract "On this page"
-    [CanvasMapEdgeView](#canvasmapedgeview) &middot; [CanvasMapNodeView](#canvasmapnodeview) &middot; [CanvasMapPresenter](#canvasmappresenter) &middot; [DefaultMapNodeHitTester](#defaultmapnodehittester) &middot; [IMapAudioCueAdapter](#imapaudiocueadapter) &middot; [IMapBackgroundPresenter](#imapbackgroundpresenter) &middot; [IMapDevelopmentHost](#imapdevelopmenthost) &middot; [IMapEdgeAvailabilityView](#imapedgeavailabilityview) &middot; [IMapEdgeTransitionView](#imapedgetransitionview) &middot; [IMapEdgeView](#imapedgeview) &middot; [IMapEdgeViewFactory](#imapedgeviewfactory) &middot; [IMapFocusIndicatorPresenter](#imapfocusindicatorpresenter) &middot; [IMapFocusView](#imapfocusview) &middot; [IMapInputSource](#imapinputsource) &middot; [IMapLocalizationAdapter](#imaplocalizationadapter) &middot; [IMapNodeHitState](#imapnodehitstate) &middot; [IMapNodeHitTester](#imapnodehittester) &middot; [IMapNodeTransitionView](#imapnodetransitionview) &middot; [IMapNodeView](#imapnodeview) &middot; [IMapNodeViewFactory](#imapnodeviewfactory) &middot; [IMapPresentationTransitionAdapter](#imappresentationtransitionadapter) &middot; [IMapViewFactoryLifetime](#imapviewfactorylifetime) &middot; [IPlayerPawnPresenter](#iplayerpawnpresenter) &middot; [IRouteMarkerPresenter](#iroutemarkerpresenter) &middot; [InputSystemSignalAdapter](#inputsystemsignaladapter) &middot; [LegacyMapInputSource](#legacymapinputsource) &middot; [MapCameraBloom](#mapcamerabloom) &middot; [MapDevelopmentCommandResult](#mapdevelopmentcommandresult) &middot; [MapDevelopmentFailureKind](#mapdevelopmentfailurekind) &middot; [MapEdgeViewData](#mapedgeviewdata) &middot; [MapFogSettings](#mapfogsettings) &middot; [MapFogState](#mapfogstate) &middot; [MapInputController](#mapinputcontroller) &middot; [MapInputFrame](#mapinputframe) &middot; [MapNavigationDirection](#mapnavigationdirection) &middot; [MapNavigationModel](#mapnavigationmodel) &middot; [MapNodeRuntimeState](#mapnoderuntimestate) &middot; [MapNodeViewData](#mapnodeviewdata) &middot; [MapNodeVisualState](#mapnodevisualstate) &middot; [MapPresenterBase](#mappresenterbase) &middot; [MapRuntimeContent](#mapruntimecontent) &middot; [MapRuntimeStateDeriver](#mapruntimestatederiver) &middot; [MapRuntimeStateSnapshot](#mapruntimestatesnapshot) &middot; [MapSelectionResult](#mapselectionresult) &middot; [MapSetupHierarchyBinding](#mapsetuphierarchybinding) &middot; [MapTraversalController](#maptraversalcontroller) &middot; [PassthroughLocalizationAdapter](#passthroughlocalizationadapter) &middot; [WorldMapEdgeView](#worldmapedgeview) &middot; [WorldMapNodeView](#worldmapnodeview) &middot; [WorldMapPresenter](#worldmappresenter)
+    [CanvasMapEdgeView](#canvasmapedgeview) &middot; [CanvasMapNodeView](#canvasmapnodeview) &middot; [CanvasMapPresenter](#canvasmappresenter) &middot; [DefaultMapNodeHitTester](#defaultmapnodehittester) &middot; [IMapAudioCueAdapter](#imapaudiocueadapter) &middot; [IMapBackgroundPresenter](#imapbackgroundpresenter) &middot; [IMapDevelopmentHost](#imapdevelopmenthost) &middot; [IMapEdgeAvailabilityView](#imapedgeavailabilityview) &middot; [IMapEdgeTransitionView](#imapedgetransitionview) &middot; [IMapEdgeView](#imapedgeview) &middot; [IMapEdgeViewFactory](#imapedgeviewfactory) &middot; [IMapFocusIndicatorPresenter](#imapfocusindicatorpresenter) &middot; [IMapFocusView](#imapfocusview) &middot; [IMapInputSource](#imapinputsource) &middot; [IMapLocalizationAdapter](#imaplocalizationadapter) &middot; [IMapNodeHitState](#imapnodehitstate) &middot; [IMapNodeHitTester](#imapnodehittester) &middot; [IMapNodeTransitionView](#imapnodetransitionview) &middot; [IMapNodeView](#imapnodeview) &middot; [IMapNodeViewFactory](#imapnodeviewfactory) &middot; [IMapPresentationTransitionAdapter](#imappresentationtransitionadapter) &middot; [IMapViewFactoryLifetime](#imapviewfactorylifetime) &middot; [IPlayerPawnPresenter](#iplayerpawnpresenter) &middot; [IRouteMarkerPresenter](#iroutemarkerpresenter) &middot; [InputSystemSignalAdapter](#inputsystemsignaladapter) &middot; [LegacyMapInputSource](#legacymapinputsource) &middot; [MapCameraBloom](#mapcamerabloom) &middot; [MapDevelopmentCommandResult](#mapdevelopmentcommandresult) &middot; [MapDevelopmentFailureKind](#mapdevelopmentfailurekind) &middot; [MapEdgeViewData](#mapedgeviewdata) &middot; [MapFogSettings](#mapfogsettings) &middot; [MapFogState](#mapfogstate) &middot; [MapInputController](#mapinputcontroller) &middot; [MapInputFrame](#mapinputframe) &middot; [MapNavigationDirection](#mapnavigationdirection) &middot; [MapNavigationModel](#mapnavigationmodel) &middot; [MapNodeRuntimeState](#mapnoderuntimestate) &middot; [MapNodeViewData](#mapnodeviewdata) &middot; [MapNodeVisualState](#mapnodevisualstate) &middot; [MapPresenterBase](#mappresenterbase) &middot; [MapRuntimeContent](#mapruntimecontent) &middot; [MapRuntimeStateDeriver](#mapruntimestatederiver) &middot; [MapRuntimeStateSnapshot](#mapruntimestatesnapshot) &middot; [MapSelectionResult](#mapselectionresult) &middot; [MapSetupHierarchyBinding](#mapsetuphierarchybinding) &middot; [MapSurfaceStyling](#mapsurfacestyling) &middot; [MapTraversalController](#maptraversalcontroller) &middot; [PassthroughLocalizationAdapter](#passthroughlocalizationadapter) &middot; [WorldMapEdgeView](#worldmapedgeview) &middot; [WorldMapNodeView](#worldmapnodeview) &middot; [WorldMapPresenter](#worldmappresenter)
 
 ## CanvasMapEdgeView
 
@@ -1718,6 +1718,43 @@ Durable identity for scene objects created and owned by the BranchWeaver setup w
 :   Records the optional Input System components setup owns, replacing whatever was recorded before. Like `Configure` it only writes the record; passing nulls is how setup clears it after removing those components, which is what happens when setup is re-run with Input System support switched off or the package is not installed.
     - `ownedBridge` &mdash; The bridge component, typed loosely because it is resolved by name so this assembly stays free of a package reference.
     - `ownedSignals` &mdash; The signal adapter the bridge was bound to.
+
+---
+
+## MapSurfaceStyling
+
+```csharp
+public static class MapSurfaceStyling
+```
+
+`BranchWeaver.Runtime` &middot; <small>BranchWeaver/Runtime/Runtime/MapSurfaceStyling.cs</small>
+
+Turns a node's compiled type, visual state, and fog state into the surface
+request that draws it.
+
+Keeping this a pure function of its inputs means the same mapping drives the
+runtime views, the Map Studio graph, and the Style Browser previews, so what
+an author sees while editing is what ships. It also makes the mapping
+directly testable without a canvas.
+
+It lives in the shared runtime assembly rather than beside the Canvas views
+on purpose: a style has nothing to do with uGUI, and putting the mapping here
+is what lets the Canvas and World2D presentations agree on what a node of a
+given state should look like instead of each deciding separately.
+
+**Methods**
+
+`public static MapSurfaceRequest BuildBackdrop(CompiledMapStyle style)`
+
+:   Builds the surface request for the map backdrop.
+
+`public static MapSurfaceRequest BuildEdgeSegment()`
+
+:   Builds the surface request for one straight edge segment.
+
+`public static MapSurfaceRequest BuildNode()`
+
+:   Builds the surface request for one node.
 
 ---
 

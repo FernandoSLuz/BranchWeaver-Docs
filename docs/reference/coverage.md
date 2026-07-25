@@ -22,8 +22,8 @@ Coverage is reported over the published surface for the same reason: documenting
 | [Getting a map](getting-a-map.md) | 12 | 12 | 100% |
 | [Traversal and progression](traversal-and-progression.md) | 8 | 8 | 100% |
 | [Authoring assets](authoring-assets.md) | 17 | 17 | 100% |
-| [Styling and appearance](styling-and-appearance.md) | 22 | 22 | 100% |
-| [Presentation and views](presentation-and-views.md) | 50 | 50 | 100% |
+| [Styling and appearance](styling-and-appearance.md) | 21 | 21 | 100% |
+| [Presentation and views](presentation-and-views.md) | 51 | 51 | 100% |
 | [Framing, input and navigation](framing-input-and-navigation.md) | 7 | 7 | 100% |
 | [Rules and constraints](rules-and-constraints.md) | 18 | 18 | 100% |
 | [Graph, layout and geometry](graph-layout-and-geometry.md) | 10 | 10 | 100% |
