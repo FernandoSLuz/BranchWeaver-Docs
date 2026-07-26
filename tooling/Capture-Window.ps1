@@ -30,14 +30,17 @@
   capture to be considered real. Defaults to 0.02.
 
 .PARAMETER RegionScreen
-  Optional "x,y,width,height" in ABSOLUTE SCREEN pixels, cropping the capture to
-  one region. Documentation shots should be focused on the thing being explained;
-  a whole-editor shot is only right when the point is the whole editor.
+  Optional "x,y,width,height" in ABSOLUTE SCREEN PHYSICAL PIXELS, cropping the
+  capture to one region. Documentation shots should be focused on the thing being
+  explained; a whole-editor shot is only right when the point is the whole editor.
 
   Screen coordinates are used rather than window-relative ones because the caller
   (Unity) knows where a panel or a single UI element sits on screen, while this
   script knows where the captured window sits. Subtracting one from the other is
-  exact and needs no shared assumption about title-bar height or DPI.
+  exact and needs no shared assumption about title-bar height.
+
+  Physical, not logical: this script opts out of DPI virtualisation (see below), so
+  a caller working in logical points must multiply by the display scale first.
 
 .PARAMETER Pad
   Pixels of margin added around the region, so a focused shot does not clip the
@@ -56,6 +59,19 @@ param(
 $ErrorActionPreference = 'Stop'
 
 Add-Type -AssemblyName System.Drawing
+
+# Opt out of DPI virtualisation BEFORE any window is measured. PowerShell is DPI-unaware
+# by default, and an unaware process is told a 150%-scaled window is two-thirds of its
+# real size while PrintWindow still renders it full size -- so the bitmap gets sized for
+# the small number and keeps only the top-left of what was drawn. That is not a visible
+# failure: the result is a plausible window missing its right-hand side, and it shipped
+# eight cropped screenshots to two documentation sites. The library owns the opt-out so
+# both capture scripts get the same behaviour from one place.
+$here = Split-Path -Parent $PSCommandPath
+$captureLib = Join-Path $here 'WindowCaptureLib.ps1'
+if (-not (Test-Path $captureLib)) { throw "Missing $captureLib" }
+. $captureLib
+Write-Output ("dpi awareness: {0}" -f [DocsDpiAwareness]::Describe())
 
 $signature = @'
 using System;

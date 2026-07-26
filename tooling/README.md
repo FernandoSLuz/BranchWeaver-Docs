@@ -35,6 +35,78 @@ Capture-EditorWindows.ps1 `
 ```
 
 A target is `TypeName|file-stem|width|height|fixture`, everything after the stem optional.
+Sizes are in **logical points**; the PNG comes out at points times the display scale.
+
+### The exact shipped set
+
+Recorded because it was not, and the eight images below then shipped cropped for weeks
+with nobody able to reproduce the run that made them.
+
+TempoForge-ImportHost:
+
+```
+BattleWorkbenchWindow|editor-workbench|1300|860|workbench
+ContentValidatorWindow|editor-content-validator|1120|300|validator
+FormationEditorWindow|editor-formation-editor|1200|800|formation
+BattleSkinBrowserWindow|editor-skin-browser|1180|620
+BattleTemplateBrowserWindow|editor-battle-template-browser|1200|910
+```
+
+BranchWeaver-ImportHost:
+
+```
+MapStudioWindow|editor-map-studio|1300|860
+MapStyleBrowserWindow|editor-style-browser|1180|800
+MapSetupWizard|editor-setup-wizard|900|640
+```
+
+Heights are chosen so the window is filled rather than trailing dead space, which is a
+judgement about each panel's content and has to be re-made if that content changes. The
+Content Validator is the short one on purpose: with a valid catalog it draws a toolbar
+and one verdict line, so a tall window is nine-tenths void.
+
+### Display scaling silently cropped every one of these
+
+**The failure.** PowerShell is DPI-unaware by default, so Windows virtualises what it is
+told: `GetWindowRect` returns **logical points** while `PrintWindow` renders the window at
+its true **physical pixel** size. The capture sized its bitmap from the first and filled it
+with the second, so on this machine's 150% display a 1180-point window produced a 1193-pixel
+bitmap holding the top-left two-thirds of a window that had rendered 1790 pixels wide.
+
+**Why nobody saw it.** A cropped window is not a broken image. It is a plausible-looking
+panel that happens to be missing its right-hand side, and `MinContentRatio` -- the only
+check there was -- scores a crop as perfectly healthy. `editor-skin-browser.png` shipped
+with "Apply to interfaces in open scen" cut mid-word.
+
+**The fix** is not arithmetic on the scale factor: it is to stop being lied to.
+`WindowCaptureLib.ps1` calls `SetProcessDpiAwarenessContext(PER_MONITOR_AWARE_V2)` at
+dot-source time, before any window is measured. `GetWindowRect` then returns physical
+pixels, the bitmap matches what `PrintWindow` draws, and no scaling correction is needed
+anywhere. Both capture scripts report the awareness they achieved on the first line of
+output; if it ever says `UNAWARE`, every image from that run is cropped.
+
+**Output sizes are therefore machine-dependent**: 1300 points is 1950 pixels at 150% and
+1300 at 100%. Same content, more pixels. That is the intended behaviour, not drift.
+
+### Two checks, because the obvious one is not sufficient
+
+`ExpectPoints{Width,Height}` is the real guard and it is arithmetic, not judgement: a
+window of *W* points at scale *S* renders *W×S* pixels, so a smaller bitmap is a
+photograph of part of it. The driver passes the size Unity itself reports, so the check
+needs no agreement about frame or title-bar thickness.
+
+`MaxEdgeBusy` is a backstop for crops from any other cause: the outermost row and column
+of a whole window are its frame, which is a near-constant line, while a cut through the
+middle of one is not. It is a backstop and not the guard because **it is not sufficient
+on its own** -- measured against the eight images that actually shipped cropped, it scored
+`editor-workbench` at 0.040 and `editor-content-validator` at 0.037 against 0.023 for a
+correct capture, because both crops happened to land in an empty panel. It would have
+passed two of the very images it was proposed to catch. The eight correct re-shoots all
+score 0.000.
+
+Comparing edge pixels for *equality* does not work either: DWM and PNG round-tripping put
+three shades of `(243,243,24x)` along one title-bar line, which reads as 57% "content".
+The comparison is against the line's median with a tolerance.
 
 ### How it is triggered
 

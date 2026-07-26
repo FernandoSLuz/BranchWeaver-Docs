@@ -36,6 +36,17 @@
 
 .PARAMETER TimeoutSeconds
   How long to wait for any single window to be arranged before giving up.
+
+.PARAMETER MaxEdgeBusy
+  Rejects a capture whose outermost row or column looks like sliced-through interface
+  rather than a window frame. Set to 0 to disable. See WindowCaptureLib.ps1.
+
+.NOTES
+  Output images are in PHYSICAL PIXELS, so on a scaled display they are larger than the
+  point size requested -- a 1300-point window is 1950 pixels at 150%. That is the whole
+  window rather than a scaled-down rendering of it, and it is what stops the capture
+  being cropped. Sizes are therefore expected to differ between machines with different
+  display scaling; the content is the same.
 #>
 [CmdletBinding()]
 param(
@@ -45,6 +56,7 @@ param(
     [Parameter(Mandatory = $true)][string[]]$Targets,
     [int]$TimeoutSeconds = 420,
     [int]$TopChrome = 0,
+    [double]$MaxEdgeBusy = 0.15,
     [switch]$KeepEditorOpen
 )
 
@@ -55,6 +67,10 @@ $here = Split-Path -Parent $PSCommandPath
 $captureLib = Join-Path $here 'WindowCaptureLib.ps1'
 if (-not (Test-Path $captureLib)) { throw "Missing $captureLib" }
 . $captureLib
+
+# Dot-sourcing the library opts this process out of DPI virtualisation. Report what it
+# achieved: on an UNAWARE host every capture below would be silently cropped.
+Write-Output ("dpi awareness: {0}" -f [DocsDpiAwareness]::Describe())
 
 $handshake = Join-Path $ProjectPath 'Temp\docs-window-capture'
 if (Test-Path $handshake) { Remove-Item -Recurse -Force $handshake }
@@ -118,23 +134,31 @@ try {
         # Let the compositor settle after the editor's own repaint loop.
         Start-Sleep -Milliseconds 1200
 
+        # The size Unity reports is in POINTS. The capture is in PHYSICAL PIXELS. Handing
+        # both to the capture is what lets it prove the whole window was photographed
+        # rather than its top-left corner -- see the header of WindowCaptureLib.ps1.
+        $expectW = [int]$info['width']
+        $expectH = [int]$info['height']
+
         # Photograph the panel's OWN window, found by title within this editor process, so
         # the image is exactly the panel with no cropping and no editor chrome. Falls back
         # to the whole editor window if the panel is docked rather than floating.
         $outFile = Join-Path $OutDir ($stem + '.png')
-        $result = Save-WindowRegion -TitleMatch $title -ProcessId $proc.Id -OutFile $outFile
+        $result = Save-WindowRegion -TitleMatch $title -ProcessId $proc.Id -OutFile $outFile `
+            -ExpectPointsWidth $expectW -ExpectPointsHeight $expectH -MaxEdgeBusy $MaxEdgeBusy
         if (-not $result.Ok -and $result.Reason -eq 'NO_WINDOW') {
             Write-Output ("  panel window '{0}' not found; falling back to the editor window" -f $title)
             $result = Save-WindowRegion `
                 -TitleMatch 'Unity' -ProcessId $proc.Id -OutFile $outFile -MainWindowOnly `
                 -RegionX ([int]$info['x']) -RegionY ([int]$info['y']) `
-                -RegionWidth ([int]$info['width']) -RegionHeight ([int]$info['height']) `
-                -TopChrome $TopChrome
+                -RegionWidth $expectW -RegionHeight $expectH `
+                -TopChrome $TopChrome -MaxEdgeBusy $MaxEdgeBusy
         }
 
         if ($result.Ok) {
-            Write-Output ("  OK  {0}  {1}x{2}  content={3:N3}" -f `
-                (Split-Path -Leaf $outFile), $result.Width, $result.Height, $result.ContentRatio)
+            Write-Output ("  OK  {0}  {1}x{2}  content={3:N3} edge={4:N3} scale={5:N2} (points {6}x{7})" -f `
+                (Split-Path -Leaf $outFile), $result.Width, $result.Height, `
+                $result.ContentRatio, $result.EdgeBusy, $result.Scale, $expectW, $expectH)
             $captured += $stem
         }
         else {
