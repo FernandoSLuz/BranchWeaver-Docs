@@ -417,7 +417,11 @@ function Save-WindowRegion {
         [int]$RegionHeight = 0,
         [int]$TopChrome = 0,
         [int]$Pad = 0,
-        [double]$MinContentRatio = 0.02,
+        # 0.02 was too generous to be a blank check. A Map Studio window that photographed
+        # entirely white scored 0.027 and sailed through, while every genuine capture in the
+        # shipped set scores between 0.14 and 0.54. 0.05 still sits far below the sparsest
+        # real window and would have rejected that one.
+        [double]$MinContentRatio = 0.05,
         [int]$ExpectPointsWidth = 0,
         [int]$ExpectPointsHeight = 0,
         [double]$MaxEdgeBusy = 0.15,
