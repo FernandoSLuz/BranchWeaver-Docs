@@ -70,6 +70,23 @@ fog multiplies the node's opacity by 0.75 for `Dimmed` and by 0 for `Hidden`. Se
 
 ## Style versus theme
 
+One map, two styles. Every node, every route and every position is identical, because a style cannot
+reach the graph that produced them.
+
+<div class="grid-2" markdown>
+
+<figure markdown>
+  ![The Wayfarer map on a dark background, nodes drawn as rounded squares with cyan glow and an amber current node named Cairn](../assets/images/style-slate-nocturne.png){ .shot }
+  <figcaption><strong>Slate Nocturne</strong> - dark, rounded, glowing.</figcaption>
+</figure>
+
+<figure markdown>
+  ![The same Wayfarer map on parchment, the same nodes drawn as flat circles with dashed routes and a red current node named Cairn](../assets/images/style-parchment-atlas.png){ .shot }
+  <figcaption><strong>Parchment Atlas</strong> - the same graph, the same layout, a different look.</figcaption>
+</figure>
+
+</div>
+
 Both exist, and they are not redundant.
 
 | Asset | Owns | Reaches the map through | Compiled |

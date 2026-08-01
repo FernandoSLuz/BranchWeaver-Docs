@@ -129,6 +129,14 @@ frame a world map by placing and sizing the camera. Pan clamping and focus recov
 already intersect the camera's pixel rect with the device safe area, so the focused node
 stays clear of a notch.
 
+![A World2D map in world space: two completed nodes drawn green, the current node amber, two
+locked nodes dimmed, each labelled with its node type and joined by drawn
+routes](../assets/images/world2d-runtime-traversal.png){ .shot }
+
+That is the same map data the Canvas presenter draws, framed by an orthographic camera fitted
+to the node bounds rather than by a `RectTransform`. Traversal state reads identically in both
+presenters because the state lives in the run, not in the presentation.
+
 ### Cropped, off-centre, or unreachable
 
 A map that crops on an aspect ratio you did not design for has no frame. Add

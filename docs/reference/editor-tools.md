@@ -23,8 +23,8 @@ still records the attempt in the seed history -- so drive the UI from
 
 :   Records the outcome of one command.
     - `succeeded` &mdash; Whether the command was accepted.
-    - `snapshot` &mdash; The session's snapshot after the command, accepted or not.
-    - `diagnostic` &mdash; The error explaining a rejection; null when the command was accepted.
+    - `snapshot` &mdash; Input snapshot consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `diagnostic` &mdash; Input diagnostic consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
 
 **Properties**
 
@@ -67,26 +67,26 @@ rebuilds the graph straight from the edited nodes and edges.
 `public MapStudioSession(MapRuleSnapshot rules)`
 
 :   Starts an empty preview over the given rules, driven by the shipped `LayeredMapGenerator` and carrying no node types. Nothing is generated yet, so `MapStudioSnapshot.Graph` stays null until `Regenerate` or a Manual edit produces one. Without node types nothing resolves a type ID back to its definition, which suits a headless or test session rather than one behind a window.
-    - `rules` &mdash; The compiled rules every command in this session is measured against.
+    - `rules` &mdash; Input rules consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
 
 `public MapStudioSession(MapRuleSnapshot rules, IEnumerable<CompiledMapNodeType> nodeTypes)`
 
 :   Starts an empty preview over the given rules and node types, driven by the shipped `LayeredMapGenerator`. This is the usual way to open a session that is not backed by a blueprint asset; use `Load` when it is.
-    - `rules` &mdash; The compiled rules every command in this session is measured against.
-    - `nodeTypes` &mdash; The compiled node types the graph's type IDs resolve against, in any order. May be null.
+    - `rules` &mdash; Input rules consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `nodeTypes` &mdash; Ordered node Types input; implementations copy or enumerate it without taking caller ownership.
 
 `public MapStudioSession(MapRuleSnapshot rules, IMapGenerator generator)`
 
 :   Starts an empty preview driven by your own generator instead of the shipped one, carrying no node types. Every command that produces a generated graph goes through this instance, including the Hybrid edits, which re-run generation to honour the override they just added.
-    - `rules` &mdash; The compiled rules every command in this session is measured against.
-    - `generator` &mdash; The generator the session drives.
+    - `rules` &mdash; Input rules consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `generator` &mdash; Input generator consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
 
 `public MapStudioSession(MapRuleSnapshot rules, IMapGenerator generator, IEnumerable<CompiledMapNodeType> nodeTypes)`
 
 :   Starts an empty preview with every input stated. The node types are copied, so the caller may reuse or mutate the sequence afterwards, and the session keeps that one set -- as it keeps the one rule snapshot -- for its whole lifetime.
-    - `rules` &mdash; The compiled rules every command in this session is measured against.
-    - `generator` &mdash; The generator the session drives.
-    - `nodeTypes` &mdash; The compiled node types the graph's type IDs resolve against, in any order. May be null.
+    - `rules` &mdash; Input rules consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `generator` &mdash; Input generator consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `nodeTypes` &mdash; Ordered node Types input; implementations copy or enumerate it without taking caller ownership.
 
 **Properties**
 
@@ -106,26 +106,26 @@ rebuilds the graph straight from the edited nodes and edges.
 
 `public MapStudioCommandResult AddManualNode(StableId id, StableId typeId, MapNodeSlot slot,)`
 
-:   Adds an authored node at a chosen layer and ordinal. Manual mode only: the other modes have a generator deciding how many nodes each layer holds. The whole graph is then re-pinned -- every node to all of its fields, every edge as a required override -- and revalidated, because that is what Manual mode means. The new node arrives with no edges of its own, so expect the report to object about reachability until `Connect` has joined it to its neighbours.
-    - `id` &mdash; The stable ID of the new node. It must be non-empty and must not already be in the graph.
-    - `typeId` &mdash; The stable ID of its node type. It must be non-empty.
-    - `slot` &mdash; The layer and ordinal to occupy. The layer must exist in the rules, the ordinal must be below that layer's authored maximum, and the slot must be unoccupied.
-    - `position` &mdash; The node's position. Both axes must lie between 0 and 10,000 inclusive.
-    - `payload` &mdash; The node's payload. Pass `MapNodePayload.Empty` for a node that carries nothing; null is rejected rather than treated as empty.
+:   Runs add Manual Node against validated inputs and returns a complete result rather than exposing partially updated state.
+    - `id` &mdash; Input id consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `typeId` &mdash; Stable identifier for type; invalid or empty IDs are rejected before mutation.
+    - `slot` &mdash; Input slot consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `position` &mdash; Input position consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `payload` &mdash; Input payload consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
     - **Returns** &mdash; Failure outside Manual mode, or for an empty ID, an out-of-range or occupied slot, a duplicate node ID, a position outside bounds, or an invalid payload.
 
 `public MapStudioCommandResult Connect(StableId sourceId, StableId targetId, string edgeIdText)`
 
 :   Joins two nodes with a forward edge between adjacent layers. Manual mode adds the edge to the graph outright. Hybrid instead records it as a required edge override and pins both endpoints' identities first, so the override has stable slots to name, then regenerates -- which is what lets the connection survive later regenerations, and also what lets the generator refuse it.
-    - `sourceId` &mdash; The node the edge leaves. It must exist and must not be locked.
-    - `targetId` &mdash; The node the edge enters. It must exist, must not be locked, and must sit on the layer immediately after `sourceId`.
-    - `edgeIdText` &mdash; The stable ID to give the edge. Leave it null or empty to have one derived from the two endpoint IDs, which makes the same pair yield the same edge ID on every run and across machines.
+    - `sourceId` &mdash; Stable identifier for source; invalid or empty IDs are rejected before mutation.
+    - `targetId` &mdash; Stable identifier for target; invalid or empty IDs are rejected before mutation.
+    - `edgeIdText` &mdash; Stable identifier for edge; invalid or empty IDs are rejected before mutation.
     - **Returns** &mdash; Failure in Procedural mode, for an unknown or locked endpoint, for endpoints that are not on adjacent layers, for a connection or edge ID that already exists, for text that is not a valid stable ID, or when a Hybrid regeneration rejects the edge.
 
 `public MapStudioCommandResult Disconnect(StableId edgeId)`
 
-:   Removes an edge. Manual mode drops it from the graph. Hybrid instead records a forbidden edge override for that pair of slots and regenerates, so the connection stays suppressed on later regenerations rather than being rebuilt by the next search; the override outlives the edge, and connecting the same pair again is what replaces it with a required one. Switching mode also drops it, since `SetMode` rewrites the override set wholesale.
-    - `edgeId` &mdash; The edge to remove. It must exist, and neither of its endpoints may be locked.
+:   Runs disconnect against validated inputs and returns a complete result rather than exposing partially updated state.
+    - `edgeId` &mdash; Stable identifier for edge; invalid or empty IDs are rejected before mutation.
     - **Returns** &mdash; Failure in Procedural mode, for an unknown edge, for a locked endpoint, or when regenerating without the edge fails.
 
 `public MapStudioCommandResult FocusDiagnostic(int index)`
@@ -137,22 +137,22 @@ rebuilds the graph straight from the edited nodes and edges.
 `public static MapStudioSession Load(MapBlueprintCompilation compilation, string sourceToken,)`
 
 :   Opens a session on an already compiled blueprint, adopting its mode, seed, graph, overrides, search budgets, locks, and validation report as the first snapshot. The preview starts clean rather than dirty, and its seed history starts empty: whatever the blueprint was generated from is not replayable history until this session generates something itself. The session drives the shipped `LayeredMapGenerator`; construct one directly to supply your own.
-    - `compilation` &mdash; The compiled blueprint to open. Its rules become the session's rules.
+    - `compilation` &mdash; Input compilation consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
     - `sourceToken` &mdash; Opaque token for the blueprint asset's stored state, carried so a later save can tell that the asset has moved on.
-    - `nodeTypes` &mdash; The compiled node types the graph's type IDs resolve against, in any order. May be null.
+    - `nodeTypes` &mdash; Ordered node Types input; implementations copy or enumerate it without taking caller ownership.
     - **Returns** &mdash; A session whose first snapshot is the blueprint exactly as compiled, undo history empty.
 
 `public void MarkSaved(long sourceRevision, string sourceToken)`
 
 :   Records that the preview has been written to a blueprint asset: it clears the dirty flag and adopts the revision and token that save produced, which is what a later save compares against to tell whether the asset has been changed by something else in the meantime. It writes nothing itself -- call it after the save has succeeded. The current snapshot is rewritten in place rather than committed, so saving is not an undoable step. The snapshots already on the undo stack keep the save state they were built with, which means stepping back past a save shows the preview as dirty again.
-    - `sourceRevision` &mdash; The blueprint asset's authoring revision as of the save.
+    - `sourceRevision` &mdash; Input source Revision consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
     - `sourceToken` &mdash; Opaque token for that asset's stored state as of the save. Null is kept as an empty token.
 
 `public MapStudioCommandResult MoveNode(StableId nodeId, NormalizedMapPosition position)`
 
 :   Moves a node to a new normalized position and pins the position, so a later regeneration cannot put it back. In Hybrid mode the pin is handed to the generator and the map is rebuilt around it, which can fail and leave the preview as it was; in Manual mode the graph is rebuilt directly from the edited nodes.
-    - `nodeId` &mdash; The node to move. It must exist and must not be locked.
-    - `position` &mdash; The new position. Both axes must lie between 0 and 10,000 inclusive.
+    - `nodeId` &mdash; Stable identifier for node; invalid or empty IDs are rejected before mutation.
+    - `position` &mdash; Input position consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
     - **Returns** &mdash; Failure in Procedural mode, for an unknown or locked node, for a position outside those bounds, or when a Hybrid regeneration rejects the pin.
 
 `public MapStudioCommandResult Redo()`
@@ -163,19 +163,19 @@ rebuilds the graph straight from the edited nodes and edges.
 `public MapStudioCommandResult Regenerate(uint seed, CancellationToken cancellationToken)`
 
 :   Runs the generator for one seed and commits the outcome as the new preview. Manual mode ignores `seed` and generates against zero, because a manual graph is authored rather than seeded. A failed attempt is still committed. The previous graph, seed, and locks are kept, but the attempt is recorded in `MapStudioSnapshot.SeedHistory` and the failure's diagnostics become the snapshot's report -- so a rejected command here has still changed what the window should draw. Holding the old seed next to the old graph is deliberate: it keeps the pair consistent so the preview still round-trips when it is saved. A cancelled attempt is the exception and commits nothing at all.
-    - `seed` &mdash; The seed to generate from. Ignored in Manual mode, which always uses zero.
+    - `seed` &mdash; Explicit unsigned deterministic seed; equal inputs and seed produce equal canonical output.
     - `cancellationToken` &mdash; Cancels the attempt. Cancellation leaves the preview exactly as it was and is reported as a diagnostic, not thrown.
     - **Returns** &mdash; Success with the new graph, or failure carrying the first diagnostic explaining why generation produced none.
 
 `public MapStudioCommandResult RemoveManualNode(StableId id)`
 
-:   Removes an authored node together with every edge that touched it, and re-pins and revalidates what is left. Manual mode only. The surviving nodes keep the layers and ordinals they had, so a hole is left in the numbering rather than closed up, and the removed node's lock is released with it. Removing the last node leaves the preview holding no graph at all rather than an empty one, with a report saying the manual graph is empty.
-    - `id` &mdash; The node to remove. It must exist and must not be locked.
+:   Runs remove Manual Node against validated inputs and returns a complete result rather than exposing partially updated state.
+    - `id` &mdash; Input id consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
     - **Returns** &mdash; Failure outside Manual mode, for a locked node, or for a node that is not in the graph.
 
 `public MapStudioCommandResult ReplayHistory(int index, CancellationToken cancellationToken)`
 
-:   Regenerates from the seed of one entry in `MapStudioSnapshot.SeedHistory`, which is how a map that has since been generated over is brought back. It replays the seed and not the stored result: the graph is produced afresh from the rules and overrides in force now, so it can differ from the fingerprint that entry recorded, and the replay is itself pushed onto the history as a new attempt.
+:   Regenerates from the seed of one entry in `MapStudioSnapshot.SeedHistory`, which is how a map that has since been generated over is brought back. It replays the seed and not the stored result: the graph is produced afresh from the rules and overrides in force now, so it can differ from the fingerprint that entry recorded. A replay that lands somewhere different is pushed onto the history as a new attempt, because that divergence is the thing worth seeing. A replay that reproduces the entry exactly is not, because the history already holds that row and adding an identical one reads as the window duplicating rather than as history.
     - `index` &mdash; Zero-based index into the current snapshot's seed history, which is ordered newest first.
     - `cancellationToken` &mdash; Cancels the attempt, exactly as for `Regenerate`.
     - **Returns** &mdash; The outcome of the regeneration, or failure when the index falls outside the history.
@@ -183,35 +183,35 @@ rebuilds the graph straight from the edited nodes and edges.
 `public MapStudioCommandResult SetMode(MapGenerationMode mode)`
 
 :   Switches the preview between Procedural, Hybrid, and Manual, converting whatever is already there rather than starting over. Asking for the mode already in force is accepted and leaves the preview alone. The conversions are not symmetric, so this is not a setting you can flick back and forth without loss. Procedural discards the graph and every override, because it is only allowed to hold none. Hybrid pins each existing node's identity and nothing else -- type, position, and payload go back to the generator -- and then regenerates, which can refuse the conversion and leave the preview untouched. Manual pins every field of every node, turns each edge into a required override, and forces the seed to zero.
-    - `mode` &mdash; The mode to move to.
+    - `mode` &mdash; Input mode consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
     - **Returns** &mdash; Failure when the value is none of the three supported modes, or when a Hybrid conversion cannot be generated; success otherwise.
 
 `public MapStudioCommandResult SetNodeLocked(StableId nodeId, bool locked)`
 
 :   Locks or unlocks a node against further editing. A lock is editor bookkeeping and nothing more: it makes the session refuse to move, retype, repayload, or remove that node and to touch any edge that ends on it, but it creates no override and changes nothing about what the generator may produce. That is also why regenerating quietly drops the locks whose nodes are not in the new graph.
-    - `nodeId` &mdash; The node to lock or unlock. It must exist in the current graph.
+    - `nodeId` &mdash; Stable identifier for node; invalid or empty IDs are rejected before mutation.
     - `locked` &mdash; True to lock the node, false to release it.
     - **Returns** &mdash; Failure only when there is no graph or the node is unknown. Setting the state the node already has is accepted and still counts as a preview edit.
 
 `public MapStudioCommandResult SetNodePayload(StableId nodeId, MapNodePayload payload)`
 
 :   Replaces a node's payload and pins it. Unlike the type, the payload is checked before anything is committed: it must be non-null, must carry a payload ID once it has any properties at all, and every property must have a non-empty key, a canonical value, and no duplicate of that key elsewhere in the payload.
-    - `nodeId` &mdash; The node to edit. It must exist and must not be locked.
-    - `payload` &mdash; The new payload. Pass `MapNodePayload.Empty` for a node that carries nothing; null is rejected rather than treated as empty.
+    - `nodeId` &mdash; Stable identifier for node; invalid or empty IDs are rejected before mutation.
+    - `payload` &mdash; Input payload consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
     - **Returns** &mdash; Failure in Procedural mode, for an unknown or locked node, for a payload that fails those checks, or when a Hybrid regeneration rejects the pin.
 
 `public MapStudioCommandResult SetNodeType(StableId nodeId, StableId typeId)`
 
 :   Retypes a node and pins the type. The type ID is only checked for being non-empty here; whether the rules actually allow that type in that slot is settled afterwards, by the Hybrid regeneration or by the validation report a Manual edit produces, so a bad type comes back as a rejected command or an invalid preview rather than as an argument error.
-    - `nodeId` &mdash; The node to retype. It must exist and must not be locked.
-    - `typeId` &mdash; The stable ID of the new node type. It must be non-empty.
+    - `nodeId` &mdash; Stable identifier for node; invalid or empty IDs are rejected before mutation.
+    - `typeId` &mdash; Stable identifier for type; invalid or empty IDs are rejected before mutation.
     - **Returns** &mdash; Failure in Procedural mode, for an unknown or locked node, for an empty type ID, or when a Hybrid regeneration rejects the pin.
 
 `public MapStudioCommandResult SetPinnedFields(StableId nodeId, PinnedNodeFields fields)`
 
-:   Sets exactly which of a node's fields the generator must reproduce, replacing whatever was pinned before instead of adding to it. Clearing a flag hands that field back to the generator, so this is how a node pinned harder than it needed to be is loosened again -- and it takes the node's current type, position, and payload as the pinned values, so setting a flag freezes what is on screen now. Identity is pinned either way. A node with no fields pinned still binds its slot to its node ID, which is why `PinnedNodeFields.None` is a useful value here and why removing the pin altogether is `UnpinNode` rather than this. A lock does not block this command, just as it does not block `UnpinNode`: locks stop a node's own fields and its edges from being edited, not its pin.
-    - `nodeId` &mdash; The node to re-pin. It must exist; a locked node is accepted, because only the pin is being changed.
-    - `fields` &mdash; The fields to pin, and only those. Manual mode accepts nothing but `PinnedNodeFields.All`.
+:   Replaces the set Pinned Fields settings used by future operations; existing immutable graphs and saves are not rewritten.
+    - `nodeId` &mdash; Stable identifier for node; invalid or empty IDs are rejected before mutation.
+    - `fields` &mdash; Input fields consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
     - **Returns** &mdash; Failure in Procedural mode, for an unknown node, for flags outside `PinnedNodeFields.All`, for anything short of every field in Manual mode, or when a Hybrid regeneration rejects the pins.
 
 `public MapStudioCommandResult Undo()`
@@ -222,7 +222,7 @@ rebuilds the graph straight from the edited nodes and edges.
 `public MapStudioCommandResult UnpinNode(StableId nodeId)`
 
 :   Drops a node's pin entirely -- identity included, not just its fields -- and regenerates. The generator is then free to fill that slot however the rules allow, so the node that comes back need not be the one that was there and need not carry the same ID. It is refused while any edge override still names the node's slot, because such an override would otherwise be left pointing at a slot nothing pins any more. Disconnect or reroute those edges first.
-    - `nodeId` &mdash; The node whose pin is to be removed. It must exist in the current graph.
+    - `nodeId` &mdash; Stable identifier for node; invalid or empty IDs are rejected before mutation.
     - **Returns** &mdash; Failure outside Hybrid mode, for an unknown node, while an edge override still references the node's slot, or when regenerating without the pin fails.
 
 `public MapStudioCommandResult Validate()`
@@ -252,17 +252,17 @@ read it defensively.
 
 `public MapStudioSnapshot(MapRuleSnapshot rules, IEnumerable<CompiledMapNodeType> nodeTypes,)`
 
-:   Builds a snapshot and normalizes its optional parts: null overrides, search options, validation, focus, and statistics fall back to their empty or default values, the node types are copied and sorted by type ID with nulls dropped, the locked IDs are de-duplicated and sorted, and `GraphStatistics` is measured from `graph` here rather than passed in.
-    - `rules` &mdash; The compiled rules this preview is pinned to.
-    - `nodeTypes` &mdash; The compiled node types the graph's type IDs resolve against, in any order.
-    - `mode` &mdash; The generation mode the preview is running in.
-    - `seed` &mdash; The seed behind `graph`; zero in Manual mode.
-    - `graph` &mdash; The current graph, or null when nothing has been generated or authored yet.
-    - `overrides` &mdash; The pins and edge overrides the graph was built with.
-    - `searchOptions` &mdash; The generator's search budget for this preview.
+:   Creates an immutable map Studio Snapshot snapshot; invalid required identifiers, ranges, or null inputs are rejected before state is exposed.
+    - `rules` &mdash; Input rules consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `nodeTypes` &mdash; Ordered node Types input; implementations copy or enumerate it without taking caller ownership.
+    - `mode` &mdash; Input mode consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `seed` &mdash; Explicit unsigned deterministic seed; equal inputs and seed produce equal canonical output.
+    - `graph` &mdash; Input graph consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `overrides` &mdash; Input overrides consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `searchOptions` &mdash; Input search Options consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
     - `lockedNodeIds` &mdash; Nodes the session refuses to edit or remove, in any order.
-    - `validation` &mdash; The report from the most recent validation or generation pass.
-    - `focus` &mdash; The rules, nodes, and slots the window should highlight.
+    - `validation` &mdash; Input validation consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `focus` &mdash; Input focus consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
     - `generationStatistics` &mdash; Search counters from the most recent generation attempt.
     - `seedHistory` &mdash; Recent generation attempts, newest first.
     - `changeOrdinal` &mdash; Count of preview edits committed so far.
@@ -345,8 +345,8 @@ read it defensively.
 `public bool TryGetNodeType(StableId typeId, out CompiledMapNodeType type)`
 
 :   Resolves a node type ID against the compiled types this snapshot carries -- the same set a node on `Graph` refers to by ID.
-    - `typeId` &mdash; The stable ID of the wanted node type.
-    - `type` &mdash; The matching node type, or null when there is no match.
+    - `typeId` &mdash; Stable identifier for type; invalid or empty IDs are rejected before mutation.
+    - `type` &mdash; Input type consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
     - **Returns** &mdash; True when a node type with that ID is present.
 
 ---

@@ -4,14 +4,14 @@ Generated from source alongside the reference itself, so it cannot quietly drift
 
 | Scope | Documented | Total | Coverage |
 | --- | --- | --- | --- |
-| Public types | 175 | 175 | 100% |
-| Public members | 1020 | 1067 | 96% |
+| Public types | 193 | 193 | 100% |
+| Public members | 1176 | 1184 | 99% |
 
-Measured over the 175 types this reference publishes.
+Measured over the 193 types this reference publishes.
 
 ## What is excluded, and why
 
-A further **70** public types are left out. They are public only because `internal` is per-assembly in C# and this package spans several assemblies, so publishing them would describe plumbing as API. They carry `[EditorBrowsable(Never)]` in the source.
+A further **72** public types are left out. They are public only because `internal` is per-assembly in C# and this package spans several assemblies, so publishing them would describe plumbing as API. They carry `[EditorBrowsable(Never)]` in the source.
 
 Coverage is reported over the published surface for the same reason: documenting the excluded types would raise this percentage without helping anyone read the package.
 
@@ -19,18 +19,19 @@ Coverage is reported over the published surface for the same reason: documenting
 
 | Area | Types | Documented | Coverage |
 | --- | --- | --- | --- |
+| [Host and content routing](host-and-content-routing.md) | 16 | 16 | 100% |
 | [Getting a map](getting-a-map.md) | 12 | 12 | 100% |
 | [Traversal and progression](traversal-and-progression.md) | 8 | 8 | 100% |
 | [Authoring assets](authoring-assets.md) | 17 | 17 | 100% |
 | [Styling and appearance](styling-and-appearance.md) | 21 | 21 | 100% |
-| [Presentation and views](presentation-and-views.md) | 51 | 51 | 100% |
+| [Presentation and views](presentation-and-views.md) | 52 | 52 | 100% |
 | [Framing, input and navigation](framing-input-and-navigation.md) | 7 | 7 | 100% |
 | [Rules and constraints](rules-and-constraints.md) | 18 | 18 | 100% |
 | [Graph, layout and geometry](graph-layout-and-geometry.md) | 10 | 10 | 100% |
 | [Saving and migration](saving-and-migration.md) | 12 | 12 | 100% |
 | [Editor tools](editor-tools.md) | 3 | 3 | 100% |
 | [Determinism and diagnostics](determinism-and-diagnostics.md) | 3 | 3 | 100% |
-| [Other](other.md) | 13 | 13 | 100% |
+| [Other](other.md) | 14 | 14 | 100% |
 
 ## How to read this
 

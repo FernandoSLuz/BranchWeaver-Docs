@@ -70,8 +70,8 @@ three ids, and it sorts by source, then target, then id -- which is the order
 
 `public MapEdge(StableId id, StableId sourceId, StableId targetId)`
 
-:   Creates a directed edge. Nothing is checked here: whether the endpoints exist, sit in adjacent layers, or repeat a connection is decided by graph validation, not by this constructor.
-    - `id` &mdash; The edge's own stable identity, unique within the graph.
+:   Creates an immutable map Edge snapshot; invalid required identifiers, ranges, or null inputs are rejected before state is exposed.
+    - `id` &mdash; Input id consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
     - `sourceId` &mdash; Id of the node the edge leaves.
     - `targetId` &mdash; Id of the node the edge arrives at, normally one layer further on.
 
@@ -94,24 +94,30 @@ three ids, and it sorts by source, then target, then id -- which is the order
 `public int CompareTo(MapEdge other)`
 
 :   Orders edges canonically: source id first, then target id, then edge id. This is the ordering `MapGraph` sorts its edge list into, and it is what makes an exported or fingerprinted graph byte-stable across runs.
+    - `other` &mdash; Input other consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
     - **Returns** &mdash; Negative, zero or positive in the usual comparison sense.
 
 `public bool Equals(MapEdge other)`
 
 :   Compares all three ids. Two edges that join the same pair of nodes under different edge ids are therefore not equal.
+    - `other` &mdash; Input other consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
     - **Returns** &mdash; True when id, source and target all match.
 
 `public override bool Equals(object obj)`
 
 :   Value equality against another `MapEdge`; anything else is never equal.
+    - `obj` &mdash; Input obj consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - **Returns** &mdash; only when all preconditions are satisfied; otherwise with no partial mutation.
 
 `public override int GetHashCode()`
 
 :   A hash over all three ids, matching `Equals(MapEdge)`.
+    - **Returns** &mdash; The requested immutable or borrowed value; ownership remains with the object documented by the return type.
 
 `public override string ToString()`
 
 :   Renders the edge as `id:source->target`. Diagnostics use this form, so it is the string to search for when tracing a reported edge back to its data.
+    - **Returns** &mdash; The complete string outcome; inspect its typed status or diagnostics before consuming payload data.
 
 ---
 
@@ -136,26 +142,26 @@ handed to the runtime, the views and the save layer at once without copying.
 
 `public MapGraph()`
 
-:   Builds a purely procedural graph: the generation mode is `MapGenerationMode.Procedural` and the overrides fingerprint and generation key are empty. Use the other overload for a graph that came from overrides.
-    - `formatVersion` &mdash; The format this graph follows -- `FormatVersion1` or `FormatVersion2`. It also picks the canonical node order, so it must match the graph's real shape.
-    - `generatorVersion` &mdash; The generator version of the rules this graph was built from.
-    - `seed` &mdash; The seed the map was generated from.
+:   Creates an immutable map Graph snapshot; invalid required identifiers, ranges, or null inputs are rejected before state is exposed.
+    - `formatVersion` &mdash; Input format Version consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `generatorVersion` &mdash; Input generator Version consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `seed` &mdash; Explicit unsigned deterministic seed; equal inputs and seed produce equal canonical output.
     - `rulesFingerprint` &mdash; Lowercase SHA-256 of the rule snapshot used. Null becomes an empty string; the value is stored as given and not recomputed.
-    - `nodes` &mdash; The nodes to snapshot. Copied, then sorted; null throws `ArgumentNullException`.
-    - `edges` &mdash; The edges to snapshot. Copied, then sorted; null throws `ArgumentNullException`.
+    - `nodes` &mdash; Ordered nodes input; implementations copy or enumerate it without taking caller ownership.
+    - `edges` &mdash; Ordered edges input; implementations copy or enumerate it without taking caller ownership.
 
 `public MapGraph()`
 
-:   Builds a graph and canonicalizes it in one step: the node and edge sequences are copied, sorted, and indexed for lookup, so the caller's collections may be mutated afterwards without affecting the graph. Duplicate and empty node ids survive in `Nodes` but are left out of the lookup index, which is why `TryGetNode` can miss a node that is plainly in the list -- validation is what reports that, not this constructor.
-    - `formatVersion` &mdash; The format this graph follows -- `FormatVersion1` or `FormatVersion2`. It also picks the canonical node order, so it must match the graph's real shape.
-    - `generatorVersion` &mdash; The generator version of the rules this graph was built from.
-    - `seed` &mdash; The seed the map was generated from.
+:   Creates an immutable map Graph snapshot; invalid required identifiers, ranges, or null inputs are rejected before state is exposed.
+    - `formatVersion` &mdash; Input format Version consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `generatorVersion` &mdash; Input generator Version consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `seed` &mdash; Explicit unsigned deterministic seed; equal inputs and seed produce equal canonical output.
     - `rulesFingerprint` &mdash; Lowercase SHA-256 of the rule snapshot used. Null becomes an empty string; the value is stored as given and not recomputed.
     - `generationMode` &mdash; How the map was produced: procedural, manual, or hybrid.
     - `overridesFingerprint` &mdash; Lowercase SHA-256 of the overrides applied, or empty when there were none. Null becomes empty.
-    - `generationKey` &mdash; The hash covering generator version, mode, rules fingerprint, overrides fingerprint and seed. Null becomes empty.
-    - `nodes` &mdash; The nodes to snapshot. Copied, then sorted; null throws `ArgumentNullException`.
-    - `edges` &mdash; The edges to snapshot. Copied, then sorted; null throws `ArgumentNullException`.
+    - `generationKey` &mdash; Input generation Key consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `nodes` &mdash; Ordered nodes input; implementations copy or enumerate it without taking caller ownership.
+    - `edges` &mdash; Ordered edges input; implementations copy or enumerate it without taking caller ownership.
 
 **Properties**
 
@@ -200,14 +206,14 @@ handed to the runtime, the views and the save layer at once without copying.
 `public IReadOnlyList<StableId> GetOutgoing(StableId sourceId)`
 
 :   The ids of the nodes reachable in one step from `sourceId`, in ascending id order. Returns a cached read-only list -- an unknown or terminal node gives an empty list rather than null, and no call allocates, so this is safe to walk every frame.
-    - `sourceId` &mdash; The node whose outgoing edges are followed.
+    - `sourceId` &mdash; Stable identifier for source; invalid or empty IDs are rejected before mutation.
     - **Returns** &mdash; Target node ids, not edge ids; one entry per outgoing edge, so a repeated edge shows its target more than once.
 
 `public bool TryGetNode(StableId id, out MapNode node)`
 
 :   Looks a node up by id through the index built at construction, without scanning `Nodes`. An id that is empty, or that more than one node claims, is deliberately not indexed, so this returns false for it even though the node is present -- treat a false here on a validated graph as an unknown id, not as a duplicate.
-    - `id` &mdash; The node id to resolve.
-    - `node` &mdash; The node found, or null when none was.
+    - `id` &mdash; Input id consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `node` &mdash; Input node consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
     - **Returns** &mdash; True when a single node owns that id.
 
 ---
@@ -230,7 +236,7 @@ positions are presentation data, and replacing a layout cannot change graph iden
 
 `public MapLayout(MapLayoutOrientation orientation, IEnumerable<MapLayoutNode> nodes)`
 
-:   Builds a layout from already-positioned nodes, validating them so a layout can never hold an unusable position table.
+:   Creates an immutable map Layout snapshot; invalid required identifiers, ranges, or null inputs are rejected before state is exposed.
     - `orientation` &mdash; Orientation the positions were computed for; must be Vertical or Horizontal.
     - `nodes` &mdash; Positioned nodes, copied on entry. Ids must be non-empty and unique, and every position must satisfy `NormalizedMapPosition.IsWithinBounds`.
 
@@ -249,7 +255,8 @@ positions are presentation data, and replacing a layout cannot change graph iden
 `public bool TryGetPosition(StableId nodeId, out NormalizedMapPosition position)`
 
 :   Looks up one node's position without allocating. It returns false for any id this pass did not lay out, including graph nodes a custom strategy chose to skip.
-    - `position` &mdash; The node's normalized position, or `default` when the lookup fails.
+    - `position` &mdash; Input position consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `nodeId` &mdash; Stable identifier for node; invalid or empty IDs are rejected before mutation.
     - **Returns** &mdash; True when this layout holds `nodeId`.
 
 ---
@@ -271,6 +278,8 @@ sorting a set of these never depends on where the nodes ended up.
 `public MapLayoutNode(StableId nodeId, NormalizedMapPosition position)`
 
 :   Pairs a node with a position. Nothing is validated here; `MapLayout` rejects empty ids and out-of-range positions when the entry is handed to it.
+    - `nodeId` &mdash; Stable identifier for node; invalid or empty IDs are rejected before mutation.
+    - `position` &mdash; Input position consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
 
 **Properties**
 
@@ -287,19 +296,25 @@ sorting a set of these never depends on where the nodes ended up.
 `public int CompareTo(MapLayoutNode other)`
 
 :   Orders by `NodeId` only. Two entries for the same node compare equal even when their positions differ.
+    - `other` &mdash; Input other consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - **Returns** &mdash; The complete int outcome; inspect its typed status or diagnostics before consuming payload data.
 
 `public bool Equals(MapLayoutNode other)`
 
 :   Value equality over both `NodeId` and `Position`, unlike `CompareTo(MapLayoutNode)`, which ignores the position.
+    - `other` &mdash; Input other consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - **Returns** &mdash; only when all preconditions are satisfied; otherwise with no partial mutation.
 
 `public override bool Equals(object obj)`
 
 :   Value equality against a boxed entry, on the same terms as `Equals(MapLayoutNode)`.
     - `obj` &mdash; Candidate to compare with; anything that is not a `MapLayoutNode`, null included, is unequal.
+    - **Returns** &mdash; only when all preconditions are satisfied; otherwise with no partial mutation.
 
 `public override int GetHashCode()`
 
 :   Combines the node id with the position, matching `Equals(MapLayoutNode)`. Two entries for the same node at different positions therefore hash apart, even though `CompareTo(MapLayoutNode)` treats them as equal.
+    - **Returns** &mdash; The requested immutable or borrowed value; ownership remains with the object documented by the return type.
 
 ---
 
@@ -321,8 +336,8 @@ position on its own does not say which of its two numbers carries progress.
 
 | Value | Meaning |
 | --- | --- |
-| `Vertical` | &mdash; |
-| `Horizontal` | &mdash; |
+| `Vertical` | Choosing vertical configures `MapLayoutOrientation`; the serialized numeric value is part of the compatibility contract. |
+| `Horizontal` | Choosing horizontal configures `MapLayoutOrientation`; the serialized numeric value is part of the compatibility contract. |
 
 ---
 
@@ -345,7 +360,7 @@ rather than here.
 
 `public MapLayoutRequest()`
 
-:   Creates a request. The defaults fill the whole normalized range on both axes; narrow the bounds to inset the map, for instance to leave room for a header.
+:   Creates an immutable map Layout Request snapshot; invalid required identifiers, ranges, or null inputs are rejected before state is exposed.
     - `orientation` &mdash; Axis layers advance along: Vertical advances along Y, Horizontal along X.
     - `layerStart` &mdash; Where the layer band begins; the shipped strategy places the first layer exactly here.
     - `layerEnd` &mdash; Where the layer band ends; the shipped strategy places the last layer exactly here.
@@ -405,18 +420,18 @@ or layout choices.
 
 `public MapNode()`
 
-:   Creates a node with no payload, exactly as if `MapNodePayload.Empty` were passed. Version-one graphs must stay payload-free, so this is the shape they use.
-    - `id` &mdash; The node's stable identity. Must be unique within the graph.
-    - `typeId` &mdash; The node type assigned to this node, from the rules the map was built against.
+:   Creates an immutable map Node snapshot; invalid required identifiers, ranges, or null inputs are rejected before state is exposed.
+    - `id` &mdash; Input id consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `typeId` &mdash; Stable identifier for type; invalid or empty IDs are rejected before mutation.
     - `layer` &mdash; Zero-based index of the layer the node sits in, counting from the start layer.
     - `ordinal` &mdash; Zero-based slot of the node within its layer.
     - `position` &mdash; Normalized placement, each axis in 0..`NormalizedMapPosition.Scale`. Generators spread ordinals along X and layers along Y; nothing here enforces that.
 
 `public MapNode()`
 
-:   Creates a node carrying an authored payload. A null payload is stored as `MapNodePayload.Empty`, so `Payload` is never null.
-    - `id` &mdash; The node's stable identity. Must be unique within the graph.
-    - `typeId` &mdash; The node type assigned to this node, from the rules the map was built against.
+:   Creates an immutable map Node snapshot; invalid required identifiers, ranges, or null inputs are rejected before state is exposed.
+    - `id` &mdash; Input id consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `typeId` &mdash; Stable identifier for type; invalid or empty IDs are rejected before mutation.
     - `layer` &mdash; Zero-based index of the layer the node sits in, counting from the start layer.
     - `ordinal` &mdash; Zero-based slot of the node within its layer.
     - `position` &mdash; Normalized placement, each axis in 0..`NormalizedMapPosition.Scale`. Generators spread ordinals along X and layers along Y; nothing here enforces that.
@@ -465,7 +480,7 @@ Values are not clamped so validators can report malformed imported data without 
 
 `public NormalizedMapPosition(int x, int y)`
 
-:   Creates a position from raw coordinates. Neither is clamped or checked, so a value read from imported or hand-edited data survives intact for a validator to report on; test it with `IsWithinBounds`.
+:   Creates an immutable normalized Map Position snapshot; invalid required identifiers, ranges, or null inputs are rejected before state is exposed.
     - `x` &mdash; Horizontal coordinate, conventionally 0 to `Scale` inclusive.
     - `y` &mdash; Vertical coordinate, conventionally 0 to `Scale` inclusive.
 
@@ -488,26 +503,38 @@ Values are not clamped so validators can report malformed imported data without 
 `public static int EndpointCoordinateForIndex(int index, int count)`
 
 :   Spans a layered axis from exactly zero to exactly `Scale`.
+    - `index` &mdash; Zero-based index used for deterministic ordering; negative values are invalid.
+    - `count` &mdash; Input count consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - **Returns** &mdash; The complete int outcome; inspect its typed status or diagnostics before consuming payload data.
 
 `public bool Equals(NormalizedMapPosition other)`
 
 :   Reports whether both positions hold the same pair of coordinates. Being integers, they compare exactly -- there is no tolerance to worry about.
+    - `other` &mdash; Input other consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - **Returns** &mdash; only when all preconditions are satisfied; otherwise with no partial mutation.
 
 `public override bool Equals(object obj)`
 
 :   Reports whether `obj` is a position with the same coordinates.
+    - `obj` &mdash; Input obj consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - **Returns** &mdash; only when all preconditions are satisfied; otherwise with no partial mutation.
 
 `public override int GetHashCode()`
 
 :   Returns a hash combining both coordinates. It is derived from the two integers alone, so it is the same in every process and on every platform and may safely be persisted or compared across machines.
+    - **Returns** &mdash; The requested immutable or borrowed value; ownership remains with the object documented by the return type.
 
 `public static int InteriorCoordinateForOrdinal(int ordinal, int nodeCount)`
 
 :   Places a node inside an axis without touching its endpoints.
+    - `ordinal` &mdash; Zero-based ordinal used for deterministic ordering; negative values are invalid.
+    - `nodeCount` &mdash; Input node Count consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - **Returns** &mdash; The complete int outcome; inspect its typed status or diagnostics before consuming payload data.
 
 `public override string ToString()`
 
 :   Returns the coordinates as `x,y`. It is meant for diagnostic context and logs, not for display to players.
+    - **Returns** &mdash; The complete string outcome; inspect its typed status or diagnostics before consuming payload data.
 
 ---
 

@@ -1,9 +1,9 @@
 # Other
 
-13 types in this area.
+14 types in this area.
 
 !!! abstract "On this page"
-    [IMapGenerator](#imapgenerator) &middot; [IMapValidator](#imapvalidator) &middot; [LayerNodeRange](#layernoderange) &middot; [MapDiagnosticSeverity](#mapdiagnosticseverity) &middot; [MapFingerprint](#mapfingerprint) &middot; [MapGenerationManifest](#mapgenerationmanifest) &middot; [MapNodePayload](#mapnodepayload) &middot; [MapProperty](#mapproperty) &middot; [MapPropertyKind](#mappropertykind) &middot; [MapPropertyValue](#mappropertyvalue) &middot; [MapRuleSnapshot](#maprulesnapshot) &middot; [SampleSceneBootstrap](#samplescenebootstrap) &middot; [XorShift32Random](#xorshift32random)
+    [IMapGenerator](#imapgenerator) &middot; [IMapValidator](#imapvalidator) &middot; [LayerNodeRange](#layernoderange) &middot; [MapDiagnosticSeverity](#mapdiagnosticseverity) &middot; [MapFingerprint](#mapfingerprint) &middot; [MapGenerationManifest](#mapgenerationmanifest) &middot; [MapNodePayload](#mapnodepayload) &middot; [MapProperty](#mapproperty) &middot; [MapPropertyKind](#mappropertykind) &middot; [MapPropertyValue](#mappropertyvalue) &middot; [MapRuleSnapshot](#maprulesnapshot) &middot; [SampleProceduralVisuals](#sampleproceduralvisuals) &middot; [SampleSceneBootstrap](#samplescenebootstrap) &middot; [XorShift32Random](#xorshift32random)
 
 ## IMapGenerator
 
@@ -61,6 +61,8 @@ pin a layer to a single width by giving it an equal minimum and maximum.
 `public LayerNodeRange(int minimum, int maximum)`
 
 :   Declares the inclusive node count bounds of one layer. Nothing is validated here; rule validation is what requires 1 <= minimum <= maximum and caps the maximum at `MapRuleSnapshot.MaximumNodesPerLayer`.
+    - `minimum` &mdash; Input minimum consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `maximum` &mdash; Input maximum consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
 
 **Properties**
 
@@ -77,14 +79,19 @@ pin a layer to a single width by giving it an equal minimum and maximum.
 `public bool Equals(LayerNodeRange other)`
 
 :   Reports whether both ranges carry the same minimum and maximum.
+    - `other` &mdash; Input other consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - **Returns** &mdash; only when all preconditions are satisfied; otherwise with no partial mutation.
 
 `public override bool Equals(object obj)`
 
 :   Reports whether `obj` is a range with the same minimum and maximum.
+    - `obj` &mdash; Input obj consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - **Returns** &mdash; only when all preconditions are satisfied; otherwise with no partial mutation.
 
 `public override int GetHashCode()`
 
 :   Returns a hash combining the minimum and the maximum.
+    - **Returns** &mdash; The requested immutable or borrowed value; ownership remains with the object documented by the return type.
 
 ---
 
@@ -102,8 +109,8 @@ Neither level is zero, so a defaulted severity field is not a legal value.
 
 | Value | Meaning |
 | --- | --- |
-| `Warning` | &mdash; |
-| `Error` | &mdash; |
+| `Warning` | Marks the diagnostic as warning; error severity makes its validation report invalid. |
+| `Error` | Marks the diagnostic as error; error severity makes its validation report invalid. |
 
 ---
 
@@ -122,35 +129,35 @@ Versioned, domain-separated, big-endian canonical SHA-256 fingerprints.
 `public static string ComputeGenerationKey()`
 
 :   Folds the whole generation input into one lowercase SHA-256 hex string. Generated node and edge ids are derived from it, so anything that shifts the key -- an edited rules asset, a changed override, a different mode -- replaces the identities of the map a seed produces rather than nudging its shape, and save data keyed on the old node ids stops resolving.
-    - `generatorVersion` &mdash; The generator version of the rules the map is built from.
+    - `generatorVersion` &mdash; Input generator Version consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
     - `mode` &mdash; Whether the map is procedural, manual, or a seeded search over overrides.
-    - `rulesFingerprint` &mdash; The value `ComputeRules` produced. It is hashed as given and never recomputed or checked, so passing a stale one silently keeps the old key alive.
-    - `overridesFingerprint` &mdash; The value `ComputeOverrides` produced, or an empty string when there are no overrides. Null is hashed as empty.
-    - `seed` &mdash; The seed the map is generated from.
+    - `rulesFingerprint` &mdash; Input rules Fingerprint consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `overridesFingerprint` &mdash; Input overrides Fingerprint consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `seed` &mdash; Explicit unsigned deterministic seed; equal inputs and seed produce equal canonical output.
     - **Returns** &mdash; Sixty-four lowercase hexadecimal characters.
 
 `public static string ComputeGraph(MapGraph graph)`
 
 :   Hashes a whole graph down to one lowercase SHA-256 hex string, for comparing two maps or checking that a rebuilt one matches what was saved. Nodes and edges are re-sorted into canonical order before hashing and every number is written big-endian, so two graphs holding the same map agree whatever order they were assembled in and whatever platform they were built on. Which fields take part is decided by the graph's format version: a version-one graph leaves out the generation mode, the overrides fingerprint, the generation key, and node payloads, so upgrading a graph's format changes its fingerprint even when the map is unchanged.
-    - `graph` &mdash; The graph to fingerprint.
+    - `graph` &mdash; Input graph consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
     - **Returns** &mdash; Sixty-four lowercase hexadecimal characters.
 
 `public static string ComputeOverrides(MapGenerationOverrides overrides)`
 
 :   Hashes a set of pinned nodes and edge overrides down to one lowercase SHA-256 hex string, which then feeds `ComputeGenerationKey`. Only the fields a pin actually claims are hashed: a pin carrying a type or position it does not pin fingerprints identically to one that leaves those values at their defaults, so stray authored data that the generator would ignore cannot change the maps a seed produces.
-    - `overrides` &mdash; The overrides to fingerprint; an empty set still yields a hash.
+    - `overrides` &mdash; Input overrides consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
     - **Returns** &mdash; Sixty-four lowercase hexadecimal characters.
 
 `public static string ComputeRules(MapRuleSnapshot rules)`
 
 :   Hashes a compiled rule snapshot down to one lowercase SHA-256 hex string, the value that feeds `ComputeGenerationKey` and is stored on every graph built from those rules. Which layout is hashed is decided by the snapshot's own schema version, so version-one rules keep the fingerprint they have always had and maps saved against them still match. Custom constraints contribute their ID and their declared revision fingerprint, never their behaviour, which is why a constraint whose logic changes has to be given a new revision fingerprint or maps generated under the old logic still look current.
-    - `rules` &mdash; The compiled snapshot to fingerprint.
+    - `rules` &mdash; Input rules consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
     - **Returns** &mdash; Sixty-four lowercase hexadecimal characters.
 
 `public static bool IsSha256Hex(string value)`
 
 :   Reports whether a string has the shape every fingerprint in this package takes: exactly sixty-four characters, all of them 0-9 or lowercase a-f. Uppercase hex is rejected rather than folded to lowercase, because fingerprints are compared as text and a case difference would otherwise read as a different map.
-    - `value` &mdash; The candidate fingerprint. Null is a false answer rather than an error, so a missing value can be checked without a separate guard.
+    - `value` &mdash; Input value consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
     - **Returns** &mdash; True only for a well-formed fingerprint. It says nothing about whether the value matches any particular rules or graph.
 
 ---
@@ -172,24 +179,24 @@ is what separates "the rules changed" from "the generator changed" when a map st
 
 `public MapGenerationManifest()`
 
-:   Creates a version-1 manifest. `GenerationMode` is recorded as `MapGenerationMode.Procedural` and the override and generation-key fingerprints are left empty, because the version-1 generator honours neither modes nor overrides.
-    - `generatorVersion` &mdash; The generator algorithm that produced the graph, as declared by the rule snapshot.
-    - `randomAlgorithmVersion` &mdash; The version of the deterministic random algorithm that produced the graph.
-    - `seed` &mdash; The seed the generator ran on.
-    - `rulesFingerprint` &mdash; The canonical fingerprint of the rule snapshot used.
-    - `graphFingerprint` &mdash; The canonical fingerprint of the graph produced.
+:   Creates an immutable map Generation Manifest snapshot; invalid required identifiers, ranges, or null inputs are rejected before state is exposed.
+    - `generatorVersion` &mdash; Input generator Version consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `randomAlgorithmVersion` &mdash; Input random Algorithm Version consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `seed` &mdash; Explicit unsigned deterministic seed; equal inputs and seed produce equal canonical output.
+    - `rulesFingerprint` &mdash; Input rules Fingerprint consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `graphFingerprint` &mdash; Input graph Fingerprint consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
 
 `public MapGenerationManifest()`
 
-:   Creates a manifest with every field stated, as version-2 generation does. Any null string is stored as an empty one.
-    - `generatorVersion` &mdash; The generator algorithm that produced the graph, as declared by the rule snapshot.
-    - `randomAlgorithmVersion` &mdash; The version of the deterministic random algorithm that produced the graph.
-    - `seed` &mdash; The seed the generator ran on.
-    - `rulesFingerprint` &mdash; The canonical fingerprint of the rule snapshot used.
-    - `graphFingerprint` &mdash; The canonical fingerprint of the graph produced.
-    - `generationMode` &mdash; The mode the request ran in.
-    - `overridesFingerprint` &mdash; The canonical fingerprint of the override set honoured.
-    - `generationKey` &mdash; The combined identity of generator version, mode, rules, overrides, and seed.
+:   Creates an immutable map Generation Manifest snapshot; invalid required identifiers, ranges, or null inputs are rejected before state is exposed.
+    - `generatorVersion` &mdash; Input generator Version consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `randomAlgorithmVersion` &mdash; Input random Algorithm Version consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `seed` &mdash; Explicit unsigned deterministic seed; equal inputs and seed produce equal canonical output.
+    - `rulesFingerprint` &mdash; Input rules Fingerprint consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `graphFingerprint` &mdash; Input graph Fingerprint consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `generationMode` &mdash; Input generation Mode consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `overridesFingerprint` &mdash; Input overrides Fingerprint consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `generationKey` &mdash; Input generation Key consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
 
 **Properties**
 
@@ -244,8 +251,9 @@ same entries in different orders compare equal and hash and fingerprint alike.
 
 `public MapNodePayload(StableId payloadId, IEnumerable<MapProperty> properties)`
 
-:   Creates a payload from the given entries. They are copied and sorted, so the caller may reuse or mutate the sequence afterwards, and a null sequence means no properties. Nothing is validated here: duplicate keys and non-canonical values are reported when the payload is validated.
+:   Creates an immutable map Node Payload snapshot; invalid required identifiers, ranges, or null inputs are rejected before state is exposed.
     - `payloadId` &mdash; Identity of the payload. It may be empty only for a payload with no properties; carrying properties under an empty ID is rejected by validation.
+    - `properties` &mdash; Ordered properties input; implementations copy or enumerate it without taking caller ownership.
 
 **Properties**
 
@@ -262,15 +270,19 @@ same entries in different orders compare equal and hash and fingerprint alike.
 `public bool Equals(MapNodePayload other)`
 
 :   Reports whether both payloads have the same ID and the same properties. Because both sides are canonically sorted, this is insensitive to the order the entries were originally given in.
+    - `other` &mdash; Input other consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
     - **Returns** &mdash; True when the payloads match; false when `other` is null.
 
 `public override bool Equals(object obj)`
 
 :   Reports whether `obj` is a payload equal to this one.
+    - `obj` &mdash; Input obj consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - **Returns** &mdash; only when all preconditions are satisfied; otherwise with no partial mutation.
 
 `public override int GetHashCode()`
 
 :   Returns a hash over the ID and every property in canonical order. It depends only on content, and every part of it is computed with a fixed algorithm rather than with `string.GetHashCode()`, so the value is reproducible across processes and platforms.
+    - **Returns** &mdash; The requested immutable or borrowed value; ownership remains with the object documented by the return type.
 
 ---
 
@@ -291,6 +303,8 @@ the payload is validated rather than when the entry is made.
 `public MapProperty(StableId key, MapPropertyValue value)`
 
 :   Pairs a key with a value. Neither is validated here.
+    - `key` &mdash; Input key consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `value` &mdash; Input value consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
 
 **Properties**
 
@@ -307,19 +321,25 @@ the payload is validated rather than when the entry is made.
 `public int CompareTo(MapProperty other)`
 
 :   Orders entries by key, then by every field of the value in turn: kind, numeric, string, and ID. This is the canonical order a payload stores its properties in, and comparing the whole entry rather than the key alone means duplicate keys end up adjacent, which is how payload validation is able to spot them. The string comparison is ordinal, so no culture setting can change the order.
+    - `other` &mdash; Input other consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
     - **Returns** &mdash; A negative value, zero, or a positive value as this entry sorts before, alongside, or after `other`.
 
 `public bool Equals(MapProperty other)`
 
 :   Reports whether both entries carry the same key and an equal value.
+    - `other` &mdash; Input other consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - **Returns** &mdash; only when all preconditions are satisfied; otherwise with no partial mutation.
 
 `public override bool Equals(object obj)`
 
 :   Reports whether `obj` is an entry with the same key and an equal value.
+    - `obj` &mdash; Input obj consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - **Returns** &mdash; only when all preconditions are satisfied; otherwise with no partial mutation.
 
 `public override int GetHashCode()`
 
 :   Returns a hash combining the key and the value. Both sides hash their text with a fixed algorithm rather than with `string.GetHashCode()`, so the result is the same in every process and on every platform and may safely be persisted or compared across machines.
+    - **Returns** &mdash; The requested immutable or borrowed value; ownership remains with the object documented by the return type.
 
 ---
 
@@ -364,6 +384,10 @@ and no engine types is what lets a payload hash to the same value on every platf
 `public MapPropertyValue()`
 
 :   Assembles a value from its parts. Prefer the factory methods, which cannot produce an inconsistent combination. A null `stringValue` is stored as an empty string.
+    - `kind` &mdash; Input kind consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `numericValue` &mdash; Input numeric Value consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `stringValue` &mdash; Input string Value consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `stableIdValue` &mdash; Input stable Id Value consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
 
 **Properties**
 
@@ -391,36 +415,50 @@ and no engine types is what lets a payload hash to the same value on every platf
 
 `public static MapPropertyValue Boolean(bool value)`
 
-:   Creates a canonical boolean value.
+:   Runs boolean against validated inputs and returns a complete result rather than exposing partially updated state.
+    - `value` &mdash; Whether value; false selects the documented conservative behavior.
+    - **Returns** &mdash; The complete map Property Value outcome; inspect its typed status or diagnostics before consuming payload data.
 
 `public bool Equals(MapPropertyValue other)`
 
 :   Reports whether both values have the same kind and identical contents in every field, not only in the field the kind uses. Text is compared ordinally, so no culture setting affects the answer.
+    - `other` &mdash; Input other consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - **Returns** &mdash; only when all preconditions are satisfied; otherwise with no partial mutation.
 
 `public override bool Equals(object obj)`
 
 :   Reports whether `obj` is a value equal to this one.
+    - `obj` &mdash; Input obj consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - **Returns** &mdash; only when all preconditions are satisfied; otherwise with no partial mutation.
 
 `public static MapPropertyValue FixedPoint(long scaledValue)`
 
-:   Creates a canonical fixed-point value.
-    - `scaledValue` &mdash; The number already multiplied by `FixedPointScale`; pass 15000 to mean 1.5. This method does not scale for you.
+:   Runs fixed Point against validated inputs and returns a complete result rather than exposing partially updated state.
+    - `scaledValue` &mdash; Input scaled Value consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - **Returns** &mdash; The complete map Property Value outcome; inspect its typed status or diagnostics before consuming payload data.
 
 `public override int GetHashCode()`
 
 :   Returns a hash over the kind and all four fields. Text is hashed with a fixed algorithm instead of `string.GetHashCode()`, which some runtimes randomise per process, so the value is reproducible across runs, machines, and platforms.
+    - **Returns** &mdash; The requested immutable or borrowed value; ownership remains with the object documented by the return type.
 
 `public static MapPropertyValue Id(StableId value)`
 
-:   Creates a reference value. An empty ID is not canonical, since the kind promises a reference.
+:   Runs id against validated inputs and returns a complete result rather than exposing partially updated state.
+    - `value` &mdash; Input value consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - **Returns** &mdash; The complete map Property Value outcome; inspect its typed status or diagnostics before consuming payload data.
 
 `public static MapPropertyValue Integer(long value)`
 
-:   Creates a canonical whole-number value.
+:   Runs integer against validated inputs and returns a complete result rather than exposing partially updated state.
+    - `value` &mdash; Input value consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - **Returns** &mdash; The complete map Property Value outcome; inspect its typed status or diagnostics before consuming payload data.
 
 `public static MapPropertyValue String(string value)`
 
-:   Creates a text value. Null becomes an empty string, which is canonical; text containing an unpaired surrogate is not.
+:   Runs string against validated inputs and returns a complete result rather than exposing partially updated state.
+    - `value` &mdash; Input value consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - **Returns** &mdash; The complete map Property Value outcome; inspect its typed status or diagnostics before consuming payload data.
 
 ---
 
@@ -448,7 +486,7 @@ any rule changes the map a given seed produces.
 
 `public MapRuleSnapshot()`
 
-:   Creates the simplest usable rule set: the given layers, and one node type that every node will be. It declares that single type in the node type table with weight 1, leaves the zones, quotas, forced types, adjacency rules and custom constraints empty, and takes the default connection rules, which allow wide fan-out, add no optional edges, and forbid crossings. Use this to get a map generating, then move to the full constructor to shape it.
+:   Creates an immutable map Rule Snapshot snapshot; invalid required identifiers, ranges, or null inputs are rejected before state is exposed.
     - `schemaVersion` &mdash; Rule schema in use; must pair with `generatorVersion`.
     - `generatorVersion` &mdash; Generator to run; see `GeneratorVersion2` for the pairing requirement.
     - `layers` &mdash; Node count bounds per layer, in order; the index is the layer number.
@@ -456,12 +494,12 @@ any rule changes the map a given seed produces.
 
 `public MapRuleSnapshot()`
 
-:   Creates a complete rule set. Every sequence is copied, so the caller keeps ownership of the collections it passed and may mutate them afterwards, and every one of them may be null to mean empty. Nothing is validated here: pass the result to the rule validator to find out whether it is coherent.
+:   Creates an immutable map Rule Snapshot snapshot; invalid required identifiers, ranges, or null inputs are rejected before state is exposed.
     - `schemaVersion` &mdash; Must pair with `generatorVersion`; see `SchemaVersion2`.
     - `generatorVersion` &mdash; Must pair with `schemaVersion`; only version two enforces the rules below.
     - `layers` &mdash; Layers in order, front to back. This is the one collection whose order is preserved rather than sorted, because its index is the layer number every rule and override refers to.
     - `defaultNodeTypeId` &mdash; Type used where no rule decides otherwise; it must also appear in `nodeTypeWeights`.
-    - `nodeTypeWeights` &mdash; The node type table, which is also the type domain: a type absent from it cannot be placed and cannot be named by any zone, quota, forced, or adjacency rule.
+    - `nodeTypeWeights` &mdash; Positive relative selection weight; zero or negative values are rejected by validation.
     - `zones` &mdash; Layer bands with their own type rules; validation requires their ranges not to overlap.
     - `quotas` &mdash; How many of a type the map, or one named zone, must and may contain.
     - `forcedNodeTypes` &mdash; Slots whose type is decided in advance rather than drawn by weight.
@@ -547,6 +585,31 @@ any rule changes the map a given seed produces.
 :   Finds the zone governing a layer. In a valid snapshot zone ranges are disjoint, so the answer is unambiguous; if ranges do overlap the first zone in canonical order wins.
     - `layer` &mdash; Zero-based layer index; out-of-range values simply match no zone.
     - **Returns** &mdash; The zone covering that layer, or null when none does, meaning the map-wide rules apply unmodified.
+
+---
+
+## SampleProceduralVisuals
+
+```csharp
+public static class SampleProceduralVisuals
+```
+
+`BranchWeaver.Samples` &middot; <small>BranchWeaver/Samples/Shared/SampleProceduralVisuals.cs</small>
+
+Creates the sample-only scenery and traveler markers from deterministic geometry at
+runtime. No imported image, font, shader, material, or render-pipeline package is needed.
+The deliberately small textures keep the sample lightweight and make their clean-room
+origin auditable directly from this source file.
+
+**Methods**
+
+`public static Sprite GetBackdrop(BranchWeaverSampleKind kind)`
+
+:   Returns one cached, code-generated backdrop for the requested sample.
+
+`public static IReadOnlyList<Sprite[]> GetHeroFrames()`
+
+:   Returns six cached two-frame traveler animations. Their order matches `SampleTraveler.CharacterNames`.
 
 ---
 
@@ -678,7 +741,7 @@ The xorshift32 transition and zero-seed normalization are public compatibility c
 `public XorShift32Random(uint seed)`
 
 :   Starts a fresh stream from a seed. A seed of zero is quietly replaced by `ZeroSeedReplacement`, because xorshift32 can never leave zero and would otherwise repeat it forever; seeding with 0 and with that constant therefore give the same sequence.
-    - `seed` &mdash; The seed to start from. Any 32-bit value is accepted, so a map seed can be handed over unmodified.
+    - `seed` &mdash; Explicit unsigned deterministic seed; equal inputs and seed produce equal canonical output.
 
 `public XorShift32Random(DeterministicRandomState state)`
 
@@ -696,23 +759,30 @@ The xorshift32 transition and zero-seed normalization are public compatibility c
 `public DeterministicRandomState CaptureState()`
 
 :   Takes the stream's current position so it can be stored and later handed back to `XorShift32Random(DeterministicRandomState)`. The capture carries `AlgorithmVersion` with it, so a position saved by a build with a different algorithm is refused on load rather than silently resuming a different sequence.
+    - **Returns** &mdash; The complete deterministic Random State outcome; inspect its typed status or diagnostics before consuming payload data.
 
 `public bool NextBool()`
 
 :   Returns true or false with even odds, consuming exactly one draw. It reads the low bit of that draw and reports true for the even outcome.
+    - **Returns** &mdash; only when all preconditions are satisfied; otherwise with no partial mutation.
 
 `public int NextInt(int exclusiveMaximum)`
 
 :   Returns a value from zero up to but not including `exclusiveMaximum`, with every value equally likely. Draws that land in the uneven tail left over by the modulus are discarded and redrawn rather than folded back, so no value is favoured -- at the cost of consuming an unpredictable number of draws when the bound does not divide the 32-bit range evenly.
     - `exclusiveMaximum` &mdash; How many distinct values to choose between; must be positive.
+    - **Returns** &mdash; The complete int outcome; inspect its typed status or diagnostics before consuming payload data.
 
 `public int NextInt(int inclusiveMinimum, int inclusiveMaximum)`
 
 :   Returns a value in the inclusive range. A fixed range returns immediately without consuming random state, which keeps optional fixed rules from shifting later choices.
+    - `inclusiveMinimum` &mdash; Input inclusive Minimum consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `inclusiveMaximum` &mdash; Input inclusive Maximum consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - **Returns** &mdash; The complete int outcome; inspect its typed status or diagnostics before consuming payload data.
 
 `public uint NextUInt()`
 
 :   Advances the stream one step and returns the new state word. Every other draw on this class is built on it, so calling it directly shifts every later result -- which is the usual cause of two runs of one seed diverging.
+    - **Returns** &mdash; The complete uint outcome; inspect its typed status or diagnostics before consuming payload data.
 
 ---
 

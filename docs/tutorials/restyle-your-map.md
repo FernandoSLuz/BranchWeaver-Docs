@@ -1,4 +1,4 @@
-# 4. Restyle your map
+# 5. Restyle your map
 
 Everything the map draws itself with lives in one asset: a **Map Style Preset**. This page
 takes the [map you added to your scene](add-a-map-to-your-scene.md) from a shipped look to a

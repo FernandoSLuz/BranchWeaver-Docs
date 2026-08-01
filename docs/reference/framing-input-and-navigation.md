@@ -26,49 +26,49 @@ Optional PlayerInput UnityEvent bridge compiled only when com.unity.inputsystem 
 `public void Bind(InputSystemSignalAdapter adapter)`
 
 :   Points the bridge at an adapter from code, for a rig assembled at runtime rather than wired in the inspector.
-    - `adapter` &mdash; The adapter to post to. Null puts the bridge back to resolving one from this GameObject when the next signal arrives.
+    - `adapter` &mdash; Input adapter consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
 
 `public void OnNavigate(InputAction.CallbackContext context)`
 
 :   Handler for the directional action: it posts the stick or D-pad vector while the action is performed, and a zero vector when it is cancelled. The zero on cancel is what stops a released stick from walking the focus onward, because the adapter holds the last axis it was given until told otherwise. Wire this to the action's UnityEvent on `PlayerInput`.
-    - `context` &mdash; The context PlayerInput supplies. Only the performed and cancelled phases are acted on; the value is read as a `Vector2`.
+    - `context` &mdash; Input context consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
 
 `public void OnPan(InputAction.CallbackContext context)`
 
 :   Handler for dragging the map about, posting the action's value as a pan movement. Bind it to an action that reports movement per event. Deltas are accumulated until the next frame is captured, so an action that reports an absolute pointer position instead would pan the map by that whole position on every event.
-    - `context` &mdash; The context PlayerInput supplies. Read as a `Vector2` delta in the performed phase.
+    - `context` &mdash; Input context consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
 
 `public void OnPinch(InputAction.CallbackContext context)`
 
 :   Handler for a two-finger pinch: the action's value is read as a scale factor while the gesture is performed, and the gesture is ended when it is cancelled. Ending it matters. While a pinch is marked active the adapter refuses pointer presses, so an action that never reaches its cancelled phase leaves the map ignoring taps for good.
-    - `context` &mdash; The context PlayerInput supplies. Read as a scale factor in the performed phase; 1 leaves the zoom alone.
+    - `context` &mdash; Input context consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
 
 `public void OnPointer(InputAction.CallbackContext context)`
 
 :   Handler for the pointer position, in screen pixels. Position only: moving the pointer over a node never selects it, which is what `OnPointerPress` is for.
-    - `context` &mdash; The context PlayerInput supplies. Read as a `Vector2` in the performed phase and ignored otherwise.
+    - `context` &mdash; Input context consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
 
 `public void OnPointerPress(InputAction.CallbackContext context)`
 
 :   Handler for a click or tap on the map, acted on in the performed phase. The press is only queued here; the map decides what it hit when the next input frame is captured. The adapter drops it while a pinch is running, so a second finger landing on a node cannot select it.
-    - `context` &mdash; The context PlayerInput supplies; its value is not read.
+    - `context` &mdash; Input context consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
 
 `public void OnSubmit(InputAction.CallbackContext context)`
 
 :   Handler for activating the focused node. Only the performed phase counts, so the same press is not acted on again when the action starts and when it is released. The request is queued for the next captured frame rather than sent straight to the map.
-    - `context` &mdash; The context PlayerInput supplies; its value is not read.
+    - `context` &mdash; Input context consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
 
 `public void OnZoom(InputAction.CallbackContext context)`
 
 :   Handler for a scroll wheel or zoom axis. The action's value is added to the zoom accumulated for the next captured frame, so several events between frames add up rather than replacing one another.
-    - `context` &mdash; The context PlayerInput supplies. Read as a `float` delta in the performed phase.
+    - `context` &mdash; Input context consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
 
 `public void SignalNavigatePhase(bool performed, bool canceled, Vector2 value)`
 
 :   The phase-only form of `OnNavigate`, on the same terms as `SignalPinchPhase`. Cancellation wins over performed and posts a zero axis rather than nothing, because the adapter holds the last axis it was given until it is told the control was released.
     - `performed` &mdash; True while the control is held at `value`.
     - `canceled` &mdash; True when the control has been released.
-    - `value` &mdash; The directional axis. Ignored unless `performed` is the only flag set.
+    - `value` &mdash; Input value consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
 
 `public void SignalPanPhase(bool performed, Vector2 value)`
 
@@ -139,6 +139,12 @@ keep it reachable.
 `public MapFrameResult()`
 
 :   Captures an already-resolved framing. Normally read from `MapViewportFrame.Frame` rather than constructed by hand; nothing here is validated or clamped.
+    - `valid` &mdash; Whether valid; false selects the documented conservative behavior.
+    - `areaPixels` &mdash; Input area Pixels consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `scale` &mdash; Input scale consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `contentSizePixels` &mdash; Input content Size Pixels consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `minimumPan` &mdash; Input minimum Pan consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `maximumPan` &mdash; Input maximum Pan consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
 
 **Properties**
 
@@ -171,6 +177,8 @@ keep it reachable.
 `public Vector2 ClampPan(Vector2 pan)`
 
 :   Clamps a pan offset into the allowed range.
+    - `pan` &mdash; Input pan consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - **Returns** &mdash; The complete vector2 outcome; inspect its typed status or diagnostics before consuming payload data.
 
 ---
 
@@ -190,6 +198,14 @@ without a scene, a canvas, or a device.
 `public static MapFrameResult Resolve()`
 
 :   Resolves the area, scale, and pan limits for a map. `availablePixels` is the full rectangle the map is allowed to consider, normally the canvas rect or the screen. `safeAreaPixels` is the device safe area in the same space; pass the full rectangle when there is none.
+    - `availablePixels` &mdash; Input available Pixels consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `safeAreaPixels` &mdash; Input safe Area Pixels consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `contentSizePixels` &mdash; Input content Size Pixels consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `framing` &mdash; Input framing consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `zoom` &mdash; Input zoom consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `minimumZoom` &mdash; Input minimum Zoom consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `maximumZoom` &mdash; Input maximum Zoom consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - **Returns** &mdash; The complete map Frame Result outcome; inspect its typed status or diagnostics before consuming payload data.
 
 ---
 
@@ -271,7 +287,7 @@ asset rather than by hand-positioning transforms.
 `public bool FocusOn(BranchWeaver.Core.StableId nodeId)`
 
 :   Centres the view on a node without changing zoom, clamped so the map cannot be pushed out of reach.
-    - `nodeId` &mdash; The node to centre on. It must be present in the presenter's current layout.
+    - `nodeId` &mdash; Stable identifier for node; invalid or empty IDs are rejected before mutation.
     - **Returns** &mdash; True when the pan was updated and the framing reapplied. False, leaving the view untouched, when no presenter is assigned or found in the parents, or when that presenter has no presentation position for the node yet.
 
 `public void FrameAll()`
@@ -297,9 +313,10 @@ rather than a usable fallback.
 
 `public MapViewportResult(bool valid, Rect normalizedSafeArea, MapAspectClass aspectClass)`
 
-:   Creates a result. No relationship between the three values is enforced here.
+:   Creates an immutable map Viewport Result snapshot; invalid required identifiers, ranges, or null inputs are rejected before state is exposed.
     - `valid` &mdash; Whether the measurement produced usable values.
     - `normalizedSafeArea` &mdash; Safe area as fractions of the screen, not pixels.
+    - `aspectClass` &mdash; Input aspect Class consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
 
 **Properties**
 

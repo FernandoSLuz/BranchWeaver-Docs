@@ -20,9 +20,9 @@ deliberately distinct from node-authored MapNodePayload.
 
 `public MapDataPayload(StableId payloadId, IEnumerable<MapProperty> properties)`
 
-:   Creates a payload from the given entries. They are copied and sorted by key, so the caller may reuse or mutate the sequence afterwards, and two payloads built from the same entries in different orders compare equal and hash alike. Nothing is checked here: read `IsCanonical` before handing the payload to a session.
+:   Creates an immutable map Data Payload snapshot; invalid required identifiers, ranges, or null inputs are rejected before state is exposed.
     - `payloadId` &mdash; Identity of the payload; it may be left empty only when there are no properties.
-    - `properties` &mdash; The entries to carry. Null means no properties.
+    - `properties` &mdash; Ordered properties input; implementations copy or enumerate it without taking caller ownership.
 
 **Properties**
 
@@ -43,15 +43,19 @@ deliberately distinct from node-authored MapNodePayload.
 `public bool Equals(MapDataPayload other)`
 
 :   Reports whether both payloads carry the same ID and the same entries. Both sides are already sorted, so the order the entries were originally supplied in makes no difference.
+    - `other` &mdash; Input other consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
     - **Returns** &mdash; True when the payloads match; false when `other` is null.
 
 `public override bool Equals(object obj)`
 
 :   Reports whether `obj` is a payload equal to this one.
+    - `obj` &mdash; Input obj consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - **Returns** &mdash; only when all preconditions are satisfied; otherwise with no partial mutation.
 
 `public override int GetHashCode()`
 
 :   Returns a hash over the ID and every entry in sorted order. It depends on content alone, and each part is hashed with a fixed algorithm rather than with `string.GetHashCode()`, so the value is reproducible across processes and platforms and may safely be persisted.
+    - **Returns** &mdash; The requested immutable or borrowed value; ownership remains with the object documented by the return type.
 
 ---
 
@@ -72,6 +76,7 @@ is never null, so a completion can be read without a null guard.
 
 :   Records that a node was completed with the given result.
     - `resultPayload` &mdash; Outcome data for the node, such as a reward roll or a chosen branch. Null is stored as `MapDataPayload.Empty`; a session accepts only a canonical payload.
+    - `nodeId` &mdash; Stable identifier for node; invalid or empty IDs are rejected before mutation.
 
 **Properties**
 
@@ -88,14 +93,19 @@ is never null, so a completion can be read without a null guard.
 `public bool Equals(MapNodeCompletion other)`
 
 :   Compares node and payload: the same node completed with a different result is not equal.
+    - `other` &mdash; Input other consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - **Returns** &mdash; only when all preconditions are satisfied; otherwise with no partial mutation.
 
 `public override bool Equals(object obj)`
 
 :   Value equality against another `MapNodeCompletion`. Anything else, null included, is unequal.
+    - `obj` &mdash; Input obj consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - **Returns** &mdash; only when all preconditions are satisfied; otherwise with no partial mutation.
 
 `public override int GetHashCode()`
 
 :   Combines the node and its result payload, so it agrees with `Equals(MapNodeCompletion)` and two completions of the same node with different results land in different buckets.
+    - **Returns** &mdash; The requested immutable or borrowed value; ownership remains with the object documented by the return type.
 
 ---
 
@@ -121,9 +131,9 @@ presentation without the run moving underneath it.
 
 `public MapProgressionState()`
 
-:   Builds a snapshot directly, which is what restoring a saved run does. Every sequence is copied, and a null sequence becomes an empty one. Nothing is checked against a graph here: `MapSession` validates a snapshot when it is constructed with one.
+:   Creates an immutable map Progression State snapshot; invalid required identifiers, ranges, or null inputs are rejected before state is exposed.
     - `revision` &mdash; Transition counter stamped on this snapshot; a new run starts at zero.
-    - `currentNodeId` &mdash; The node being played, or an empty id when no node is in progress.
+    - `currentNodeId` &mdash; Stable identifier for current Node; invalid or empty IDs are rejected before mutation.
     - `availableNodeIds` &mdash; Nodes that may be entered next. Stored sorted, so the order passed in is not preserved.
     - `visitedNodeIds` &mdash; Entered nodes in traversal order, oldest first.
     - `completions` &mdash; Finished nodes, one per completed node and in the same order as `visitedNodeIds`; a session rejects a snapshot whose completions do not line up with its route.
@@ -160,31 +170,43 @@ presentation without the run moving underneath it.
 `public bool Equals(MapProgressionState other)`
 
 :   Compares the whole snapshot, revision included, and treats route and completion order as significant. Two snapshots of the same run at different revisions are never equal.
+    - `other` &mdash; Input other consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - **Returns** &mdash; only when all preconditions are satisfied; otherwise with no partial mutation.
 
 `public override bool Equals(object obj)`
 
 :   Value equality against another `MapProgressionState`. Anything else, null included, is unequal.
+    - `obj` &mdash; Input obj consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - **Returns** &mdash; only when all preconditions are satisfied; otherwise with no partial mutation.
 
 `public override int GetHashCode()`
 
 :   Combines the revision, the current node, the completion flag, and every available id, visited id, and completion in order, so it agrees with `Equals(MapProgressionState)`. It walks the whole route rather than a fixed number of fields, so it costs more the further a run has progressed. Cache the value if a snapshot is used as a dictionary key on a per-frame path.
+    - **Returns** &mdash; The requested immutable or borrowed value; ownership remains with the object documented by the return type.
 
 `public bool IsAvailable(StableId nodeId)`
 
-:   True when the node may be entered right now.
+:   True when the node may be entered right now. Answered from an index built when the snapshot was made, so asking it about every node on screen costs the same as asking once.
+    - `nodeId` &mdash; Stable identifier for node; invalid or empty IDs are rejected before mutation.
+    - **Returns** &mdash; only when all preconditions are satisfied; otherwise with no partial mutation.
 
 `public bool IsCompleted(StableId nodeId)`
 
 :   True when the node has been finished and its result recorded.
+    - `nodeId` &mdash; Stable identifier for node; invalid or empty IDs are rejected before mutation.
+    - **Returns** &mdash; only when all preconditions are satisfied; otherwise with no partial mutation.
 
 `public bool IsVisited(StableId nodeId)`
 
-:   True when the node has been entered. Entering is not finishing: a node the player is standing on is visited but not yet completed.
+:   True when the node has been entered. Entering is not finishing: a node the player is standing on is visited but not yet completed. Indexed like `IsAvailable`, so it is safe to ask per node and per edge while drawing.
+    - `nodeId` &mdash; Stable identifier for node; invalid or empty IDs are rejected before mutation.
+    - **Returns** &mdash; only when all preconditions are satisfied; otherwise with no partial mutation.
 
 `public bool TryGetCompletion(StableId nodeId, out MapNodeCompletion completion)`
 
 :   Reads back the result recorded for a finished node.
-    - `completion` &mdash; The recorded completion, or null when the node has not been finished.
+    - `completion` &mdash; Input completion consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `nodeId` &mdash; Stable identifier for node; invalid or empty IDs are rejected before mutation.
     - **Returns** &mdash; True when a completion for the node exists.
 
 ---
@@ -208,13 +230,13 @@ after the new state is committed; callback exceptions become warnings and never 
 `public MapSession(MapGraph graph)`
 
 :   Starts a fresh run over a map: no node is current, nothing has been visited, and the graph's start nodes -- the ones no edge leads into -- are what the player may enter first.
-    - `graph` &mdash; The map to traverse. It is validated, never repaired.
+    - `graph` &mdash; Input graph consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
 
 `public MapSession(MapGraph graph, MapProgressionState state)`
 
 :   Resumes a run from a progression snapshot, typically one just loaded from a save. The graph and the progression are validated together, so a snapshot that does not describe one legal ordered route through this particular graph is rejected outright rather than loaded and silently corrected. That is deliberate: a save edited by hand, or written against a map that has since been regenerated, fails loudly at load instead of drifting.
-    - `graph` &mdash; The map to traverse.
-    - `state` &mdash; The progression to resume from.
+    - `graph` &mdash; Input graph consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `state` &mdash; Input state consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
 
 **Properties**
 
@@ -247,8 +269,8 @@ after the new state is committed; callback exceptions become warnings and never 
 
 `public MapTransitionResult TryEnter(StableId nodeId)`
 
-:   Enters an available node and makes it the current one. Every precondition is checked first and a refusal changes nothing, so any node ID may be offered and the reason read back off the result -- there is no need to pre-check availability yourself. A successful entry appends the node to the visited route, empties the available set until the node is completed, and produces a `MapTransitionEventKind.NodeEntered` event followed by an `MapTransitionEventKind.AvailabilityChanged` event.
-    - `nodeId` &mdash; The node to enter; it must currently be in `MapProgressionState.AvailableNodeIds`.
+:   Enters an available node and makes it the current one. Every precondition is checked first and a refusal changes nothing, so any node ID may be offered and the reason read back off the result -- there is no need to pre-check availability yourself. A successful entry appends the node to the visited route, empties the available set until the node is completed, and produces a `MapTransitionEventKind.NodeEntered` event followed by an `MapTransitionEventKind.AvailabilityChanged` event. The entered event names the node moved off and the edge crossed, so animating the step needs nothing remembered from the previous transition.
+    - `nodeId` &mdash; Stable identifier for node; invalid or empty IDs are rejected before mutation.
     - **Returns** &mdash; The outcome, with the reason in `MapTransitionResult.FailureKind` when the attempt was refused.
 
 ---
@@ -266,28 +288,46 @@ public sealed class MapTransitionEvent
 One immutable thing that happened during a traversal transition: a node was entered or
 completed, the choosable set changed, or the run ended. This is the type your UI listens to --
 entering a node, finishing it, and the map ending each arrive as their own event, so a view can
-react to exactly the change it cares about instead of diffing progression snapshots. Every
-event of one transition shares that transition's `Revision` and reports the
-availability that transition produced, and the events are already committed by the time you see
-them: a listener that throws cannot undo them.
+react to exactly the change it cares about instead of diffing progression snapshots. A node
+event also names the move that produced it -- `PreviousNodeId` and
+`EdgeId` -- so a view never has to remember where the traveller was. Every event of
+one transition shares that transition's `Revision` and reports the availability
+that transition produced, and the events are already committed by the time you see them: a
+listener that throws cannot undo them.
 
 **Constructors**
 
 `public MapTransitionEvent()`
 
-:   Creates one transition event. The available ids are copied and sorted, so the caller's collection is neither retained nor required to be ordered.
+:   Creates an immutable map Transition Event snapshot; invalid required identifiers, ranges, or null inputs are rejected before state is exposed.
     - `kind` &mdash; What the event reports.
     - `order` &mdash; Zero-based position within its own transition, not a running total.
-    - `revision` &mdash; The progression revision this transition produced.
-    - `nodeId` &mdash; The node the event is about. Pass the default id for events that describe the map rather than a node, such as `MapTransitionEventKind.AvailabilityChanged`.
+    - `revision` &mdash; Input revision consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `nodeId` &mdash; Stable identifier for node; invalid or empty IDs are rejected before mutation.
     - `resultPayload` &mdash; Completion data for a node-completed or map-completed event. Null becomes `MapDataPayload.Empty`.
-    - `availableNodeIds` &mdash; The nodes choosable after the transition. Null becomes an empty set.
+    - `availableNodeIds` &mdash; Ordered available Node Ids input; implementations copy or enumerate it without taking caller ownership.
+
+`public MapTransitionEvent()`
+
+:   Creates an immutable map Transition Event snapshot that also records the move itself: where the traveller came from and which edge was walked. The shorter overload remains, and leaves both empty.
+    - `kind` &mdash; What the event reports.
+    - `order` &mdash; Zero-based position within its own transition, not a running total.
+    - `revision` &mdash; Input revision consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `nodeId` &mdash; Stable identifier for node; invalid or empty IDs are rejected before mutation.
+    - `resultPayload` &mdash; Completion data for a node-completed or map-completed event. Null becomes `MapDataPayload.Empty`.
+    - `availableNodeIds` &mdash; Ordered available Node Ids input; implementations copy or enumerate it without taking caller ownership.
+    - `previousNodeId` &mdash; The node `nodeId` was reached from; empty when there was none.
+    - `edgeId` &mdash; The edge walked to reach `nodeId`; empty when there was none.
 
 **Properties**
 
 `public IReadOnlyList<StableId> AvailableNodeIds`
 
 :   The nodes choosable after the transition, ascending. It is the complete post-transition set rather than a delta, and it is repeated on every event of the transition -- including `MapTransitionEventKind.NodeEntered`, where entering a node leaves it empty until that node is completed.
+
+`public StableId EdgeId`
+
+:   The edge walked from `PreviousNodeId` to `NodeId`, which is what an edge-specific effect or a per-route score keys off. Empty whenever `PreviousNodeId` is. Where two edges join the same pair of nodes this is the first of them in the graph's canonical edge order, so replaying a run reports the same edge every time.
 
 `public MapTransitionEventKind Kind`
 
@@ -300,6 +340,10 @@ them: a listener that throws cannot undo them.
 `public int Order`
 
 :   Zero-based position within its own transition, not a running total across the run. Use it to keep the events of one transition in order, not to tell transitions apart.
+
+`public StableId PreviousNodeId`
+
+:   The node `NodeId` was reached from, so a listener can animate the move, score the route, or colour the step just taken without shadowing the current node and diffing it itself. Empty when there is no such node: the first node of a run was not walked to, and an event that describes the map rather than one node leaves this empty alongside `NodeId`. Check `StableId.IsEmpty` before using it.
 
 `public MapDataPayload ResultPayload`
 
@@ -400,12 +444,12 @@ here rather than thrown, and it changes nothing -- so a caller can offer any nod
 
 `public static MapTransitionResult Rejected()`
 
-:   Builds a refused result with an error diagnostic of your own. Use it when code wrapping a session must turn a request down before the session sees it, so that callers still get a refusal in the same shape a session would have produced.
-    - `failureKind` &mdash; The kind to report. `MapTransitionFailureKind.None` is not meaningful here.
-    - `state` &mdash; The unchanged current progression state, which the result carries on both sides.
-    - `diagnosticCode` &mdash; The diagnostic code to record for the refusal.
-    - `message` &mdash; The human-readable explanation to record alongside the code.
-    - `nodeId` &mdash; The node the refusal is about. Pass the default id when it concerns no specific node.
+:   Runs rejected against validated inputs and returns a complete result rather than exposing partially updated state.
+    - `failureKind` &mdash; Input failure Kind consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `state` &mdash; Input state consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `diagnosticCode` &mdash; Input diagnostic Code consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `message` &mdash; Input message consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `nodeId` &mdash; Stable identifier for node; invalid or empty IDs are rejected before mutation.
     - **Returns** &mdash; A refused result carrying no events and one error diagnostic.
 
 ---

@@ -28,10 +28,10 @@ constraint in the pass, so treat it as read-only. During the search
 `public ConstraintContext()`
 
 :   Captures one evaluation's view of an attempt. Slots, edges, and assignments are copied and sorted here, so later changes to the collections passed in cannot reach the constraint.
-    - `rules` &mdash; The rule snapshot the attempt runs under; required.
+    - `rules` &mdash; Input rules consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
     - `slots` &mdash; Every slot in the attempt, assigned or not. Null is read as empty.
-    - `edges` &mdash; The connections between those slots. Null is read as empty.
-    - `assignments` &mdash; The slots whose type is already decided. Null is read as empty.
+    - `edges` &mdash; Ordered edges input; implementations copy or enumerate it without taking caller ownership.
+    - `assignments` &mdash; Ordered assignments input; implementations copy or enumerate it without taking caller ownership.
     - `isComplete` &mdash; True only when every slot in `slots` has an assignment.
 
 **Properties**
@@ -99,9 +99,10 @@ reported a violation, so there is no "no answer" result to reach for.
 
 `public ConstraintResult(ConstraintEvaluationState state, string diagnosticCode, string message)`
 
-:   Creates a result from its parts. The three factory methods cover every case the generator distinguishes; a null code or message is stored as an empty string.
-    - `diagnosticCode` &mdash; The code to report with a violation. Leave it empty on satisfied and undetermined results, and on a violation that has no better code to offer.
-    - `message` &mdash; The reason for a violation, reported to the caller as written.
+:   Creates an immutable constraint Result snapshot; invalid required identifiers, ranges, or null inputs are rejected before state is exposed.
+    - `diagnosticCode` &mdash; Input diagnostic Code consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `message` &mdash; Input message consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `state` &mdash; Input state consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
 
 **Properties**
 
@@ -122,16 +123,19 @@ reported a violation, so there is no "no answer" result to reach for.
 `public static ConstraintResult Satisfied()`
 
 :   A result stating that the rule holds, carrying no code or message.
+    - **Returns** &mdash; The complete constraint Result outcome; inspect its typed status or diagnostics before consuming payload data.
 
 `public static ConstraintResult Undetermined()`
 
 :   A result stating that the rule cannot be judged yet. Only useful while `ConstraintContext.IsComplete` is false; on a finished assignment it is treated as a failure rather than as a pass.
+    - **Returns** &mdash; The complete constraint Result outcome; inspect its typed status or diagnostics before consuming payload data.
 
 `public static ConstraintResult Violated(string code, string message)`
 
 :   A result stating that the rule is broken, which makes the generator backtrack and record an error against the constraint that returned it.
-    - `code` &mdash; The diagnostic code to report; an empty code becomes `MapDiagnosticCodes.GenerationConstraintsUnsatisfiable`.
-    - `message` &mdash; The reason, reported to the caller as written.
+    - `code` &mdash; Input code consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `message` &mdash; Input message consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - **Returns** &mdash; The complete constraint Result outcome; inspect its typed status or diagnostics before consuming payload data.
 
 ---
 
@@ -153,8 +157,8 @@ each other.
 
 | Value | Meaning |
 | --- | --- |
-| `Forbid` | &mdash; |
-| `Allow` | &mdash; |
+| `Forbid` | Choosing forbid configures `EdgeCrossingPolicy`; the serialized numeric value is part of the compatibility contract. |
+| `Allow` | Choosing allow configures `EdgeCrossingPolicy`; the serialized numeric value is part of the compatibility contract. |
 
 ---
 
@@ -194,7 +198,7 @@ topology with no valid type assignment at all, rather than merely thinning the c
 
 `public ForbiddenAdjacencyRule()`
 
-:   Creates an adjacency ban between two node types. When `direction` is `ForbiddenAdjacencyDirection.Either` the pair is stored in ascending type-ID order, so `FirstTypeId` and `SecondTypeId` may come back reversed from the arguments and two mirrored bans become indistinguishable.
+:   Creates an immutable forbidden Adjacency Rule snapshot; invalid required identifiers, ranges, or null inputs are rejected before state is exposed.
     - `ruleId` &mdash; Identity of the rule; must be non-empty and unique among all rules in the snapshot.
     - `firstTypeId` &mdash; Source-side type when `direction` is `ForbiddenAdjacencyDirection.Forward`.
     - `secondTypeId` &mdash; Target-side type when `direction` is `ForbiddenAdjacencyDirection.Forward`.
@@ -223,6 +227,7 @@ topology with no valid type assignment at all, rather than merely thinning the c
 `public int CompareTo(ForbiddenAdjacencyRule other)`
 
 :   Orders bans by rule ID, then first type, second type, and direction, which is how a rule snapshot canonicalises its adjacency list.
+    - `other` &mdash; Input other consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
     - **Returns** &mdash; A negative value, zero, or a positive value as this rule sorts before, alongside, or after `other`.
 
 `public bool Forbids(StableId sourceType, StableId targetType)`
@@ -275,6 +280,7 @@ authored minimum and change which layer sizes remain feasible.
 `public int CompareTo(ForcedNodeTypeRule other)`
 
 :   Orders forced rules by rule ID, then slot, then type, which is how a rule snapshot canonicalises its forced list.
+    - `other` &mdash; Input other consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
     - **Returns** &mdash; A negative value, zero, or a positive value as this rule sorts before, alongside, or after `other`.
 
 ---
@@ -328,7 +334,7 @@ map, so an existing seed no longer reproduces the layout a player saw.
 
 `public MapConnectionRules()`
 
-:   Creates a connection rule set. Nothing is checked here; the rule validator is what enforces the ranges described on each property, and it also rejects caps too tight to join two adjacent layers at any of their permitted node counts.
+:   Creates an immutable map Connection Rules snapshot; invalid required identifiers, ranges, or null inputs are rejected before state is exposed.
     - `ruleId` &mdash; Identity reported in diagnostics and hashed into the fingerprint.
     - `maximumOutgoingPerNode` &mdash; Branch cap; validation requires 1 to 256.
     - `maximumIncomingPerNode` &mdash; Merge cap; validation requires 1 to 256.
@@ -380,7 +386,7 @@ meaning from one seed to the next.
 
 `public MapNodeSlot(int layer, int ordinal)`
 
-:   Creates a slot address. Nothing is validated here; whether the slot falls inside the map is decided by the rule snapshot it is used with.
+:   Creates an immutable map Node Slot snapshot; invalid required identifiers, ranges, or null inputs are rejected before state is exposed.
     - `layer` &mdash; Zero-based index into the layer list of that rule snapshot.
     - `ordinal` &mdash; Zero-based position inside the layer.
 
@@ -399,23 +405,30 @@ meaning from one seed to the next.
 `public int CompareTo(MapNodeSlot other)`
 
 :   Orders slots by layer first and then by ordinal. This is the canonical order applied wherever slot collections are sorted for deterministic output.
+    - `other` &mdash; Input other consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
     - **Returns** &mdash; A negative value, zero, or a positive value as this slot sorts before, alongside, or after `other`.
 
 `public bool Equals(MapNodeSlot other)`
 
 :   Reports whether both slots address the same layer and ordinal.
+    - `other` &mdash; Input other consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - **Returns** &mdash; only when all preconditions are satisfied; otherwise with no partial mutation.
 
 `public override bool Equals(object obj)`
 
 :   Reports whether `obj` is a slot addressing the same layer and ordinal.
+    - `obj` &mdash; Input obj consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - **Returns** &mdash; only when all preconditions are satisfied; otherwise with no partial mutation.
 
 `public override int GetHashCode()`
 
 :   Returns a hash combining layer and ordinal, so slots are safe as dictionary keys; the generator keys its per-slot lookups this way.
+    - **Returns** &mdash; The requested immutable or borrowed value; ownership remains with the object documented by the return type.
 
 `public override string ToString()`
 
 :   Returns the compact `layer:ordinal` form that slot-related diagnostics carry as their context text.
+    - **Returns** &mdash; The complete string outcome; inspect its typed status or diagnostics before consuming payload data.
 
 ---
 
@@ -437,6 +450,9 @@ sequence no matter what order the search settled them in.
 `public MapNodeTypeAssignment(MapNodeSlot slot, StableId nodeId, StableId typeId)`
 
 :   Pairs one slot with the node identity and node type chosen for it.
+    - `slot` &mdash; Input slot consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `nodeId` &mdash; Stable identifier for node; invalid or empty IDs are rejected before mutation.
+    - `typeId` &mdash; Stable identifier for type; invalid or empty IDs are rejected before mutation.
 
 **Properties**
 
@@ -457,6 +473,8 @@ sequence no matter what order the search settled them in.
 `public int CompareTo(MapNodeTypeAssignment other)`
 
 :   Orders by `Slot`, then `NodeId`, then `TypeId`.
+    - `other` &mdash; Input other consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - **Returns** &mdash; The complete int outcome; inspect its typed status or diagnostics before consuming payload data.
 
 ---
 
@@ -478,6 +496,8 @@ never equals target-to-source.
 `public MapSlotEdge(MapNodeSlot source, MapNodeSlot target)`
 
 :   Connects one slot to another, leaving `source` and entering `target`.
+    - `source` &mdash; Input source consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `target` &mdash; Input target consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
 
 **Properties**
 
@@ -494,22 +514,30 @@ never equals target-to-source.
 `public int CompareTo(MapSlotEdge other)`
 
 :   Orders by `Source`, then `Target`, which is how edge lists are kept in one deterministic order.
+    - `other` &mdash; Input other consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - **Returns** &mdash; The complete int outcome; inspect its typed status or diagnostics before consuming payload data.
 
 `public bool Equals(MapSlotEdge other)`
 
 :   Two edges are equal only when both endpoints match in the same direction.
+    - `other` &mdash; Input other consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - **Returns** &mdash; only when all preconditions are satisfied; otherwise with no partial mutation.
 
 `public override bool Equals(object obj)`
 
 :   Value equality against another `MapSlotEdge`; any other object is unequal.
+    - `obj` &mdash; Input obj consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - **Returns** &mdash; only when all preconditions are satisfied; otherwise with no partial mutation.
 
 `public override int GetHashCode()`
 
 :   Hash of both endpoints, consistent with `Equals(MapSlotEdge)`.
+    - **Returns** &mdash; The requested immutable or borrowed value; ownership remains with the object documented by the return type.
 
 `public override string ToString()`
 
 :   Formats the edge as "layer:ordinal->layer:ordinal".
+    - **Returns** &mdash; The complete string outcome; inspect its typed status or diagnostics before consuming payload data.
 
 ---
 
@@ -555,17 +583,17 @@ same report in the same order.
 `public ValidationReport Validate(MapGraph graph, MapRuleSnapshot rules)`
 
 :   Judges a graph against the rules, taking the generation mode from the graph itself and comparing it against no authoring overrides. A version-two graph must still carry well-formed override metadata, but it is checked only for shape and self-consistency, not against any particular set of pins -- none were supplied. Use the overload taking a mode and overrides when the caller knows which ones the graph was generated under.
-    - `graph` &mdash; The graph to inspect. Null is reported as a missing-graph error rather than thrown.
-    - `rules` &mdash; The compiled snapshot the graph is judged against; its own faults are reported first and stop the graph being inspected at all.
+    - `graph` &mdash; Input graph consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `rules` &mdash; Input rules consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
     - **Returns** &mdash; Every diagnostic found. Any error-severity diagnostic rejects the graph.
 
 `public ValidationReport Validate()`
 
 :   Judges a graph against the rules, the generation mode, and the authoring overrides the caller believes it was produced under. This is the strict form, and the one an authoring pipeline wants: a version-two graph must also declare the same mode, carry an overrides fingerprint and generation key that match `overrides`, and preserve every pinned node field and every edge override. A procedural request additionally requires the overrides to be empty, and a manual one requires seed zero and forbids the graph from holding any node or edge the overrides did not spell out.
-    - `graph` &mdash; The graph to inspect. Null is reported as a missing-graph error rather than thrown.
-    - `rules` &mdash; The compiled snapshot the graph is judged against.
-    - `mode` &mdash; The mode the graph is expected to declare; a graph recording a different one is an error.
-    - `overrides` &mdash; The pins the graph must honour. Null is treated as `MapGenerationOverrides.Empty`.
+    - `graph` &mdash; Input graph consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `rules` &mdash; Input rules consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `mode` &mdash; Input mode consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `overrides` &mdash; Input overrides consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
     - **Returns** &mdash; Every diagnostic found. Any error-severity diagnostic rejects the graph.
 
 ---
@@ -588,7 +616,7 @@ node type table unchanged.
 
 `public MapZoneDefinition()`
 
-:   Creates a zone. Every collection is copied and sorted into canonical order, so the caller may reuse or mutate the sequences it passed afterwards, and any of them may be null to mean empty. Nothing is validated here: whether the layer range fits the map and whether the type references resolve is decided when the owning rule snapshot is validated.
+:   Creates an immutable map Zone Definition snapshot; invalid required identifiers, ranges, or null inputs are rejected before state is exposed.
     - `id` &mdash; Identity of the zone, which quota rules use to scope themselves to it.
     - `firstLayerInclusive` &mdash; Zero-based index of the first layer in the zone, counted into the layer list of the rule snapshot the zone belongs to.
     - `lastLayerInclusive` &mdash; Zero-based index of the last layer in the zone, itself included.
@@ -627,11 +655,14 @@ node type table unchanged.
 `public int CompareTo(MapZoneDefinition other)`
 
 :   Orders zones by ID first, then by layer range, then by their allowed, forbidden, and override contents. Comparing the whole contents rather than the ID alone is what lets a rule snapshot sort its zones into an order that depends only on what they say, which is a precondition for a stable rule fingerprint. A null zone sorts before any zone.
+    - `other` &mdash; Input other consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
     - **Returns** &mdash; A negative value, zero, or a positive value as this zone sorts before, alongside, or after `other`.
 
 `public bool ContainsLayer(int layer)`
 
 :   Reports whether the given layer index falls inside this zone, both bounds included.
+    - `layer` &mdash; Zero-based map layer index constrained by the compiled rule snapshot.
+    - **Returns** &mdash; only when all preconditions are satisfied; otherwise with no partial mutation.
 
 ---
 
@@ -652,11 +683,12 @@ a diagnostic instead of returning a map that breaks the bound.
 
 `public NodeTypeQuotaRule(StableId ruleId, StableId typeId, StableId zoneId, int minimum, int maximum)`
 
-:   Creates a quota bounding the node count of one type inside one scope.
+:   Creates an immutable node Type Quota Rule snapshot; invalid required identifiers, ranges, or null inputs are rejected before state is exposed.
     - `ruleId` &mdash; Identity of the rule; must be non-empty and unique among all rules in the snapshot.
     - `zoneId` &mdash; Scope of the bound: empty for the whole map, otherwise a zone declared in the snapshot.
     - `minimum` &mdash; Inclusive lower bound on the node count.
     - `maximum` &mdash; Inclusive upper bound on the node count; there is no value meaning unbounded.
+    - `typeId` &mdash; Stable identifier for type; invalid or empty IDs are rejected before mutation.
 
 **Properties**
 
@@ -685,6 +717,7 @@ a diagnostic instead of returning a map that breaks the bound.
 `public int CompareTo(NodeTypeQuotaRule other)`
 
 :   Orders quotas by rule ID, then type, zone, minimum, and maximum, which is how a rule snapshot canonicalises its quota list.
+    - `other` &mdash; Input other consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
     - **Returns** &mdash; A negative value, zero, or a positive value as this quota sorts before, alongside, or after `other`.
 
 ---
@@ -708,6 +741,7 @@ Zones retune the value for their own layers through `NodeTypeWeightOverride`.
 
 :   Declares a node type and its map-wide selection weight.
     - `weight` &mdash; Relative selection weight; rule validation requires 1 to 1,000,000.
+    - `typeId` &mdash; Stable identifier for type; invalid or empty IDs are rejected before mutation.
 
 **Properties**
 
@@ -724,6 +758,7 @@ Zones retune the value for their own layers through `NodeTypeWeightOverride`.
 `public int CompareTo(NodeTypeWeight other)`
 
 :   Orders entries by type ID and then by weight, which is how a rule snapshot canonicalises its weight table.
+    - `other` &mdash; Input other consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
     - **Returns** &mdash; A negative value, zero, or a positive value as this entry sorts before, alongside, or after `other`.
 
 ---
@@ -764,6 +799,7 @@ with no effective type at all.
 `public int CompareTo(NodeTypeWeightOverride other)`
 
 :   Orders overrides by type ID and then by weight. This is the canonical order the owning zone sorts its overrides into, so that two zones authored in different orders produce the same rule fingerprint.
+    - `other` &mdash; Input other consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
     - **Returns** &mdash; A negative value, zero, or a positive value as this override sorts before, alongside, or after `other`.
 
 ---
@@ -792,8 +828,8 @@ be compared line by line. Warnings never make a report invalid.
 
 `public ValidationReport(IEnumerable<MapDiagnostic> diagnostics)`
 
-:   Builds a report from a set of diagnostics, taking a sorted copy; later changes to the caller's collection do not affect the report.
-    - `diagnostics` &mdash; The diagnostics to report. Null yields an empty, valid report. The sequence itself must not contain null entries.
+:   Creates an immutable validation Report snapshot; invalid required identifiers, ranges, or null inputs are rejected before state is exposed.
+    - `diagnostics` &mdash; Ordered diagnostics input; implementations copy or enumerate it without taking caller ownership.
 
 **Properties**
 

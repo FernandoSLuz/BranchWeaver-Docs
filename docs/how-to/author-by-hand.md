@@ -56,29 +56,82 @@ to the node. Editing a node re-pins the field you edited, so unpin last.
 
 ## Edit nodes and edges
 
-### Nodes
+Nothing in this section is typed from memory. Every node, node type and endpoint you can choose is
+already in the window, as a button or a dropdown entry, and each one is named the way you read the
+map: its type, then its layer and slot. `Route - L2 / S1` is the Route node in the second layer,
+first slot. Hover any of them to see the stable ID underneath.
+
+### Change a node's type
+
+Click a node on the canvas. The right-hand panel names it, and the **Type palette** under **Node
+type** shows one button per node type your rules allow.
+
+![The Map Studio panel for a selected node, with a Type palette row of Gateway, Landmark, Rest and Route buttons above an Apply type button](../assets/images/map-studio-typed-palette.png){ .shot }
+
+1. Click the palette button for the type you want. The **Node type** dropdown follows your click,
+   so the two always agree.
+2. Press **Apply type**.
+
+The node changes on the canvas and its **Type** pin is set, so a later **Regenerate** keeps it. If
+you press **Apply type** with nothing chosen, the status line reads *Select a node type from the
+rules palette* and the preview does not move.
+
+The palette holds exactly the types the compiled rules admit, which is why there is no way to type
+a type that does not exist. Add a type to the rules and it appears here after the next **Compile /
+Load** - see [Create node types](create-node-types.md).
+
+### Move a node and set its payload
 
 Drag a node on the canvas to move it. Releasing writes its new normalized position and pins
-**Position**. In the panel on the right, **Type ID** with **Apply type** changes the type and pins
-**Type**; **Payload ID**, the property rows and **Apply payload** change the payload and pin
+**Position**. **Payload ID**, the property rows, and **Apply payload** change the payload and pin
 **Payload**. What a payload means to your game is covered in
 [Create node types](create-node-types.md).
 
 A refused edit leaves the previous preview exactly as it was, so a node you were not allowed to
 move springs back to where it started.
 
-The **Manual node authoring** foldout adds and removes nodes in Manual mode. A new node needs a
-stable **Node ID** and **Type ID**, a **Layer** and **Ordinal** inside the capacity your rules
-allow for that layer, and **Normalized X** and **Y** between 0 and 10,000. Removing a locked node
-is refused.
+### Add a node in Manual mode
 
-### Edges
+The **Manual node authoring** foldout adds and removes nodes, and its buttons are live in Manual
+mode only. It opens already filled in with a legal answer:
 
-Under **Edge authoring**, fill in **Source node ID** and **Target node ID** and press **Connect
-source to target**. The edge ID is optional; left empty, a stable one is derived from the two
-endpoint IDs. A route must run forward exactly one layer, and a duplicate connection is refused.
-To remove one, click it on the canvas or in the list below, then press **Disconnect selected
-edge**.
+| Field | What it arrives as |
+| --- | --- |
+| **Node ID** | A suggestion for the first free slot, such as `manual.l0.n0`. **Suggest available ID** refills it after you change **Layer** or **Ordinal**, and a number is appended if that ID is taken. |
+| **Node type** | The rules' default node type, with the same **Type palette** of buttons beside it. |
+| **Layer**, **Ordinal** | The first slot with no node in it, inside the capacity your rules allow for that layer. |
+| **Normalized X**, **Y** | 5000 and 5000, the centre of the 0 to 10,000 field. |
+
+So the shortest way to add a node is to open the foldout, click a palette button, and press **Add
+node**. Change the layer and ordinal first if you want it somewhere else; the ID follows. **Remove
+selected node** deletes the node you have selected, and is refused for a locked one.
+
+!!! note "What a valid ID looks like"
+    A stable ID may contain lowercase ASCII letters, digits, `.`, `_` and `-`. The label under
+    **Node ID** says *Use lowercase letters, digits, period, underscore, or hyphen* the moment you
+    type something else, and **Add node** is refused until it is fixed. You only ever type an ID in
+    two places now: this field and the optional edge override below. Everywhere else you pick.
+
+### Connect two nodes
+
+Under **Edge authoring**, both endpoints are dropdowns listing every node in the preview.
+
+![The Edge authoring foldout with Source node set to Route - L1 / S1, a Target node dropdown still reading Select a node, and a list of existing edges naming each endpoint by type, layer and slot](../assets/images/map-studio-connections.png){ .shot }
+
+1. Select a node on the canvas. **Source node** is already set to it.
+2. Check **Target node**. It is pre-seeded with the first node one layer forward that the source is
+   not already connected to, so on a fresh selection it is often the connection you wanted. When
+   every candidate is already connected it stays on *Select a node...* and you pick one yourself.
+3. Leave **Edge ID override** empty unless you need a particular ID. Blank means BranchWeaver
+   derives a stable one from the two endpoints.
+4. Press **Connect source to target**.
+
+A route must run forward exactly one layer, and a duplicate connection is refused. Pressing
+**Connect** with an endpoint still unset reports *Choose both endpoints from the graph*.
+
+To remove a route, click it on the canvas or in the list of existing edges - each row reads
+`Route - L1 / S1  ->  Route - L2 / S2`, and the selected one is prefixed *Selected:* - then press
+**Disconnect selected edge**.
 
 In Hybrid mode a connection is recorded as a required route and a disconnection as a forbidden
 one, then the map is regenerated around them. If the rules cannot accommodate the change you get

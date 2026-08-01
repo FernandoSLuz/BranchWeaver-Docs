@@ -57,20 +57,22 @@ present them in an editor window, a console, or a test assertion.
 
 `public MapDiagnostic(MapDiagnosticSeverity severity, string code, string message, string context)`
 
-:   Creates a diagnostic that names no rules, nodes, or slots.
+:   Creates an immutable map Diagnostic snapshot; invalid required identifiers, ranges, or null inputs are rejected before state is exposed.
     - `code` &mdash; Stable code identifying the problem; matched by ordinal comparison.
     - `message` &mdash; Human-readable explanation. Null becomes an empty string.
     - `context` &mdash; Where the problem was found. Null becomes an empty string.
+    - `severity` &mdash; Input severity consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
 
 `public MapDiagnostic()`
 
-:   Creates a diagnostic that also names the rules, nodes, and slots it concerns.
+:   Creates an immutable map Diagnostic snapshot; invalid required identifiers, ranges, or null inputs are rejected before state is exposed.
     - `code` &mdash; Stable code identifying the problem; matched by ordinal comparison.
     - `message` &mdash; Human-readable explanation. Null becomes an empty string.
     - `context` &mdash; Where the problem was found. Null becomes an empty string.
     - `relatedRuleIds` &mdash; Rules implicated in the problem. Null is treated as none.
     - `relatedNodeIds` &mdash; Nodes implicated in the problem. Null is treated as none.
     - `relatedSlots` &mdash; Slots implicated in the problem. Null is treated as none.
+    - `severity` &mdash; Input severity consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
 
 **Properties**
 
@@ -146,44 +148,53 @@ digits, period, underscore, and hyphen.
 `public int CompareTo(StableId other)`
 
 :   Orders identifiers by their text ordinally, so a sorted list comes out the same on every machine regardless of its culture. The default value sorts first.
+    - `other` &mdash; Input other consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
     - **Returns** &mdash; Negative, zero, or positive as this identifier sorts before, with, or after `other`.
 
 `public bool Equals(StableId other)`
 
 :   Reports whether both identifiers hold the same text, compared ordinally rather than by the current culture.
+    - `other` &mdash; Input other consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - **Returns** &mdash; only when all preconditions are satisfied; otherwise with no partial mutation.
 
 `public override bool Equals(object obj)`
 
 :   Reports whether `obj` is an identifier holding the same text. Anything else, including null and a bare string, is not equal.
+    - `obj` &mdash; Input obj consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - **Returns** &mdash; only when all preconditions are satisfied; otherwise with no partial mutation.
 
 `public override int GetHashCode()`
 
 :   Returns an FNV-1a hash of the identifier text. It is computed here instead of being delegated to the string's own hash because some runtimes randomise those per process. The same ID therefore hashes to the same value in every process and every build, which is what makes it safe to persist or compare across runs.
+    - **Returns** &mdash; The requested immutable or borrowed value; ownership remains with the object documented by the return type.
 
 `public static bool IsValid(string value)`
 
 :   Reports whether text would be accepted as an identifier: non-empty, and built only from lowercase ASCII letters, digits, '.', '_', and '-'. The alphabet is deliberately narrow because these IDs are written into save files, file names, and hashes, where case folding or an encoding change would otherwise turn one ID into another.
     - `value` &mdash; Text to test; null and empty both fail.
+    - **Returns** &mdash; only when all preconditions are satisfied; otherwise with no partial mutation.
 
 `public static StableId Parse(string value)`
 
-:   Builds an identifier from text that is expected to be well formed, such as a literal written in code, and throws when it is not.
+:   Runs parse against validated inputs and returns a complete result rather than exposing partially updated state.
     - `value` &mdash; Text matching the permitted alphabet.
+    - **Returns** &mdash; The complete stable Id outcome; inspect its typed status or diagnostics before consuming payload data.
 
 `public override string ToString()`
 
 :   Returns `Value`, so an unset identifier prints as an empty string rather than as the type name.
+    - **Returns** &mdash; The complete string outcome; inspect its typed status or diagnostics before consuming payload data.
 
 `public static bool TryCreate(string value, out StableId stableId)`
 
-:   Builds an identifier from untrusted text without throwing, which is what to use for anything that came from a save file, a config, or a user field.
+:   Attempts to create without throwing for expected invalid input; failure leaves output parameters at documented defaults.
     - `value` &mdash; Text to accept or reject.
     - `stableId` &mdash; Receives the identifier, or the default value when the text is rejected.
     - **Returns** &mdash; True when the text was accepted.
 
 `public static bool TryParse(string value, out StableId stableId)`
 
-:   Builds an identifier from text without throwing. Behaves exactly as `TryCreate`; both names exist so the type offers the usual Parse and TryParse pair.
+:   Attempts to parse without throwing for expected invalid input; failure leaves output parameters at documented defaults.
     - `value` &mdash; Text to accept or reject.
     - `stableId` &mdash; Receives the identifier, or the default value when the text is rejected.
     - **Returns** &mdash; True when the text was accepted.

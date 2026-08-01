@@ -21,12 +21,12 @@ backup without repairing or otherwise mutating any candidate.
 
 `public FileMapSaveAdapter(string rootDirectory)`
 
-:   Creates an adapter over a save directory using the default serializer.
+:   Creates an immutable file Map Save Adapter snapshot; invalid required identifiers, ranges, or null inputs are rejected before state is exposed.
     - `rootDirectory` &mdash; Absolute path of the directory slot files live in, typically a folder under the platform's persistent data path. It does not have to exist yet; it is created on the first write.
 
 `public FileMapSaveAdapter(string rootDirectory, MapSaveSerializer serializer)`
 
-:   Creates an adapter over a save directory with a serializer you supply, which is how a game registers its own save migrations. The root is normalised and inspected here rather than on first use, so a save location that is unusable or unsafe fails while you are wiring the adapter up instead of the first time a player saves.
+:   Creates an immutable file Map Save Adapter snapshot; invalid required identifiers, ranges, or null inputs are rejected before state is exposed.
     - `rootDirectory` &mdash; Absolute path of the directory slot files live in. It does not have to exist yet; it is created on the first write.
     - `serializer` &mdash; Serializer used for every read and write through this adapter.
 
@@ -70,7 +70,7 @@ backup without repairing or otherwise mutating any candidate.
 
 `public MapSaveReadResult TryRead(StableId slotId)`
 
-:   Loads a slot, trying the committed save first, then the temporary file an interrupted write may have left, then the backup. Nothing on disk is repaired, replaced, or deleted by a read, so a slot that fails to load is left exactly as it was for a retry or a support copy. When something other than the committed save supplies the data, the returned report carries a warning naming which file it came from, together with the diagnostics from the candidates rejected before it, downgraded to warnings.
+:   Attempts to read without throwing for expected invalid input; failure leaves output parameters at documented defaults.
     - `slotId` &mdash; Slot to read; an empty ID is refused as an unsafe path.
     - **Returns** &mdash; The envelope and the file it was recovered from on success. On failure the kind is the most serious one seen across the candidates, and is `MapSaveFailureKind.NotFound` both when the slot has no files at all and when it carries a deletion marker.
 
@@ -78,7 +78,7 @@ backup without repairing or otherwise mutating any candidate.
 
 :   Serialises a save and publishes it to the slot, keeping the bytes it replaced as a backup. The new save is written to a private staging file, flushed all the way to the device, promoted to the slot's temporary file, and only then swapped over the committed save. A crash at any point therefore leaves either the previous save or a complete temporary file that `TryRead` can recover from; a half-written save is never left where a read would find it. Writing to a slot that was deleted revives it and clears its deletion marker.
     - `slotId` &mdash; Slot to publish to; an empty ID is refused as an unsafe path.
-    - `envelope` &mdash; The save to serialise and store.
+    - `envelope` &mdash; Input envelope consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
     - **Returns** &mdash; Failure when the envelope will not serialise, when one of the slot's paths is a reparse point or the wrong kind of entry, or when the commit throws. In that last case any temporary file already published is deliberately left in place, because it is a valid recovery candidate.
 
 ---
@@ -149,12 +149,12 @@ A complete, versioned graph and traversal snapshot.
 `public MapSaveEnvelope()`
 
 :   Assembles an envelope from its parts, without checking that they agree. Prefer `CreateCurrent` for a save you are about to write, since it fills the version and manifest fields from the graph itself. This constructor exists for the two cases that must state a version rather than assume the current one: reading a save back, and migrating one forward.
-    - `formatVersion` &mdash; The save format these fields follow. Only `CurrentFormatVersion` may be serialized.
-    - `generatorVersion` &mdash; The embedded graph's generator version, repeated here; a value that disagrees with the graph is rejected on read and write.
-    - `seed` &mdash; The embedded graph's seed, repeated here; it too must agree with the graph.
-    - `rulesFingerprint` &mdash; The embedded graph's rules fingerprint, repeated here. Null is stored as an empty string.
-    - `graphFingerprint` &mdash; The canonical fingerprint of `graph`. Null is stored as an empty string.
-    - `graph` &mdash; The map the run took place on.
+    - `formatVersion` &mdash; Input format Version consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `generatorVersion` &mdash; Input generator Version consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `seed` &mdash; Explicit unsigned deterministic seed; equal inputs and seed produce equal canonical output.
+    - `rulesFingerprint` &mdash; Input rules Fingerprint consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `graphFingerprint` &mdash; Input graph Fingerprint consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `graph` &mdash; Input graph consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
     - `progression` &mdash; How far the run had got on that map.
     - `customerMetadata` &mdash; Your own data to carry alongside the run. Null is stored as `MapDataPayload.Empty`.
 
@@ -196,8 +196,8 @@ A complete, versioned graph and traversal snapshot.
 
 `public static MapSaveEnvelope CreateCurrent()`
 
-:   Builds the envelope to write for a run in progress: it stamps `CurrentFormatVersion`, copies the generator version, seed, and rules fingerprint off `graph`, and computes the graph fingerprint. Taking those fields from the graph rather than from the caller is what stops the manifest drifting from the map it describes, which is the mismatch serialization would otherwise reject.
-    - `graph` &mdash; The map to save.
+:   Constructs create Current from validated inputs and returns an independently usable result without transferring caller ownership.
+    - `graph` &mdash; Input graph consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
     - `progression` &mdash; How far the run has got.
     - `customerMetadata` &mdash; Your own data to carry with the run. Null is stored as `MapDataPayload.Empty`.
     - **Returns** &mdash; An envelope at the current format, ready to serialize.
@@ -373,25 +373,25 @@ Strict, culture-invariant JSON persistence for complete map save envelopes.
 
 `public MapSaveSerializer()`
 
-:   Creates a serializer carrying the migration chain this build ships with, which is what lets it read every save format back to version 1.
+:   Creates an immutable map Save Serializer snapshot; invalid required identifiers, ranges, or null inputs are rejected before state is exposed.
 
 `public MapSaveSerializer(IEnumerable<IMapSaveMigration> migrations)`
 
-:   Creates a serializer over a migration chain of your own, for a project that has added save formats of its own on top of the shipped ones. A chain containing a null step, two steps declaring the same source version, or a step whose target is not exactly one above its source is not rejected here: the whole set is marked unusable and every later `TryDeserialize` fails with `MapSaveFailureKind.MigrationFailed`. Serializing is unaffected, since writing never migrates.
-    - `migrations` &mdash; The upgrade steps to apply while loading an older save, in any order; an empty sequence means only saves already at the current format can be read.
+:   Creates an immutable map Save Serializer snapshot; invalid required identifiers, ranges, or null inputs are rejected before state is exposed.
+    - `migrations` &mdash; Ordered migrations input; implementations copy or enumerate it without taking caller ownership.
 
 **Methods**
 
 `public MapSaveSerializationResult TryDeserialize(string json)`
 
 :   Reads saved JSON back into an envelope at the current save format, running whatever migration steps stand between the stored version and this one. The parse is strict rather than forgiving: an object carrying an unknown field, or missing one, is corrupt data rather than something to read on a best-effort basis, and so is a value of the wrong JSON type or outside its numeric range. A save written by a newer build is reported as `MapSaveFailureKind.UnsupportedVersion` instead of being read partially. Each migration step is checked after it runs, not trusted: the seed, generator version, rules fingerprint, stored graph fingerprint, and canonical graph bytes must all come back unchanged, and the step must report exactly the version it declared. A step that throws or drifts fails the load as `MapSaveFailureKind.MigrationFailed`, which is what stops a faulty upgrade from quietly rewriting a player's run. The envelope is validated both as it was stored and again after the last step, so a caller never sees a half-migrated save.
-    - `json` &mdash; The stored save text. Null, empty, or non-canonical text is corrupt data, not an argument error.
+    - `json` &mdash; Input json consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
     - **Returns** &mdash; The migrated, validated envelope, or the typed reason it could not be loaded. The JSON field of the result is empty either way.
 
 `public MapSaveSerializationResult TrySerialize(MapSaveEnvelope envelope)`
 
 :   Writes one envelope to canonical JSON. The envelope is validated at the current save format first, so an invalid one is refused rather than written out and rejected on the way back in. Field order, number formatting, and string escaping are all fixed and culture-invariant, which is what makes the text comparable byte for byte between two runs, two machines, and two locales. Text longer than `MaximumJsonLength` is refused, as is anything that throws while being written, so this never propagates an exception from the writer.
-    - `envelope` &mdash; The complete graph, progression, and metadata snapshot to encode.
+    - `envelope` &mdash; Input envelope consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
     - **Returns** &mdash; The JSON text and the envelope it came from, or the typed reason nothing was produced.
 
 ---
@@ -422,7 +422,7 @@ progression objects, so their canonical bytes and graph fingerprint remain uncha
 `public MapSaveEnvelope Migrate(MapSaveEnvelope previous)`
 
 :   Rebuilds a version 1 envelope as a version 2 one, carrying every field across unchanged and giving the new customer metadata field its empty value, since a version 1 save had nowhere to store any. The result is a new envelope; `previous` is not modified, and the graph and progression objects are shared with it rather than copied, which is what keeps the canonical graph bytes and the graph fingerprint identical across the step.
-    - `previous` &mdash; The envelope as read at version 1.
+    - `previous` &mdash; Input previous consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
     - **Returns** &mdash; The same run reported at version 2.
 
 ---
@@ -441,32 +441,32 @@ An in-memory adapter that stores canonical JSON rather than live object referenc
 
 `public MemoryMapSaveAdapter()`
 
-:   Creates an adapter backed by a default `MapSaveSerializer`, so a slot goes through the same canonical JSON, the same validation, and the same migration chain a file adapter would put it through.
+:   Creates an immutable memory Map Save Adapter snapshot; invalid required identifiers, ranges, or null inputs are rejected before state is exposed.
 
 `public MemoryMapSaveAdapter(MapSaveSerializer serializer)`
 
-:   Creates an adapter that encodes and decodes through a serializer you supply, which is how a test or a tool exercises a custom migration chain without writing to disk.
-    - `serializer` &mdash; The serializer every read and write of this adapter passes through.
+:   Creates an immutable memory Map Save Adapter snapshot; invalid required identifiers, ranges, or null inputs are rejected before state is exposed.
+    - `serializer` &mdash; Input serializer consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
 
 **Methods**
 
 `public MapSaveOperationResult TryDelete(StableId slotId)`
 
 :   Drops whatever the slot held. Clearing a slot that holds no save still succeeds, and nothing survives the call: this adapter keeps no backup and writes no deletion marker, so a later read of the same slot reports `MapSaveFailureKind.NotFound`.
-    - `slotId` &mdash; The slot to clear; an empty ID is refused as `MapSaveFailureKind.UnsafePath`.
+    - `slotId` &mdash; Stable identifier for slot; invalid or empty IDs are rejected before mutation.
     - **Returns** &mdash; Success, or the typed reason the slot may still hold data.
 
 `public MapSaveReadResult TryRead(StableId slotId)`
 
-:   Loads the save held in one in-process slot, reporting `MapSaveRecoverySource.Memory` as the candidate that supplied it. A slot that was never written comes back as `MapSaveFailureKind.NotFound` rather than as damage to report. The stored text is decoded afresh on every call, so the envelope handed back is a new object graph the caller may keep or alter without that reaching the slot.
-    - `slotId` &mdash; The slot to load; an empty ID is refused as `MapSaveFailureKind.UnsafePath`.
+:   Attempts to read without throwing for expected invalid input; failure leaves output parameters at documented defaults.
+    - `slotId` &mdash; Stable identifier for slot; invalid or empty IDs are rejected before mutation.
     - **Returns** &mdash; The decoded and migrated envelope on success, or the typed reason the read failed.
 
 `public MapSaveOperationResult TryWrite(StableId slotId, MapSaveEnvelope envelope)`
 
-:   Serializes the envelope and replaces whatever the slot held. The envelope is validated and encoded before the slot is touched, so a refused write leaves the previous save in place. Only the canonical text is retained, never the envelope, so later edits to the graph or progression you passed cannot reach back into what was stored.
-    - `slotId` &mdash; The slot to write; an empty ID is refused as `MapSaveFailureKind.UnsafePath`.
-    - `envelope` &mdash; The complete graph, progression, and metadata snapshot to store.
+:   Attempts to write without throwing for expected invalid input; failure leaves output parameters at documented defaults.
+    - `slotId` &mdash; Stable identifier for slot; invalid or empty IDs are rejected before mutation.
+    - `envelope` &mdash; Input envelope consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
     - **Returns** &mdash; Success, or the typed reason nothing was stored.
 
 ---

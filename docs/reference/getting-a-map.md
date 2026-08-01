@@ -23,12 +23,12 @@ question.
 
 `public EdgeGenerationOverride()`
 
-:   Creates an edge override for one pair of adjacent-layer slots.
+:   Creates an immutable edge Generation Override snapshot; invalid required identifiers, ranges, or null inputs are rejected before state is exposed.
     - `overrideId` &mdash; Identity of the override itself; required, unique among the overrides, and quoted in diagnostics.
     - `disposition` &mdash; Whether the edge is required or forbidden.
-    - `sourceSlot` &mdash; The slot the edge leaves.
-    - `targetSlot` &mdash; The slot the edge enters; its layer must be one above the source's.
-    - `pinnedEdgeId` &mdash; The ID a required edge must carry, unique among pinned edges; leave default when forbidding.
+    - `sourceSlot` &mdash; Input source Slot consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `targetSlot` &mdash; Input target Slot consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `pinnedEdgeId` &mdash; Stable identifier for pinned Edge; invalid or empty IDs are rejected before mutation.
 
 **Properties**
 
@@ -61,6 +61,7 @@ question.
 `public int CompareTo(EdgeGenerationOverride other)`
 
 :   Orders edge overrides deterministically -- slot pair, then disposition, then override ID, then pinned edge ID -- so a set of overrides fingerprints the same way no matter the order it was supplied in.
+    - `other` &mdash; Input other consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
     - **Returns** &mdash; A negative value, zero, or a positive value as this override sorts before, alongside, or after `other`.
 
 ---
@@ -102,19 +103,19 @@ For layer sizes m and n, that lattice contains exactly m + n - 1 edges.
 
 `public LayeredMapGenerator()`
 
-:   Creates the generator with the shipped `MapValidator`, which is the pairing every finished candidate is judged by unless you say otherwise.
+:   Creates an immutable layered Map Generator snapshot; invalid required identifiers, ranges, or null inputs are rejected before state is exposed.
 
 `public LayeredMapGenerator(IMapValidator validator)`
 
-:   Creates the generator over a whole-graph validator of your own, for rules that can only be judged once a map is finished. Use `IMapConstraint` instead for rules that should prune the search while node types are still being chosen.
-    - `validator` &mdash; The check applied to each finished candidate. It is passed on to the version-2 search as well, which calls it once per complete candidate rather than once per request.
+:   Creates an immutable layered Map Generator snapshot; invalid required identifiers, ranges, or null inputs are rejected before state is exposed.
+    - `validator` &mdash; Input validator consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
 
 **Methods**
 
 `public MapGenerationResult Generate(MapGenerationRequest request)`
 
 :   Produces one map from the request, or a typed failure. Nothing is thrown: a null request, null or invalid rules, and a candidate that fails validation all come back as a failed result carrying the diagnostics that explain it. This is the entry point for both shipped generators, not only the version-1 one described on the type. When the rule snapshot declares generator version 2 the call is handed straight to that search, which is what honours the mode, the overrides, the search budgets, and the cancellation token; the version-1 path below reads only the rules and the seed, gives every node the default type, and makes a single attempt -- a candidate the validator rejects fails the seed rather than being retried.
-    - `request` &mdash; The rules, seed, and -- for a version-2 ruleset -- the mode, overrides, budgets, and cancellation token to honour.
+    - `request` &mdash; Input request consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
     - **Returns** &mdash; The graph and its generation manifest, or the diagnostics behind the failure. Never null.
 
 ---
@@ -238,18 +239,18 @@ non-zero seed, or a null rule snapshot all come back as a failed
 
 `public MapGenerationRequest(MapRuleSnapshot rules, uint seed)`
 
-:   Creates a purely procedural request: no overrides, default search budgets, and no cancellation.
-    - `rules` &mdash; The compiled rules the map must satisfy.
+:   Creates an immutable map Generation Request snapshot; invalid required identifiers, ranges, or null inputs are rejected before state is exposed.
+    - `rules` &mdash; Input rules consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
     - `seed` &mdash; Seeds every random stream the generator draws from.
 
 `public MapGenerationRequest()`
 
-:   Creates a request with every input stated. A null `overrides` or `searchOptions` is replaced with `MapGenerationOverrides.Empty` and `MapGenerationSearchOptions.Default`, while `rules` is stored as given -- including null, which generation reports as a failure instead.
-    - `rules` &mdash; The compiled rules the map must satisfy.
+:   Creates an immutable map Generation Request snapshot; invalid required identifiers, ranges, or null inputs are rejected before state is exposed.
+    - `rules` &mdash; Input rules consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
     - `seed` &mdash; Seeds every random stream. Must be zero when `mode` is `MapGenerationMode.Manual`.
     - `mode` &mdash; How much of the map the generator may invent for itself.
-    - `overrides` &mdash; The pinned nodes and edge dispositions to honour. Must be empty in `MapGenerationMode.Procedural`.
-    - `searchOptions` &mdash; The per-phase trial budgets the search may spend before it gives up.
+    - `overrides` &mdash; Input overrides consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `searchOptions` &mdash; Input search Options consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
     - `cancellationToken` &mdash; Stops the search. A cancelled request produces a `MapGenerationFailureKind.Cancelled` result, not a thrown exception and not a partial graph.
 
 **Properties**
@@ -332,33 +333,33 @@ and `Failure(ValidationReport)` factories; there is no public constructor.
 
 `public static MapGenerationResult Failure(ValidationReport validation)`
 
-:   Creates the failure for a request that never got as far as searching: the kind is fixed at `MapGenerationFailureKind.InvalidInput` and the statistics are empty. Use the other overload for a failure that has to name a different kind.
-    - `validation` &mdash; The diagnostics explaining the rejection. Required; null throws `ArgumentNullException`.
+:   Runs failure against validated inputs and returns a complete result rather than exposing partially updated state.
+    - `validation` &mdash; Input validation consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
     - **Returns** &mdash; A failed result carrying no graph and no manifest.
 
 `public static MapGenerationResult Failure()`
 
-:   Creates a failure that names its own kind and reports what the abandoned search cost.
-    - `validation` &mdash; The diagnostics explaining the failure. Required; null throws `ArgumentNullException`.
+:   Runs failure against validated inputs and returns a complete result rather than exposing partially updated state.
+    - `validation` &mdash; Input validation consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
     - `failureKind` &mdash; Why the attempt failed. Must not be `MapGenerationFailureKind.None`, which throws `ArgumentException`.
-    - `statistics` &mdash; The trials spent before giving up. Null is stored as `MapGenerationStatistics.Empty`.
+    - `statistics` &mdash; Input statistics consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
     - **Returns** &mdash; A failed result carrying no graph and no manifest.
 
 `public static MapGenerationResult Success()`
 
-:   Creates a successful result for a generator that did no searching, so `Statistics` is reported as empty rather than as zero trials of a real search.
-    - `graph` &mdash; The finished graph. Required; null throws `ArgumentNullException`.
-    - `manifest` &mdash; The manifest describing how the graph was produced. Required; null throws `ArgumentNullException`.
-    - `validation` &mdash; The diagnostics for the graph, which may carry warnings. Required; null throws `ArgumentNullException`.
+:   Runs success against validated inputs and returns a complete result rather than exposing partially updated state.
+    - `graph` &mdash; Input graph consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `manifest` &mdash; Input manifest consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `validation` &mdash; Input validation consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
     - **Returns** &mdash; A result whose `Succeeded` is true and whose `FailureKind` is `MapGenerationFailureKind.None`.
 
 `public static MapGenerationResult Success()`
 
-:   Creates a successful result and records what the search that found this graph cost.
-    - `graph` &mdash; The finished graph. Required; null throws `ArgumentNullException`.
-    - `manifest` &mdash; The manifest describing how the graph was produced. Required; null throws `ArgumentNullException`.
-    - `validation` &mdash; The diagnostics for the graph, which may carry warnings. Required; null throws `ArgumentNullException`.
-    - `statistics` &mdash; The trials the search spent reaching this graph. Null is stored as `MapGenerationStatistics.Empty`.
+:   Runs success against validated inputs and returns a complete result rather than exposing partially updated state.
+    - `graph` &mdash; Input graph consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `manifest` &mdash; Input manifest consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `validation` &mdash; Input validation consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `statistics` &mdash; Input statistics consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
     - **Returns** &mdash; A result whose `Succeeded` is true and whose `FailureKind` is `MapGenerationFailureKind.None`.
 
 ---
@@ -382,7 +383,7 @@ failure into a success but never changes a map that already generated.
 
 `public MapGenerationSearchOptions()`
 
-:   Creates a budget set. A non-positive cap is accepted here but makes `IsValid` false, and generation then fails preflight with `MapGenerationFailureKind.InvalidInput` instead of searching.
+:   Creates an immutable map Generation Search Options snapshot; invalid required identifiers, ranges, or null inputs are rejected before state is exposed.
     - `maximumCountStates` &mdash; Cap on the complete per-layer node-count combinations the search may consider.
     - `maximumTopologyTrials` &mdash; Cap on the individual edge-candidate steps the search may take while wiring layers together.
     - `maximumTypeTrials` &mdash; Cap on the node-type assignment attempts the backtracking type solver may make.
@@ -425,12 +426,12 @@ reports `Empty`.
 
 `public MapGenerationStatistics()`
 
-:   Creates a statistics snapshot. Produced by the generator; a null `exhaustedPhase` is stored as an empty string.
+:   Creates an immutable map Generation Statistics snapshot; invalid required identifiers, ranges, or null inputs are rejected before state is exposed.
     - `countStates` &mdash; Per-layer node-count combinations considered.
     - `topologyTrials` &mdash; Edge-candidate steps taken while wiring layers.
     - `typeTrials` &mdash; Node-type assignment attempts made.
     - `deepestTypeAssignment` &mdash; Deepest point the type solver reached, in assigned slots.
-    - `exhaustedPhase` &mdash; The phase whose budget ran out, or empty when none did.
+    - `exhaustedPhase` &mdash; Input exhausted Phase consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
 
 **Properties**
 
@@ -503,13 +504,13 @@ ordinal, so pinning a high ordinal forces a wider layer.
 
 `public PinnedNodeOverride()`
 
-:   Creates a pin. Every value whose flag is clear in `fields` must be left at its default, and a null `payload` is stored as `MapNodePayload.Empty`.
-    - `slot` &mdash; The layer and ordinal the pinned node must occupy.
-    - `nodeId` &mdash; The node ID the generated node must carry. Required, even when no field is pinned.
+:   Creates an immutable pinned Node Override snapshot; invalid required identifiers, ranges, or null inputs are rejected before state is exposed.
+    - `slot` &mdash; Input slot consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `nodeId` &mdash; Stable identifier for node; invalid or empty IDs are rejected before mutation.
     - `fields` &mdash; Which of type, position, and payload this pin fixes.
-    - `typeId` &mdash; The fixed node type; leave default unless `PinnedNodeFields.Type` is set.
-    - `position` &mdash; The fixed normalized position; leave default unless `PinnedNodeFields.Position` is set.
-    - `payload` &mdash; The fixed payload; leave empty unless `PinnedNodeFields.Payload` is set.
+    - `typeId` &mdash; Stable identifier for type; invalid or empty IDs are rejected before mutation.
+    - `position` &mdash; Input position consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `payload` &mdash; Input payload consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
 
 **Properties**
 
@@ -542,6 +543,7 @@ ordinal, so pinning a high ordinal forces a wider layer.
 `public int CompareTo(PinnedNodeOverride other)`
 
 :   Orders pins deterministically -- slot, then node ID, then pinned fields, type, position, and finally payload contents -- which is what lets one set of pins fingerprint the same way no matter the order it was supplied in.
+    - `other` &mdash; Input other consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
     - **Returns** &mdash; A negative value, zero, or a positive value as this pin sorts before, alongside, or after `other`.
 
 ---

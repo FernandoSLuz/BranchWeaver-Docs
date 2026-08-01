@@ -27,15 +27,31 @@ colors have finite channels.
 
 `public CompiledMapNodeType(StableId id, string displayLabel, MapNodePayload defaultPayload)`
 
-:   Builds a node type with only an identity, a label, and a payload, which is enough for logic and tests that never draw it. Everything else takes a neutral value: no localization key, no tooltip, no icon or prefabs, and the same six state colors the authoring asset ships with.
+:   Creates an authored compiled Map Node Type row from the supplied fields; validation is deferred so the compiler can report every related issue together.
+    - `id` &mdash; Input id consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `displayLabel` &mdash; Input display Label consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `defaultPayload` &mdash; Input default Payload consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
 
 `public CompiledMapNodeType()`
 
-:   Builds a fully specified node type. Every string argument is stored as an empty string when null and a null `defaultPayload` becomes `MapNodePayload.Empty`, so no property here ever returns null; the Unity references are kept as given, null included. Nothing is validated, so a value built this way rather than by a `MapAuthoringCompiler` can carry an ID or a color the compiler would have refused.
+:   Creates an authored compiled Map Node Type row from the supplied fields; validation is deferred so the compiler can report every related issue together.
     - `localizationKey` &mdash; Adapter lookup key for the label; the tooltip uses the same key with `.tooltip` appended.
     - `tooltip` &mdash; Fallback tooltip used when the localized lookup yields nothing.
     - `rendererKey` &mdash; Optional pooling and styling discriminator; see `MapNodeTypeAsset.RendererKey`.
     - `defaultPayload` &mdash; Payload describing what the type means to your game; it is not applied to generated nodes.
+    - `id` &mdash; Input id consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `displayLabel` &mdash; Input display Label consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `icon` &mdash; Input icon consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `canvasPrefab` &mdash; Input canvas Prefab consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `worldPrefab` &mdash; Input world Prefab consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `hiddenColor` &mdash; Input hidden Color consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `lockedColor` &mdash; Input locked Color consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `availableColor` &mdash; Input available Color consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `currentColor` &mdash; Input current Color consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `visitedColor` &mdash; Input visited Color consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `completedColor` &mdash; Input completed Color consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `enterAudioCueId` &mdash; Stable identifier for enter Audio Cue; invalid or empty IDs are rejected before mutation.
+    - `completeAudioCueId` &mdash; Stable identifier for complete Audio Cue; invalid or empty IDs are rejected before mutation.
 
 **Properties**
 
@@ -130,12 +146,19 @@ a diagnostic rather than clamped, so a presenter can use these numbers as they s
 
 `public CompiledMapTheme()`
 
-:   Builds a theme from already-decided values. Nothing is validated here, so a theme built this way rather than by a `MapAuthoringCompiler` can hold spacing, zoom, or a duration the compiler would have rejected.
+:   Creates an authored compiled Map Theme row from the supplied fields; validation is deferred so the compiler can report every related issue together.
     - `layerSpacing` &mdash; Distance between successive layers, in presentation units.
     - `nodeSpacing` &mdash; Distance between neighbouring nodes inside one layer, in presentation units.
     - `bezierSegments` &mdash; Line segments per curved edge; ignored unless `edgeGeometry` is Bezier.
     - `bezierControlOffset` &mdash; Curve control-point offset in normalized fixed point, 10,000 units per 1.0.
     - `stateTransitionSeconds` &mdash; How long a node or edge state change plays for; zero asks for an instant change, which the built-in views honour.
+    - `id` &mdash; Input id consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `orientation` &mdash; Input orientation consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `backgroundColor` &mdash; Input background Color consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `edgeColor` &mdash; Input edge Color consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `edgeGeometry` &mdash; Input edge Geometry consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `minimumZoom` &mdash; Input minimum Zoom consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `maximumZoom` &mdash; Input maximum Zoom consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
 
 **Properties**
 
@@ -212,26 +235,26 @@ holds no state between calls and never writes to the assets it reads.
 
 `public MapBlueprintCompilation CompileBlueprint(MapBlueprintAsset asset)`
 
-:   Compiles one blueprint asset into everything a generation request needs: the rules, the mode, the seed, the node and edge overrides, the search budgets, and -- when the blueprint drew any nodes or edges -- the graph itself, already put through `MapValidator` against those same rules and overrides. Overrides are derived from the mode rather than authored twice over: a manual blueprint pins every field of every node and requires every edge it drew, while the other modes use the per-row pin flags. Any fingerprint or generation key stored on the asset is recomputed and a mismatch reported, which is how a blueprint saved against rules that have since changed is caught here instead of producing an unexpected map at runtime. Compilation stops short if the rules fail: the mode, seed, and revision still come back so the failure can be shown in context, but the overrides and budgets fall back to their defaults.
-    - `asset` &mdash; The asset to compile. Null is reported as a missing-asset error rather than thrown.
+:   Validates and copies blueprint into immutable engine-neutral data; failure exposes diagnostics and no partial compiled value.
+    - `asset` &mdash; Input asset consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
     - **Returns** &mdash; The compiled blueprint and its diagnostics; check `MapBlueprintCompilation.Succeeded` before reading the rules.
 
 `public MapNodeTypeCompilation CompileNodeType(MapNodeTypeAsset asset)`
 
-:   Compiles one node-type asset: its stable ID, its default payload, the optional renderer and audio-cue keys, and the six per-state colours. A single fault suppresses the value entirely, so a result carries either a complete node type or none at all.
-    - `asset` &mdash; The asset to compile. Null is reported as a missing-asset error rather than thrown.
+:   Validates and copies node Type into immutable engine-neutral data; failure exposes diagnostics and no partial compiled value.
+    - `asset` &mdash; Input asset consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
     - **Returns** &mdash; The compiled type and its diagnostics; check `MapNodeTypeCompilation.Succeeded` before reading the value.
 
 `public MapRulesCompilation CompileRules(MapRulesAsset asset)`
 
-:   Compiles one rules asset into the snapshot a generator is handed: layer ranges, node-type weights, zones, quotas, forced nodes, forbidden adjacencies, connection limits, and any custom constraints. Every node-type asset the rules reach is compiled here too, once per stable ID, and two distinct assets claiming the same ID is an error rather than a silent last-one-wins. A custom constraint that throws while compiling is caught and reported against its row, so one faulty constraint cannot take the editor down with it.
-    - `asset` &mdash; The asset to compile. Null is reported as a missing-asset error rather than thrown.
+:   Validates and copies rules into immutable engine-neutral data; failure exposes diagnostics and no partial compiled value.
+    - `asset` &mdash; Input asset consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
     - **Returns** &mdash; The snapshot, the node types it referenced, and the diagnostics. The snapshot is discarded when any diagnostic is an error.
 
 `public MapThemeCompilation CompileTheme(MapThemeAsset asset)`
 
-:   Compiles one theme asset: orientation, layer and node spacing, edge geometry, zoom limits, state-transition duration, and colours. A value outside its supported range rejects the theme rather than being clamped into one, so a project never ships spacing or zoom limits nobody authored. The ranges themselves are on `MapThemeLimits`, and non-finite colour channels are rejected too, since they would otherwise reach a shader as silent corruption.
-    - `asset` &mdash; The asset to compile. Null is reported as a missing-asset error rather than thrown.
+:   Validates and copies theme into immutable engine-neutral data; failure exposes diagnostics and no partial compiled value.
+    - `asset` &mdash; Input asset consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
     - **Returns** &mdash; The compiled theme and its diagnostics; check `MapThemeCompilation.Succeeded` before reading the value.
 
 ---
@@ -324,9 +347,10 @@ the asset through Unity serialization instead, which is what keeps
 
 `public void ConfigureForNewAsset(MapRulesAsset rulesAsset, MapGenerationMode generationMode, uint generationSeed)`
 
-:   Sets the three fields a freshly created blueprint needs before it can be compiled, for code that builds an asset without going through Map Studio. It touches nothing else: the node, edge, and override rows, the cached fingerprints, and `AuthoringRevision` are all left exactly as they were, so calling it on a populated blueprint can leave the cached fingerprints describing a map the new mode and seed no longer produce.
+:   Replaces the configure For New Asset settings used by future operations; existing immutable graphs and saves are not rewritten.
     - `rulesAsset` &mdash; Rules to compile against; required, and may not be null at compile time.
     - `generationSeed` &mdash; Seed to generate with; must be zero for `MapGenerationMode.Manual`.
+    - `generationMode` &mdash; Input generation Mode consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
 
 ---
 
@@ -348,15 +372,15 @@ authored, when it authored one. A successful compilation does not imply a graph,
 `public MapBlueprintCompilation()`
 
 :   Pairs the compiled blueprint parts with the report that describes them. A null `overrides` or `searchOptions` is replaced by its empty or default value, and the locked IDs are copied and sorted, so the caller's collection is neither retained nor reordered.
-    - `rules` &mdash; The compiled rule snapshot, or null to record a failure.
-    - `graph` &mdash; The authored graph, or null when the blueprint authored no nodes and no edges.
+    - `rules` &mdash; Input rules consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `graph` &mdash; Input graph consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
     - `mode` &mdash; How much of the map the blueprint left to the generator.
-    - `seed` &mdash; The authored seed. Manual blueprints are compiled against a seed of zero.
-    - `overrides` &mdash; The node pins and edge overrides. Null is stored as `MapGenerationOverrides.Empty`.
-    - `searchOptions` &mdash; The generator's search budgets. Null is stored as `MapGenerationSearchOptions.Default`.
+    - `seed` &mdash; Explicit unsigned deterministic seed; equal inputs and seed produce equal canonical output.
+    - `overrides` &mdash; Input overrides consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `searchOptions` &mdash; Input search Options consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
     - `lockedNodeIds` &mdash; Nodes the blueprint marked as locked against editing. May be null.
-    - `authoringRevision` &mdash; The blueprint's editor revision, used for stale-write protection; the compiler reports a negative authored value as an error.
-    - `validation` &mdash; The diagnostics gathered while compiling, which decide `Succeeded` together with `rules`.
+    - `authoringRevision` &mdash; Input authoring Revision consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `validation` &mdash; Input validation consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
 
 **Properties**
 
@@ -427,7 +451,7 @@ backtracking search and has to meet the purity and determinism requirements set 
 
 `public abstract IMapConstraint CompileConstraint()`
 
-:   Builds the rule this asset stands for. Compilation calls it once per constraint row, so this is where serialized fields and asset references are read; what it returns must afterwards evaluate without touching Unity at all.
+:   Validates and copies constraint into immutable engine-neutral data; failure exposes diagnostics and no partial compiled value.
     - **Returns** &mdash; The compiled rule. Returning null fails the whole ruleset with a diagnostic rather than dropping this one constraint, and an exception thrown here is caught and reported the same way, so neither can leave a map generated under a rule that never ran.
 
 ---
@@ -449,6 +473,12 @@ control offset and which is sampled into the theme's segment count.
 
 Only Bezier reads those two Bezier fields, but the compiler range-checks
 them whichever kind you pick.
+
+| Value | Meaning |
+| --- | --- |
+| `Straight` | &mdash; |
+| `Polyline` | &mdash; |
+| `Bezier` | &mdash; |
 
 ---
 
@@ -493,6 +523,11 @@ choice and never changes node identity or reachability.
 BranchWeaver.Core declares an enum of the same name and the same values for
 its own layout and geometry code; this is the authored form that a
 `MapThemeAsset` stores.
+
+| Value | Meaning |
+| --- | --- |
+| `Vertical` | &mdash; |
+| `Horizontal` | &mdash; |
 
 ---
 
@@ -595,7 +630,7 @@ integration, and none of it takes part in generation or in a map's identity.
 
 `public void Configure()`
 
-:   Sets the identity, label, and default payload of an asset built from code rather than in the Inspector. It leaves the localization key, tooltip, prefabs, icon, state colors, renderer key, and audio cues at whatever they already were, so an asset configured this way still carries the shipped default colors.
+:   Replaces the configure settings used by future operations; existing immutable graphs and saves are not rewritten.
     - `id` &mdash; Stable ID text; a value that does not parse fails compilation rather than this call.
     - `label` &mdash; Fallback display label.
     - `payloadId` &mdash; Default payload ID; pass an empty string for no payload.
@@ -620,8 +655,8 @@ than thrown, so check `Succeeded` before reading `Value`.
 `public MapNodeTypeCompilation(CompiledMapNodeType value, ValidationReport validation)`
 
 :   Pairs a compiled node type with the report that describes it.
-    - `value` &mdash; The compiled node type, or null to record a failure.
-    - `validation` &mdash; The diagnostics gathered while compiling, which decide `Succeeded` together with `value`.
+    - `value` &mdash; Input value consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `validation` &mdash; Input validation consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
 
 **Properties**
 
@@ -657,22 +692,23 @@ carry data: a row that leaves data in one of the others compiles to a value that
 canonical, and is reported and dropped rather than quietly corrected. The fields are
 private and serialized while the properties are read-only, so a row is edited in the
 inspector rather than in code; the getters substitute an empty string for the nulls that
-deserialization can leave behind.
+deserialization can leave behind. The inspector shows only the field `Kind`
+names, so a row authored there cannot carry the leftover data that makes it non-canonical.
 
 **Constructors**
 
 `public MapPropertyAuthoring()`
 
-:   Creates a blank row, which is what the inspector adds: no key, no value, and `MapPropertyKind.String` as the kind.
+:   Creates an editable Unity-serialization row; required IDs and references are checked during authoring compilation.
 
 `public MapPropertyAuthoring()`
 
-:   Creates a row in code with every field stated. Nothing is checked here. A key that is not a usable stable ID, a duplicate key, and a value that does not match `kind` are all reported when the row is compiled, so building an invalid row never throws.
-    - `key` &mdash; The property key. Compiling requires it to parse as a lowercase stable ID and to be unique within its payload. Null is stored as an empty string.
+:   Creates an authored map Property Authoring row from the supplied fields; validation is deferred so the compiler can report every related issue together.
+    - `key` &mdash; Input key consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
     - `kind` &mdash; Which of the three value parameters is the meaningful one.
-    - `numericValue` &mdash; The value for the boolean, integer, and fixed-point kinds: 1 or 0 for a boolean, the number itself for an integer, and the number already multiplied by `MapPropertyValue.FixedPointScale` for fixed point. Leave at zero for the other kinds.
-    - `stringValue` &mdash; The value for `MapPropertyKind.String`, left empty for the other kinds. Null is stored as an empty string.
-    - `stableIdValue` &mdash; The value for `MapPropertyKind.StableId`, left empty for the other kinds. Null is stored as an empty string.
+    - `numericValue` &mdash; Input numeric Value consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `stringValue` &mdash; Input string Value consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `stableIdValue` &mdash; Input stable Id Value consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
 
 **Properties**
 
@@ -786,16 +822,16 @@ asset replaces the maps its seeds produce rather than refining them.
 `public void Configure()`
 
 :   Overwrites the core of this ruleset in place -- default node type, layer rows, and node type weights -- and stamps the schema and generator versions this build authors. It is the code path behind generated starter assets, samples, and tests: the lists are replaced wholesale, zones, quotas, forced nodes, adjacencies, connection limits, and custom constraints are left exactly as they were, nothing is validated here, and the asset is neither marked dirty nor saved, so an editor caller still has to do that.
-    - `defaultType` &mdash; The required fallback node type.
+    - `defaultType` &mdash; Input default Type consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
     - `layerRows` &mdash; One row per layer, in layer order; null clears the layers.
-    - `weights` &mdash; The per-type choice weights; null clears them.
+    - `weights` &mdash; Positive relative selection weight; zero or negative values are rejected by validation.
 
 `public void ConfigureAdvanced()`
 
 :   Overwrites every rule on this asset: everything `Configure` covers plus zones, quotas, forced nodes, forbidden adjacencies, the connection limits, and the custom constraints. Any sequence passed as null becomes an empty list, so unlike `Configure` -- which leaves the zone, quota, and connection settings untouched -- this resets every category and leaves nothing behind from an earlier configuration. It validates nothing -- contradictory rules surface when the asset is compiled -- and does not mark the asset dirty or save it.
-    - `defaultType` &mdash; The required fallback node type.
+    - `defaultType` &mdash; Input default Type consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
     - `layerRows` &mdash; One row per layer, in layer order.
-    - `weights` &mdash; The per-type choice weights.
+    - `weights` &mdash; Positive relative selection weight; zero or negative values are rejected by validation.
     - `zoneRows` &mdash; Layer ranges with their permitted types, forbidden types, and local weight overrides.
     - `quotaRows` &mdash; Minimum and maximum counts for a node type, optionally scoped to one zone.
     - `forcedRows` &mdash; Node types required at an exact layer and ordinal slot.
@@ -827,9 +863,9 @@ whatever compiled cleanly, so a failed compilation is still worth reporting to a
 `public MapRulesCompilation(MapRuleSnapshot value, IEnumerable<CompiledMapNodeType> nodeTypes, ValidationReport validation)`
 
 :   Pairs a rule snapshot with the node types it referenced and the report that describes both. The node types are copied and sorted by ID, so the caller's collection is neither retained nor reordered, and a null collection is stored as an empty one.
-    - `value` &mdash; The compiled snapshot, or null to record a failure.
+    - `value` &mdash; Input value consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
     - `nodeTypes` &mdash; Every node type the rules referenced. Null is treated as an empty set.
-    - `validation` &mdash; The diagnostics gathered while compiling, which decide `Succeeded` together with `value`.
+    - `validation` &mdash; Input validation consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
 
 **Properties**
 
@@ -935,12 +971,16 @@ cosmetic styling - palette, node shapes, per-state emphasis - lives in
 `public void ConfigureRuntime()`
 
 :   Writes this theme's identity, layout, edge, zoom, and transition fields in one call, for building a theme from code instead of the Inspector - a starter or sample asset, a test fixture, or an instance made with ScriptableObject.CreateInstance. `BackgroundColor` and `EdgeColor` are not among them and keep whatever they already held, which on a freshly created instance is their authored default. Nothing is validated or clamped here: the values are stored exactly as given, and a value out of range is reported later, by `MapAuthoringCompiler.CompileTheme`. The call assigns the serialized fields directly, so it registers no undo step and does not mark the asset dirty; an editor caller that wants the change on disk must save the asset itself.
-    - `id` &mdash; The stable identity to store. Null becomes empty, which then fails compilation, so pass a real ID.
+    - `id` &mdash; Input id consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
     - `authoredLayerSpacing` &mdash; Sets `LayerSpacing`.
     - `authoredNodeSpacing` &mdash; Sets `NodeSpacing`.
     - `segments` &mdash; Sets `BezierSegments`.
     - `controlOffset` &mdash; Sets `BezierControlOffset`, in normalized map units.
     - `transitionSeconds` &mdash; Sets `StateTransitionSeconds`.
+    - `layoutOrientation` &mdash; Input layout Orientation consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `geometry` &mdash; Input geometry consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `minZoom` &mdash; Input min Zoom consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `maxZoom` &mdash; Input max Zoom consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
 
 ---
 
@@ -961,6 +1001,8 @@ thrown, so check `Succeeded` before reading `Value`.
 `public MapThemeCompilation(CompiledMapTheme value, ValidationReport validation)`
 
 :   Pairs a compiled theme with the report that describes it. Pass null for `value` to record a failure.
+    - `value` &mdash; Input value consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `validation` &mdash; Input validation consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
 
 **Properties**
 

@@ -77,6 +77,13 @@ and edges arrived in, because both are sorted canonically before hashing.
 `OverridesFingerprint`, `GenerationKey` and `GraphFingerprint`, alongside the `Seed`,
 `GeneratorVersion` and `RandomAlgorithmVersion` that produced them.
 
+Map Studio puts two of them in front of you. The **Seed** field is the input; each row of **Seed
+history** is a receipt, reading the seed, whether generation passed, and the 64-character graph
+fingerprint that seed produced. Two rows with the same seed and different fingerprints mean
+something outside the seed moved.
+
+![Map Studio showing Seed 20260722 above a Seed history row reading PASS followed by that run's 64-character graph fingerprint](../assets/images/map-studio-typed-palette.png){ .shot }
+
 A `MapGraph` keeps its own `Seed`, `RulesFingerprint`, `OverridesFingerprint` and
 `GenerationKey`, so a loaded map still knows where it came from. Blueprint assets store the
 same values; compiling one recomputes them and raises

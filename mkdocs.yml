@@ -116,8 +116,9 @@ nav:
   - Tutorials:
       - 1. Install and run the samples: tutorials/install-and-samples.md
       - 2. Generate a map in Map Studio: tutorials/generate-a-map.md
-      - 3. Add a map to your scene: tutorials/add-a-map-to-your-scene.md
-      - 4. Restyle your map: tutorials/restyle-your-map.md
+      - 3. Create a playable map in one click: tutorials/create-a-playable-map.md
+      - 4. Add a map to your scene: tutorials/add-a-map-to-your-scene.md
+      - 5. Restyle your map: tutorials/restyle-your-map.md
   - How-to:
       - Create node types: how-to/create-node-types.md
       - Write map rules: how-to/write-map-rules.md
@@ -129,6 +130,7 @@ nav:
       - Place the map on screen: how-to/place-the-map-on-screen.md
       - Control what the player can see: how-to/reveal-and-fog.md
       - Drive traversal from code: how-to/drive-traversal-from-code.md
+      - Route content to nodes: how-to/route-content-to-nodes.md
       - Save and load progress: how-to/save-and-load.md
       - Input, focus, and camera framing: how-to/input-and-navigation.md
       - Troubleshooting: how-to/troubleshooting.md
@@ -138,6 +140,7 @@ nav:
       - Style, theme, and the presenter boundary: explanation/style-and-theme.md
   - API reference:
       - Overview: reference/index.md
+      - Host and content routing: reference/host-and-content-routing.md
       - Getting a map: reference/getting-a-map.md
       - Traversal and progression: reference/traversal-and-progression.md
       - Authoring assets: reference/authoring-assets.md
