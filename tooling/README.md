@@ -1,8 +1,29 @@
 # Documentation capture tooling
 
-Two capture paths, because Unity has two very different rendering surfaces.
+## 0. BranchWeaver canonical complete set
 
-## 1. Scene, map, and interface content -- reliable and headless
+The canonical 19-image BranchWeaver set is now produced by the product repository's guarded
+InternalTools pipeline. Run Unity 2022.3.62f1 visibly on Windows with a real graphics device:
+
+```powershell
+Unity.exe -projectPath <BranchWeaver> `
+  -executeMethod BranchWeaver.InternalTools.Editor.BranchWeaverAutomatedDocumentationCapture.CaptureAllFromCommandLine `
+  -logFile <capture-log>
+```
+
+Do not pass `-batchmode` or `-nographics`. The tool captures real Unity editor windows, validates
+runtime traveler sprites and pixels, binds every PNG to the capture inputs, and rejects any
+assertion, exception, or unexpected severe log. One exact, armed error is required for the Console
+teaching image. A completion message without that exact log-guard summary is not a successful run.
+
+Review all 19 PNGs manually, then copy them byte-for-byte from
+`Assets/BranchWeaver/Documentation/Images` into this site's `docs/assets/images` and verify the
+package, manifest, and site hashes. Raw Unity logs are private diagnostics and are never published.
+
+The two older paths below remain available for extra galleries and one-off shots because Unity has
+two very different rendering surfaces. They do not replace the canonical complete-set gate.
+
+## 1. Additional scene, map, and interface content -- reliable and headless
 
 `DocsCapture.MapStyleGallery` (BranchWeaver-ImportHost) and
 `DocsCapture.BattleSkinGallery` (TempoForge-ImportHost) render through a throwaway
@@ -24,7 +45,7 @@ Notes learned the hard way:
   runs. Force layout, then re-apply each surface, or the shader receives a zero
   half-extent and draws nothing.
 
-## 2. Editor windows -- needs a GUI session, and it works
+## 2. Additional editor windows -- needs a GUI session, and it works
 
 `EditorWindowShots` (in each ImportHost) plus `Capture-EditorWindows.ps1`.
 
@@ -91,7 +112,7 @@ output; if it ever says `UNAWARE`, every image from that run is cropped.
 ### Two checks, because the obvious one is not sufficient
 
 `ExpectPoints{Width,Height}` is the real guard and it is arithmetic, not judgement: a
-window of *W* points at scale *S* renders *W×S* pixels, so a smaller bitmap is a
+window of *W* points at scale *S* renders *W*S* pixels, so a smaller bitmap is a
 photograph of part of it. The driver passes the size Unity itself reports, so the check
 needs no agreement about frame or title-bar thickness.
 

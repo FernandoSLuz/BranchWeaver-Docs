@@ -17,9 +17,8 @@ scene can be empty.
 <figure markdown>
   ![The BranchWeaver Setup window, with a ticked Canvas Presenter checkbox and a tall Create Complete Starter Map button under the heading Fastest path](../assets/images/setup-wizard-start.png){ .shot }
   <figcaption>The window as it opens. <strong>Create Complete Starter Map</strong> sits under
-  <strong>Fastest path</strong> and is the only control this page uses. The red line at the
-  bottom is the wizard reporting that no scene root is selected yet, which the one-click path
-  does not need.</figcaption>
+  <strong>Fastest path</strong> and is the only control this page uses. The validation issue below
+  reports that the manual setup path has no scene root; the one-click path does not need one.</figcaption>
 </figure>
 
 ## 2. Choose Canvas or World2D
@@ -62,10 +61,9 @@ then use the starter controls to complete, save, and load.*
 The new **BranchWeaver Playable Map** object is selected for you.
 
 <figure markdown>
-  ![The Unity editor after the one-click build: a Hierarchy holding BranchWeaver Canvas and Main Camera, an Inspector stacking Map Setup Hierarchy Binding, Map Traversal Controller and Branch Weaver Map Host, and a Game view showing an amber current node with the starter control panel](../assets/images/completed-scene-hierarchy.png){ .shot }
-  <figcaption>Everything a running map needs, created and wired in one step: the binding record,
-  the traversal controller, and the host on one object, with the presentation objects below
-  it.</figcaption>
+  ![The Unity Hierarchy after the one-click Canvas build, with the selected BranchWeaver Playable Map root, Event System, Safe Area, Map Content and expanded Starter Controls](../assets/images/completed-scene-hierarchy.png){ .shot }
+  <figcaption>The Canvas object tree created in one step. The selected playable-map root owns the
+  runtime components; its presentation and removable sample controls are visible below it.</figcaption>
 </figure>
 
 === "Canvas presenter"
@@ -126,10 +124,10 @@ The map generates and draws itself. Available nodes are bright, locked nodes are
 the node you occupy is ringed.
 
 <figure markdown>
-  ![A Play Mode map with one amber ringed node at the bottom, two dim locked Route nodes above it, and a starter panel top left reading Content requested: quickstart.route-skirmish, with Start New, Complete Current, Save and Load buttons](../assets/images/canvas-runtime-focused-node.png){ .shot }
-  <figcaption>Click an available node and the host picks that node's content from the pool
-  before traversal commits. The panel reports the content ID it chose, which is exactly what
-  your game would receive.</figcaption>
+  ![The Quick Start sample after one traversal action, with one amber current Route node, two dim locked Route nodes, sample controls and a customer callback message](../assets/images/canvas-runtime-focused-node.png){ .shot }
+  <figcaption>This recorded frame is the shipped Quick Start sample and shows the Canvas node
+  states after traversal. It illustrates the presenter and state styling, not the exact contents
+  of the generated starter panel.</figcaption>
 </figure>
 
 1. Click a bright node, or move focus with the arrow keys and press ++enter++.
@@ -147,9 +145,9 @@ the node you occupy is ringed.
 2. Press **Load**.
 
 <figure markdown>
-  ![The same map after loading, with the starter panel reading Loaded the saved map and route and the same amber node still current](../assets/images/save-reload-active-content.png){ .shot }
-  <figcaption>The same graph, the same position, and the same active content. Loading never
-  rerolls the map or re-picks the encounter.</figcaption>
+  ![The Quick Start sample after loading from memory, with the panel confirming an identical complete graph and traversal state and the same amber node current](../assets/images/save-reload-active-content.png){ .shot }
+  <figcaption>The sample confirms that the complete graph and traversal state came back from
+  memory, with the same node still current.</figcaption>
 </figure>
 
 A save that cannot be trusted is refused rather than repaired: a corrupt file, a save written

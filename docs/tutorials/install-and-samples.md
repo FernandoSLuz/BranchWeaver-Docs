@@ -26,6 +26,13 @@ in the Project window.
 | Quick Start | **Open Quick Start Sample** | `Samples/QuickStart/BranchWeaverQuickStart.unity` |
 | Wayfarer | **Open Wayfarer Sample** | `Samples/Wayfarer/BranchWeaverWayfarer.unity` |
 
+<figure markdown>
+  ![The Unity Project window open to Assets, BranchWeaver, Samples, QuickStart, Content, listing the Quick Start blueprint, rules, theme, content pool and four node types](../assets/images/starter-assets-folder.png){ .shot }
+  <figcaption>The Quick Start inputs ship together under
+  <code>Assets/BranchWeaver/Samples/QuickStart/Content</code>. They are sample assets you can
+  inspect; opening the sample does not generate replacements elsewhere in the project.</figcaption>
+</figure>
+
 Each scene holds exactly one object, carrying a `SampleSceneBootstrap` component. There is no
 camera, no canvas, and no map until you press Play: the bootstrap builds the traversal
 controller, the presenter, the input controller, and its own control panel in code, so nothing
@@ -46,6 +53,12 @@ You get a six-node map running vertically, drawn by the screen-space Canvas pres
 generated procedurally from seed `20260722`. Its rules ask for four layers, one, two, two, and
 one node wide, mixing four node types, Route, Rest, Landmark, and Gateway, with a Route forced
 first, a Gateway forced last, one or two Rest nodes in total, and no two Rest nodes adjacent.
+
+<figure markdown>
+  ![The Quick Start sample in Play Mode, with a control and status panel on the left and the generated map in the reserved viewport on the right](../assets/images/quickstart-sample-runtime.png){ .shot }
+  <figcaption>The initial Quick Start view. The panel reports the seed and traversal counts and
+  provides sample controls; the map uses the remaining viewport.</figcaption>
+</figure>
 
 ### 2. Click a highlighted node
 
@@ -102,6 +115,13 @@ appear where:
 `wayfarer.zone.shore` covers the first three layers, `wayfarer.zone.highlands` the next two, and
 `wayfarer.zone.peak` the last two. Summit is permitted only in the peak zone, so it can never
 turn up early.
+
+<figure markdown>
+  ![The Wayfarer campaign sample in Play Mode after entering the harbor, with the callback status and presenter controls visible beside the map](../assets/images/wayfarer-sample-runtime.png){ .shot }
+  <figcaption>Wayfarer after entering <code>wayfarer.harbor</code>. The sample panel shows the
+  customer callback and the extra presenter and orientation controls; BranchWeaver itself still
+  owns only map state and traversal.</figcaption>
+</figure>
 
 ### 6. Press Next seed and watch what survives
 

@@ -18,11 +18,21 @@ say why a row was or was not eligible.
    stable ID at all.
 3. Press **+** under **Entries** and fill in one row per piece of content.
 
-![The Map Content Pool inspector with Stable Id quickstart.content, four entries, and the first row expanded to show Content Id, Weight, Node Types, Minimum Layer, Maximum Layer, Zone Id, Unique and Cooldown Selections](../assets/images/content-pool-inspector.png){ .shot }
+<figure markdown>
+  ![The Map Content Pool Inspector overview with stable ID quickstart.content, four collapsed entries, a configuration fingerprint and a canonical ready result](../assets/images/content-pool-inspector.png){ .shot }
+  <figcaption>The overview keeps the four rows collapsed so the pool identity and deterministic
+  summary remain visible. Expand an entry to edit the row fields described below.</figcaption>
+</figure>
 
 Below the rows, **Deterministic resolver summary** counts the eligible rows and shows the
 configuration fingerprint. While it reads *Configuration is canonical and ready for runtime routing*,
 the pool is valid; a malformed row says so here rather than at the first click in Play Mode.
+
+<figure markdown>
+  ![A deliberately invalid content pool showing an unavailable fingerprint, row validation errors, a duplicate content ID and an unknown zone warning](../assets/images/content-pool-invalid-row.png){ .shot }
+  <figcaption>This is a deliberately invalid fixture, not the Quick Start pool. The Inspector
+  identifies the pool ID and row errors separately, and reports the unknown zone as a warning.</figcaption>
+</figure>
 
 ## What a row holds
 
@@ -53,8 +63,6 @@ When the player enters a node, the host resolves one row and raises **Content Re
 with the content ID. Wire that inspector event to whatever opens an encounter in your game and no
 code is involved at all.
 
-![The running map with one amber current node and a panel reading Content requested: quickstart.route-skirmish. Complete it when ready.](../assets/images/canvas-runtime-focused-node.png){ .shot }
-
 In C# the same thing arrives as a `MapContentSelection`, which carries the node, the pool, the
 content, and its position in the run:
 
@@ -77,8 +85,6 @@ active selection, and the next node the player picks gets its own.
 The host writes the run's whole selection history and its active selection into the save alongside
 the graph and the progression. Loading restores them and re-raises **Content Requested** for the
 node the player was standing on, so a reloaded run continues rather than restarting the encounter.
-
-![The same map after pressing Load, the same amber node still current, with the panel reading Loaded the saved map and route.](../assets/images/save-reload-active-content.png){ .shot }
 
 This is the reason the pool has a **Stable Id**. A load checks the pool's ID, its configuration
 fingerprint, and whether every content ID the save names still exists as a row. If any of the three

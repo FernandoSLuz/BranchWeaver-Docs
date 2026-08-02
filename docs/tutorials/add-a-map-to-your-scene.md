@@ -72,6 +72,12 @@ what it made. Once a `BranchWeaverMapHost` is on the root it is labelled **Fix S
 Rebind** instead, and does the same job: repair anything missing and re-bind everything to the
 current fields.
 
+<figure markdown>
+  ![The configured Setup Wizard showing a scene root, Quick Start theme, blueprint and content pool, a stable save slot, four node types and Validation passed](../assets/images/setup-wizard-configured.png){ .shot }
+  <figcaption>A configured example after the root and sample assets have been bound. Your asset
+  names can differ; the useful check is <strong>Validation passed</strong> at the bottom.</figcaption>
+</figure>
+
 A refusal appears as a dialog naming its code. **Validate Scene** re-runs the checks on their
 own and changes nothing.
 
@@ -94,10 +100,9 @@ Errors mean the map will not present. Warnings do not: a missing `EventSystem`, 
 World2D, an unavailable Input System package, or a root that has no host yet.
 
 <figure markdown>
-  ![The Setup Wizard on a deliberately broken scene: a Save Slot reading "invalid slot with spaces" with a red error and a Fix Save Slot button, four filled node type rows, and a Validation issues list reporting a missing controller and a missing presentation hierarchy](../assets/images/setup-diagnostics-fixes.png){ .shot }
-  <figcaption>An intentionally incomplete setup. Every issue is stated in the words of what to do
-  about it, and the ones the wizard can repair get a <strong>Fix:</strong> button under the
-  report.</figcaption>
+  ![The Setup Wizard on a deliberately broken scene, with an invalid save slot, a Fix Save Slot button, four node types, and missing controller and presentation issues](../assets/images/setup-diagnostics-fixes.png){ .shot }
+  <figcaption>An intentionally incomplete setup. The save-slot problem has a visible repair
+  action, and the validation list states the missing scene pieces in plain language.</figcaption>
 </figure>
 
 Three contextual fixes appear under the report when they apply, and each one re-validates after

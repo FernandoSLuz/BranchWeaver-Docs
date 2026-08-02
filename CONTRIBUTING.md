@@ -64,11 +64,12 @@ nothing.
 Screenshots are the reason this site exists in the shape it does, so they have their own
 pipeline. Full detail is in `tooling/README.md`; this is the short version.
 
-### Before anything: sync the ImportHost
+### Before and after capture: verify the ImportHost
 
 `BranchWeaver-ImportHost` holds a **byte-for-byte copy** of `Assets/BranchWeaver`, not a
-symlink. A change you made in the product is invisible to a capture run until it is mirrored,
-which is how a fix can appear not to work when it was simply never copied.
+symlink. The complete capture tool runs from the product project because its fail-closed
+implementation lives in the non-shipped `BranchWeaver.InternalTools` assembly. After the
+images and manifest are final, mirror the shipped root into the ImportHost and verify parity:
 
 ```powershell
 BranchWeaver/Internal/Release/Sync-BranchWeaverImportHost.ps1          # mirror
@@ -78,7 +79,33 @@ BranchWeaver/Internal/Release/Sync-BranchWeaverImportHost.ps1 -VerifyOnly   # ch
 It must report `missing=0 extra=0 mismatch=0`. Do not hand-copy files: that leaves `.meta`
 GUID drift that fails the release audit later.
 
-### Maps, styles, and rendered content: headless, reproducible
+### Canonical complete set: one guarded GUI run
+
+Use Unity 2022.3.62f1 on Windows with a real graphics device. Do not pass `-batchmode` or
+`-nographics`: the capture intentionally rejects either mode because it photographs real Unity
+windows as well as camera-rendered samples.
+
+```powershell
+Unity.exe -projectPath <BranchWeaver> `
+  -executeMethod BranchWeaver.InternalTools.Editor.BranchWeaverAutomatedDocumentationCapture.CaptureAllFromCommandLine `
+  -logFile <capture-log>
+```
+
+The run writes 19 PNGs and `manifest.json` under
+`Assets/BranchWeaver/Documentation/Images`. It fails closed when it observes an assertion,
+exception, unexpected error, missing traveler sprite, blank traveler pixels, undersized window,
+or uniform capture. The one Console teaching image must produce exactly one armed, exact-match
+host error; every other severe Unity log invalidates the batch.
+
+Open every PNG after the run. Then copy the PNGs byte-for-byte into
+`docs/assets/images/` and verify that package, manifest, and site SHA-256 values match. Never copy
+the raw Unity log into the package or public evidence: it contains local machine paths and Unity
+service diagnostics.
+
+### Additional style galleries: headless, reproducible
+
+The older `DocsCapture.MapDocSet` route remains useful only for extra style/state gallery images
+that are not part of the canonical 19-image set:
 
 ```bash
 DOCS_IMAGE_DIR=<this repo>/docs/assets/images \
@@ -88,7 +115,8 @@ Unity.exe -batchmode -quit -projectPath <BranchWeaver-ImportHost> \
 ```
 
 `DOCS_DOC_IMAGE_DIR` is optional. When set, the pictures the offline documentation embeds are
-copied into the package and `Images/manifest.json` is rewritten with per-image hashes.
+copied into the package and `Images/manifest.json` is rewritten with per-image hashes. Do not use
+this legacy route to overwrite a canonical image without rerunning and reviewing the complete set.
 
 **Do not pass `-nographics`.** With no GPU every render comes back a byte-identical blank
 image and the whole run looks like it worked.
@@ -101,7 +129,7 @@ a zero half-extent and draws nothing.
 If the subject is portrait-shaped, give the shot a `Crop`. Fitting a tall map into a 16:9
 frame is arithmetically correct and produces an image that is two-thirds black.
 
-### Editor windows: needs a real GUI session, and it works
+### Additional editor windows
 
 ```powershell
 tooling/Capture-EditorWindows.ps1 `
@@ -112,6 +140,10 @@ tooling/Capture-EditorWindows.ps1 `
 
 A target is `TypeName|file-stem|width|height|fixture`. Sizes are logical points; the PNG comes
 out at points times the display scale, so output size is machine-dependent by design.
+
+Use this helper for additional one-off documentation images only. The canonical set is captured
+by `BranchWeaverAutomatedDocumentationCapture`, which also binds the image manifest to its inputs
+and guards severe logs for the entire batch.
 
 Two things this pipeline learned the hard way and still guards:
 

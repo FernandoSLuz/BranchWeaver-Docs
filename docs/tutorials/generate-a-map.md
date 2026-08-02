@@ -17,6 +17,12 @@ card offering two ways in: a playable starter set, or the Quick Start sample. Th
 actions stay disabled until something is compiled, and the panes down the right side, node and
 edge authoring, seed history, and validation, fill in as you work.
 
+<figure markdown>
+  ![Map Studio with no rules or blueprint assigned, disabled graph actions, and a welcome card offering a playable starter set or the Quick Start sample](../assets/images/map-studio-empty-state.png){ .shot }
+  <figcaption>The real empty state. No graph preview is loaded until you choose a public starting
+  action or assign your own rules or blueprint and press <strong>Compile / Load</strong>.</figcaption>
+</figure>
+
 ## 2. Create a playable starter set
 
 Press **Create playable starter set** on that card and choose a folder inside your project's

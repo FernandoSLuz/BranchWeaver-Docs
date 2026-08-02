@@ -17,6 +17,13 @@ Clicking that line in the Console selects the host that produced it. The first w
 operations - `StartNew`, `TryLoad`, `Save`, `RequestNode`, `CompleteCurrent` - so it already tells
 you which part of the run gave up.
 
+<figure markdown>
+  ![The Unity Console containing one intentional BranchWeaver RequestNode error stating that the node ID must be a valid stable ID](../assets/images/console-host-failure-error.png){ .shot }
+  <figcaption>A staged invalid node request produces one error naming the operation,
+  <code>RequestNode</code>, and the reason it was refused. It is an error-path example, not a
+  successful sample run.</figcaption>
+</figure>
+
 The toggle behind it is **Log Failures To Console**, in the host's **Diagnostics** group, and it is
 on by default. Leave it on while you build. Turn it off only once your game shows a failure of its
 own, through the **Host Failed (String)** inspector event or the `HostFailed` C# event; the message
@@ -24,6 +31,13 @@ is the same text either way.
 
 If a map is missing and the Console is empty, check that toggle before anything else on this page.
 An unticked box is the one state in which BranchWeaver fails silently.
+
+<figure markdown>
+  ![The BranchWeaver host Inspector at the Diagnostics group with Log Failures To Console unticked and the Host Failed event visible below](../assets/images/host-diagnostics-toggle.png){ .shot }
+  <figcaption>The staged host with console logging turned off. During integration, leave the box
+  ticked unless your own <strong>Host Failed</strong> listener presents or records the same
+  message.</figcaption>
+</figure>
 
 ## The map does not start in Play Mode
 
@@ -52,7 +66,7 @@ For the first three, **Tools > BranchWeaver > Setup Wizard** finds the same prob
 Play Mode. **Validate Scene** compiles the blueprint's preview seed, discovers every referenced node
 type, and lists what is wrong; several rows carry a one-click fix.
 
-![The Setup Wizard listing validation issues, with an invalid save slot flagged above a Fix Save Slot button and bw.setup.controller-missing in the issues list below](../assets/images/setup-diagnostics-fixes.png){ .shot }
+![The Setup Wizard listing an invalid save slot with a Fix Save Slot action and missing controller, presentation, hit tester and input components below](../assets/images/setup-diagnostics-fixes.png){ .shot }
 
 ### The save-identity family
 

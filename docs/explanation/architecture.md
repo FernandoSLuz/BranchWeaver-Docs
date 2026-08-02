@@ -29,7 +29,7 @@ Every stage above is something you can select. In a scene built by the Setup Wiz
 blueprint sit in the **Blueprint** field, the session lives inside `MapTraversalController`, and the
 presenter is the child object drawing the nodes you see in the Game view.
 
-![A Unity scene with BranchWeaver Playable Map selected, its Map Traversal Controller and Branch Weaver Map Host components in the Inspector, and the generated map running in the Game view](../assets/images/completed-scene-hierarchy.png){ .shot }
+![The Unity Hierarchy after Canvas setup, with BranchWeaver Canvas, the selected BranchWeaver Playable Map root, Event System, Safe Area, Map Content and expanded Starter Controls](../assets/images/completed-scene-hierarchy.png){ .shot }
 
 ### What each stage decides
 

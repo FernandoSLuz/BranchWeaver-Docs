@@ -102,6 +102,12 @@ mode only. It opens already filled in with a legal answer:
 | **Layer**, **Ordinal** | The first slot with no node in it, inside the capacity your rules allow for that layer. |
 | **Normalized X**, **Y** | 5000 and 5000, the centre of the 0 to 10,000 field. |
 
+<figure markdown>
+  ![Map Studio in Manual mode with a graph preview and Manual node authoring controls for node ID, type, layer, ordinal and normalized position](../assets/images/map-studio-manual-node-authoring.png){ .shot }
+  <figcaption>Manual mode exposes the node fields and type palette beside the graph. The staged
+  ID is a suggestion; <strong>Add node</strong> still validates it against the current graph.</figcaption>
+</figure>
+
 So the shortest way to add a node is to open the foldout, click a palette button, and press **Add
 node**. Change the layer and ordinal first if you want it somewhere else; the ID follows. **Remove
 selected node** deletes the node you have selected, and is refused for a locked one.

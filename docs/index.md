@@ -14,8 +14,8 @@ rendering code.</p>
 </div>
 
 <figure markdown>
-  ![The Wayfarer sample rendered with the Slate Nocturne style](assets/images/hero-wayfarer.png){ .shot }
-  <figcaption>The Wayfarer sample, Slate Nocturne style. Nodes, routes, rings and glow are signed-distance-field shapes drawn by one unlit shader, so they stay crisp at any zoom and need no post-processing. The backdrop art and the traveller belong to the sample scene, not to the map.</figcaption>
+  ![A BranchWeaver map rendered with the Slate Nocturne style](assets/images/hero-wayfarer.png){ .shot }
+  <figcaption>A BranchWeaver map using Slate Nocturne. Nodes, routes, rings and glow are signed-distance-field shapes drawn by one unlit shader, so they stay crisp at any zoom and need no post-processing.</figcaption>
 </figure>
 
 ---
