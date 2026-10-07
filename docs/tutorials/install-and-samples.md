@@ -33,6 +33,10 @@ first, use [Experience Studio](experience-studio.md) instead: create an example 
 it, apply the preset, and create a demo in the current scene. The Studio route is optional and
 does not replace either shipped sample.
 
+The separate Marcos da Mare 2D and 3D packages are technical preview candidates rather than
+shipped samples. See [Install the optional demos](../how-to/install-optional-demos.md) for their
+versioned package order, customization points, and removal steps.
+
 <figure markdown>
   ![The Unity Project window open to Assets, BranchWeaver, Samples, QuickStart, Content, listing the Quick Start blueprint, rules, theme, content pool and four node types](../assets/images/starter-assets-folder.png){ .shot }
   <figcaption>The Quick Start inputs ship together under
