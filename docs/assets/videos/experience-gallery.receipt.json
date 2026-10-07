@@ -15,8 +15,8 @@
     },
     {
       "file": "experience-world-trail.png",
-      "sha256": "bfc6089298b36f2b09c28088bfcd82d42a30c3714ce8147362c8c7659a1325e9",
-      "bytes": 62529,
+      "sha256": "593447a28a3b1784b7445cb37d4b5a0f75067f10f6ffbcd51cf12a49bd8e964e",
+      "bytes": 62279,
       "unity": "6000.3.25f1",
       "backend": "World2D",
       "nodes": 14,
