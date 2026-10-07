@@ -1,37 +1,6 @@
 # Determinism and diagnostics
 
-3 types in this area.
-
-## MapDevelopmentOverlay
-
-```csharp
-public sealed class MapDevelopmentOverlay : MonoBehaviour
-```
-
-`BranchWeaver.DevTools` &middot; <small>BranchWeaver/DevTools/MapDevelopmentOverlay.cs</small>
-
-A draggable IMGUI window that drives the development commands of a running map: reveal
-everything, unlock or teleport to a node by ID, complete the current node, force a completion
-payload, reset the run, regenerate from a typed seed, and copy the generation manifest to the
-system clipboard.
-
-It is a thin front end and holds no state of its own beyond the text in its fields: every
-button calls straight through to `IMapDevelopmentHost` and shows the returned
-message, so a refusal reads the same here as it would in your own tooling. Text that will not
-parse -- a malformed node ID, a seed that is not an unsigned integer, an invalid payload ID --
-is turned down in the overlay and never reaches the host.
-
-Add it to a scene during development only. The commands behind it move a run outside the
-normal traversal rules, and the host interface exists only in a build that defines
-BRANCHWEAVER_DEVTOOLS.
-
-**Properties**
-
-`public IMapDevelopmentHost Host`
-
-:   The object the buttons issue their commands to. Left unset, it falls back on Awake to the `MapTraversalController` assigned in the Inspector, and the window falls back to that controller again on each repaint, so assigning this is only needed to point the overlay at a host of your own -- a wrapper that logs commands, or a stand-in in a test scene. With neither set the window draws a notice instead of its controls.
-
----
+2 types in this area.
 
 ## MapDiagnostic
 
@@ -57,22 +26,22 @@ present them in an editor window, a console, or a test assertion.
 
 `public MapDiagnostic(MapDiagnosticSeverity severity, string code, string message, string context)`
 
-:   Creates an immutable map Diagnostic snapshot; invalid required identifiers, ranges, or null inputs are rejected before state is exposed.
+:   Builds a diagnostic with no related rules, nodes, or slots and normalizes null text fields to empty strings.
     - `code` &mdash; Stable code identifying the problem; matched by ordinal comparison.
     - `message` &mdash; Human-readable explanation. Null becomes an empty string.
     - `context` &mdash; Where the problem was found. Null becomes an empty string.
-    - `severity` &mdash; Input severity consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `severity` &mdash; The warning or error level used for report ordering and validity; stored without enum validation.
 
-`public MapDiagnostic()`
+`public MapDiagnostic( MapDiagnosticSeverity severity, string code, string message, string context, IEnumerable<StableId> relatedRuleIds, IEnumerable<StableId> relatedNodeIds, IEnumerable<MapNodeSlot> relatedSlots)`
 
-:   Creates an immutable map Diagnostic snapshot; invalid required identifiers, ranges, or null inputs are rejected before state is exposed.
+:   Builds a diagnostic and defensively copies each related-ID sequence into canonical sorted order.
     - `code` &mdash; Stable code identifying the problem; matched by ordinal comparison.
     - `message` &mdash; Human-readable explanation. Null becomes an empty string.
     - `context` &mdash; Where the problem was found. Null becomes an empty string.
     - `relatedRuleIds` &mdash; Rules implicated in the problem. Null is treated as none.
     - `relatedNodeIds` &mdash; Nodes implicated in the problem. Null is treated as none.
     - `relatedSlots` &mdash; Slots implicated in the problem. Null is treated as none.
-    - `severity` &mdash; Input severity consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `severity` &mdash; The warning or error level used for report ordering and validity; stored without enum validation.
 
 **Properties**
 
@@ -143,30 +112,39 @@ digits, period, underscore, and hyphen.
 
 :   The identifier text, or an empty string when this is the default value. It is never null, so it can be compared, concatenated, or written out without a guard.
 
+**Fields**
+
+`public static bool operator`
+
+:   Combines immutable operands with the `==` operator without changing either input.
+    - `left` &mdash; The first identifier in the ordinal text equality comparison.
+    - `right` &mdash; The second identifier in the ordinal text equality comparison.
+    - **Returns** &mdash; The converted immutable value; the source operand remains unchanged.
+
 **Methods**
 
 `public int CompareTo(StableId other)`
 
 :   Orders identifiers by their text ordinally, so a sorted list comes out the same on every machine regardless of its culture. The default value sorts first.
-    - `other` &mdash; Input other consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `other` &mdash; The identifier whose text establishes the ordinal sort position.
     - **Returns** &mdash; Negative, zero, or positive as this identifier sorts before, with, or after `other`.
 
 `public bool Equals(StableId other)`
 
 :   Reports whether both identifiers hold the same text, compared ordinally rather than by the current culture.
-    - `other` &mdash; Input other consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `other` &mdash; The identifier whose canonical text is compared ordinally with this value.
     - **Returns** &mdash; only when all preconditions are satisfied; otherwise with no partial mutation.
 
 `public override bool Equals(object obj)`
 
 :   Reports whether `obj` is an identifier holding the same text. Anything else, including null and a bare string, is not equal.
-    - `obj` &mdash; Input obj consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `obj` &mdash; The object to test; a string is not equal unless first wrapped as a `StableId`.
     - **Returns** &mdash; only when all preconditions are satisfied; otherwise with no partial mutation.
 
 `public override int GetHashCode()`
 
 :   Returns an FNV-1a hash of the identifier text. It is computed here instead of being delegated to the string's own hash because some runtimes randomise those per process. The same ID therefore hashes to the same value in every process and every build, which is what makes it safe to persist or compare across runs.
-    - **Returns** &mdash; The requested immutable or borrowed value; ownership remains with the object documented by the return type.
+    - **Returns** &mdash; A process-stable FNV-1a hash of the permitted ASCII identifier text.
 
 `public static bool IsValid(string value)`
 
@@ -176,14 +154,14 @@ digits, period, underscore, and hyphen.
 
 `public static StableId Parse(string value)`
 
-:   Runs parse against validated inputs and returns a complete result rather than exposing partially updated state.
+:   Constructs an identifier from exact text, throwing instead of normalizing invalid characters or casing.
     - `value` &mdash; Text matching the permitted alphabet.
-    - **Returns** &mdash; The complete stable Id outcome; inspect its typed status or diagnostics before consuming payload data.
+    - **Returns** &mdash; An identifier whose `Value` is exactly `value`.
 
 `public override string ToString()`
 
 :   Returns `Value`, so an unset identifier prints as an empty string rather than as the type name.
-    - **Returns** &mdash; The complete string outcome; inspect its typed status or diagnostics before consuming payload data.
+    - **Returns** &mdash; The exact identifier text, or `string.Empty` for the default value.
 
 `public static bool TryCreate(string value, out StableId stableId)`
 

@@ -1,0 +1,19 @@
+WEBVTT
+
+00:00.000 --> 00:02.100
+Source preset shown with no pending edit.
+
+00:02.100 --> 00:05.100
+Paths controls show the inherited route.
+
+00:05.100 --> 00:08.600
+Gentle curves are visible in the temporary draft.
+
+00:08.600 --> 00:10.100
+Apply commits the edit and clears the draft state.
+
+00:10.100 --> 00:13.100
+The temporary presentation backend changes to World2D.
+
+00:13.100 --> 00:16.000
+Integration shows the saved-backend scene action.

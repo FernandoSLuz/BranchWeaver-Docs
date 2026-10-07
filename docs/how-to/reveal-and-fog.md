@@ -31,7 +31,7 @@ palette's **Edge Locked** colour, at 75% alpha.
 ### What fog does not touch
 
 Fog is presentation of progression, not part of the map. Reveal depth is not in the rules
-fingerprint, so changing it does not change which graph a seed produces — see
+fingerprint, so changing it does not change which graph a seed produces - see
 [Determinism, seeds, and fingerprints](../explanation/determinism.md). It never appears in a
 save file either, which is why it needs no migration.
 
@@ -59,11 +59,11 @@ stands.
 
 </div>
 
-- **0** — only what the traveller has reached plus what is immediately available. Nothing
+- **0** - only what the traveller has reached plus what is immediately available. Nothing
   ahead. Maximum mystery.
-- **1** — the next choices show as dimmed nodes. The classic run-based-map behaviour, and
+- **1** - the next choices show as dimmed nodes. The classic run-based-map behaviour, and
   the default.
-- **2 or more** — look further ahead, one layer at a time.
+- **2 or more** - look further ahead, one layer at a time.
 - At or above the layer count, effectively the whole map.
 
 Depth counts edges outwards from every node the traveller has reached, breadth-first, so
@@ -94,7 +94,7 @@ controller.FogSettings = MapFogSettings.Revealed;
 ```
 
 Assigning `FogSettings` does not publish a state change by itself, so the map redraws when
-the controller next publishes — usually the next transition. To show the change at once,
+the controller next publishes - usually the next transition. To show the change at once,
 refresh the presenter:
 
 ```csharp
@@ -135,9 +135,9 @@ set and republish at once; **Reset** clears it. That path is for testing.
 
 ## Next
 
-- **[Emphasise node states](style-node-states.md)** — how the Locked state is treated, so
+- **[Emphasise node states](style-node-states.md)** - how the Locked state is treated, so
   dimmed nodes read as a hint rather than as clutter.
-- **[Drive traversal from code](drive-traversal-from-code.md)** — publishing state, reading
+- **[Drive traversal from code](drive-traversal-from-code.md)** - publishing state, reading
   progression, and moving the traveller legally.
-- **[Input, focus, and camera framing](input-and-navigation.md)** — why focus and
+- **[Input, focus, and camera framing](input-and-navigation.md)** - why focus and
   hit-testing skip hidden nodes, and how to reframe on what is revealed.

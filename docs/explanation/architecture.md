@@ -4,6 +4,12 @@ A map passes through six stages between a rules asset and something on screen. A
 this page you can name each stage, say what it decides, and treat stable IDs as the one
 thing you do not change casually.
 
+For a configured presentation, `MapExperienceHost` is the integration boundary: it owns the
+session and sends immutable snapshots to a registered renderer. Experience Studio can select
+Canvas, World2D, World3D, or UI Toolkit without changing the graph or progression policy. The
+UI Toolkit renderer is version guarded for Unity 6.3; the Core assembly remains compatible with
+Unity 2022.3 and has no Unity references.
+
 ## The pipeline
 
 ```

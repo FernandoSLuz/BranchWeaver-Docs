@@ -13,9 +13,11 @@ a keyboard, a gamepad, or a touchscreen. No code is involved.
    and the typed input bridge compiles in, leave it out and nothing is missing.
 
 !!! note "What has actually been verified"
-    Unity 2022.3.62f1 is the verified editor version and the Built-in render pipeline is the
-    verified pipeline. Other editor versions, pipelines, and platforms are treated as pending
-    rather than assumed. The recorded evidence and the pending list ship in the package, at
+    Unity 2022.3.62f1 remains the serialization baseline. Current authoring and sample tests
+    also passed in Unity 6000.3.25f1 with Built-in on Linux; the
+    [Experience Studio walkthrough](experience-studio.md) includes native media from that
+    editor. Broader version, pipeline, platform, and physical-input coverage remains pending.
+    The recorded evidence and the pending list ship in the package, at
     `Assets/BranchWeaver/Documentation/Compatibility-and-Release.md`.
 
 Both sample scenes open from the **Tools > BranchWeaver** menu, so you never have to find them
@@ -25,6 +27,11 @@ in the Project window.
 | --- | --- | --- |
 | Quick Start | **Open Quick Start Sample** | `Samples/QuickStart/BranchWeaverQuickStart.unity` |
 | Wayfarer | **Open Wayfarer Sample** | `Samples/Wayfarer/BranchWeaverWayfarer.unity` |
+
+Quick Start and Wayfarer are the shortest sample route. If you want to author a presentation
+first, use [Experience Studio](experience-studio.md) instead: create an example preset, preview
+it, apply the preset, and create a demo in the current scene. The Studio route is optional and
+does not replace either shipped sample.
 
 <figure markdown>
   ![The Unity Project window open to Assets, BranchWeaver, Samples, QuickStart, Content, listing the Quick Start blueprint, rules, theme, content pool and four node types](../assets/images/starter-assets-folder.png){ .shot }

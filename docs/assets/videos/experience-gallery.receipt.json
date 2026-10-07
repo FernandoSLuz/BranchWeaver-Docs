@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "source": "native Unity runtime camera or UI Toolkit target panel during automated first-visit and save-restoration validation",
+  "capturedAt": "2026-10-07",
+  "artisticApproval": "not-evaluated",
+  "media": [
+    {
+      "file": "experience-expedition.png",
+      "sha256": "1836cb3931e6bc3d2f91c55b986463d659d88bcff50f30a06d471f4b4d1fce3a",
+      "bytes": 51377,
+      "unity": "6000.3.25f1",
+      "backend": "Canvas",
+      "nodes": 14,
+      "edges": 18
+    },
+    {
+      "file": "experience-world-trail.png",
+      "sha256": "bfc6089298b36f2b09c28088bfcd82d42a30c3714ce8147362c8c7659a1325e9",
+      "bytes": 62529,
+      "unity": "6000.3.25f1",
+      "backend": "World2D",
+      "nodes": 14,
+      "edges": 18
+    },
+    {
+      "file": "experience-tabletop.png",
+      "sha256": "b3c5b15b71d867939abba76abdaa8ad3629e76fe747323fef56a933418b8ce70",
+      "bytes": 61465,
+      "unity": "6000.3.25f1",
+      "backend": "World3D",
+      "nodes": 11,
+      "edges": 13
+    },
+    {
+      "file": "experience-neon.png",
+      "sha256": "2765e1547abb08a8dc2b4eab655fb24eef436fc09e69ade767c07d84c289813d",
+      "bytes": 70536,
+      "unity": "6000.3.25f1",
+      "backend": "UIToolkit",
+      "nodes": 12,
+      "edges": 15
+    }
+  ]
+}

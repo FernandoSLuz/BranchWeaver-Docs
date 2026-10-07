@@ -55,7 +55,7 @@ node's glow, and a route that leads nowhere reachable draws its glow at 40% inte
 stops a glowing style turning the whole map into one bloom.
 
 !!! warning "Two traps"
-    `Cap = Arrow` with `Arrow Length` at zero draws no arrowhead at all — the segment falls
+    `Cap = Arrow` with `Arrow Length` at zero draws no arrowhead at all - the segment falls
     back to flat ends. Set a length when you change the cap; 12 is the value the built-in
     defaults use for an arrow.
 
@@ -121,7 +121,7 @@ than one: `Grid Spacing` above zero **and** a palette `Grid Color` with alpha ab
 !!! warning "The backdrop needs a view to draw into"
     Backdrop tokens are drawn in the Style Browser and in the preset inspector's live
     preview. At runtime the package draws no backdrop of its own, so the map is transparent
-    over whatever is behind it — which is why the sample scenes supply their own scenic
+    over whatever is behind it - which is why the sample scenes supply their own scenic
     image. To draw the styled backdrop in a scene, pass a background presenter that
     implements both `IMapBackgroundPresenter` and `IMapStyledView` to `Configure`, and hand
     `MapSurfaceStyling.BuildBackdrop(style)` to a `MapSurfaceGraphic`.

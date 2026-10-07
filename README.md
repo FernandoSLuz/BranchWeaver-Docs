@@ -15,9 +15,10 @@ Read these in order. Each one ends where the next begins.
 | # | Tutorial | You will be able to |
 | --- | --- | --- |
 | 1 | **[Install and run the samples](docs/tutorials/install-and-samples.md)** | Open both samples and walk a generated map |
-| 2 | **[Generate a map in Map Studio](docs/tutorials/generate-a-map.md)** | Write rules, reproduce a map from its seed, audit a seed range |
-| 3 | **[Add a map to your scene](docs/tutorials/add-a-map-to-your-scene.md)** | Build a working map hierarchy in a scene you own |
-| 4 | **[Restyle your map](docs/tutorials/restyle-your-map.md)** | Make the map look like *your* game |
+| 2 | **[Experience Studio](docs/tutorials/experience-studio.md)** | Preview a preset, apply or undo changes, and create a demo scene |
+| 3 | **[Generate a map in Map Studio](docs/tutorials/generate-a-map.md)** | Write rules, reproduce a map from its seed, audit a seed range |
+| 4 | **[Add a map to your scene](docs/tutorials/add-a-map-to-your-scene.md)** | Build a working map hierarchy in a scene you own |
+| 5 | **[Restyle your map](docs/tutorials/restyle-your-map.md)** | Make the map look like *your* game |
 
 Then, as you need them:
 
@@ -60,18 +61,23 @@ separate on purpose, and the separation is enforced by tests rather than convent
   your project's assets.
 - Traversal with fog of war, save/load with schema migrations, and stable IDs treated
   as compatibility contracts.
-- Two presenters: uGUI (screen space) and World2D (in scene).
+- Four Experience Studio backends: Canvas (screen space), World2D, World3D, and UI Toolkit.
+- Four editable Experience Studio examples: Illustrated Expedition, Neon Network, Tabletop
+  Journey, and World Trail.
 - Four shipped visual styles, plus a Style Browser that turns any of them into an
   asset you own.
 - No third-party dependencies. No DRM, no telemetry, no online activation.
 
 ## Requirements
 
-- Unity **2022.3 LTS** or newer.
-- Built-in render pipeline, URP, or HDRP. No render-pipeline package required.
+- Unity **2022.3.62f1** is the verified editor baseline. BranchWeaver.Core remains compatible with
+  Unity 2022.3; the UI Toolkit Experience Studio backend is version guarded for Unity 6.3.
+- Built-in is the verified render pipeline baseline. URP and HDRP remain supported targets to
+  verify for the current Experience Studio presentation set.
 
-The visuals are drawn with a signed-distance-field shader and procedural geometry, so
-they stay crisp at any zoom and ship no textures.
+Core generated visuals use a signed-distance-field shader and procedural geometry, so they stay
+crisp at any zoom. Experience examples may also include authored sprites and prefabs that you can
+replace.
 
 ## Support
 

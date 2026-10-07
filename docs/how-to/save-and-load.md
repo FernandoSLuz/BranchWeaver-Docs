@@ -84,6 +84,18 @@ A read verifies more than syntax: manifest fields must match the embedded graph,
 re-fingerprinted against the stored fingerprint, the progression must be legal for that graph, and
 collection counts must be within the supported limits. A hand-edited save is refused, not loaded.
 
+## Experience Studio save policies
+
+`MapExperienceHost` exposes `Save` and `Load` for the existing forward session. If the preset
+uses revisitable progression, use `SaveExploration` and `LoadExploration` instead. Revisitable
+state is serialized by `MapExplorationSaveCodec` as a separate version-one envelope containing
+visit history, direction, visit identity, and graph fingerprint. Load requires the matching graph
+and policy and invalidates older visit tokens.
+
+Renderer choice, style, font, sprites, prefabs, and temporary Experience Studio offsets are not
+save data. A renderer swap or a visual Apply therefore does not rewrite progression. Content
+callbacks still use the exact visit token from the request that opened the encounter.
+
 !!! warning "Canonical bytes are not a security boundary"
     Strict JSON catches corruption and casual edits, but it is neither encryption nor
     authentication. If a save can be changed by someone you do not trust, wrap the payload in your

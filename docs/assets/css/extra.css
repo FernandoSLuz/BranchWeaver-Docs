@@ -104,6 +104,49 @@
   margin-top: 0.35rem;
 }
 
+/* Native Studio walkthrough video and keyboard-friendly timestamp controls. */
+.studio-video video {
+  display: block;
+  width: 100%;
+  max-width: 1260px;
+  margin: 0 auto;
+  border: 1px solid var(--md-default-fg-color--lighter);
+  border-radius: 0.35rem;
+}
+
+.studio-video-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin: 0.6rem 0 1rem;
+}
+
+.studio-video-controls button,
+#studio-video-transcript button {
+  cursor: pointer;
+}
+
+.studio-video-controls button,
+#studio-video-transcript button {
+  min-height: 2.75rem;
+  padding: 0.45rem 0.75rem;
+  color: var(--md-default-fg-color);
+  background: var(--md-default-bg-color);
+  border: 1px solid var(--md-default-fg-color--lighter);
+  border-radius: 0.3rem;
+}
+
+.studio-video-controls button:hover,
+#studio-video-transcript button:hover {
+  border-color: var(--md-accent-fg-color);
+}
+
+.studio-video-controls button:focus-visible,
+#studio-video-transcript button:focus-visible {
+  outline: 2px solid var(--md-accent-fg-color);
+  outline-offset: 2px;
+}
+
 /* Side-by-side comparison, collapsing on narrow screens. */
 .grid-2 {
   display: grid;

@@ -18,7 +18,7 @@ other: a Canvas map with only a **World Prefab** assigned still draws the built-
 | Set | Calls `Object.Instantiate(prefab)`, parents the instance under the presenter's node root, then asks it for a component implementing `IMapNodeView`. |
 
 When the supplied prefab carries no `IMapNodeView`, **nothing is rejected at runtime**: the factory
-calls `AddComponent<CanvasMapNodeView>()` — or `AddComponent<WorldMapNodeView>()` — and drives your
+calls `AddComponent<CanvasMapNodeView>()` - or `AddComponent<WorldMapNodeView>()` - and drives your
 prefab through the built-in view, the fallback both property doc comments describe. Views pool by
 `type id | renderer key | prefab instance id`, so changing any of the three releases the live view.
 
@@ -32,10 +32,10 @@ prefab through the built-in view, the fallback both property doc comments descri
 `CanvasMapNodeView` looks for an `Image` on its own GameObject; `MapSurfaceGraphic` derives from
 `Image`, so one counts as both.
 
-- **No `Image` at all** — it adds a `MapSurfaceGraphic` and draws the fully styled node: shape,
+- **No `Image` at all** - it adds a `MapSurfaceGraphic` and draws the fully styled node: shape,
   stroke, glow, shadow, ring, and the type's icon inset as a child. Art on child objects survives.
-- **A `MapSurfaceGraphic`** — the same path, using the one you supplied.
-- **A plain `Image`** — honoured rather than replaced, but its `sprite` is overwritten on every bind
+- **A `MapSurfaceGraphic`** - the same path, using the one you supplied.
+- **A plain `Image`** - honoured rather than replaced, but its `sprite` is overwritten on every bind
   with the node type's **Icon**, or a generated rounded sprite when there is none. Its `color` and its
   `raycastTarget` are driven after that, and nothing else.
 

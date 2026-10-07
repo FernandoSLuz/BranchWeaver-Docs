@@ -46,10 +46,11 @@ python -m mkdocs build --strict
 the Unity build on a single non-ASCII byte, because Windows PowerShell and offline viewers
 misdecode UTF-8. No em dashes, no smart quotes, no arrows. Write `-`, `'`, `"`, `->`.
 
-**Never claim support you do not have evidence for.** Unity 2022.3.62f1 is the only verified
-editor and Built-in the only verified pipeline. Everything else is pending, not assumed. A
-page that says "2022.3 or newer" or "URP and HDRP work" is a defect, and one shipped that way
-for weeks.
+**Never claim support you do not have evidence for.** Keep the historical Unity
+2022.3.62f1 baseline separate from current Experience Studio evidence captured in
+6000.3.25f1. A capture proves the pictured flow on that editor; it does not establish a
+version or platform matrix. Built-in is the verified pipeline. URP and HDRP remain pending.
+Do not open or install other editor versions for the current productization task.
 
 **Never tell a reader to write C# for something the editor does.** If a how-to says "call
 `MapTraversalController.Initialize`", check whether `BranchWeaverMapHost` now does it. This
@@ -130,6 +131,20 @@ If the subject is portrait-shaped, give the shot a `Crop`. Fitting a tall map in
 frame is arithmetically correct and produces an image that is two-thirds black.
 
 ### Additional editor windows
+
+For the current Linux Experience Studio flow, use the already-connected task lane in
+Unity 6000.3.25f1. The non-shipped `tools/ci/ProductizationStudioProbe.cs` creates an
+isolated copy of a shipped preset and drives public Studio actions. The companion
+`tools/ci/capture_studio_steps.py` records only that Editor client window through
+`ffmpeg` and `x11grab`, after checking its PID and title. The receipt binds each step,
+graph fingerprint, and media hash. Cleanup closes the fixture and removes only its
+owned temporary folder. Do not open another Editor to capture these additions.
+
+Review every PNG and the recorded transitions. Copy accepted media byte-for-byte and
+publish a sanitized receipt without local paths, raw logs, or machine identifiers.
+Label public-API-driven authoring accurately: it is not a physical input test or a
+human usability study. These additions do not replace the historical complete set
+or imply artistic approval.
 
 ```powershell
 tooling/Capture-EditorWindows.ps1 `

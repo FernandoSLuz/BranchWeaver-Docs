@@ -1,11 +1,13 @@
 # Authoring assets
 
-17 types in this area.
+26 types in this area.
 
 !!! abstract "On this page"
-    [CompiledMapNodeType](#compiledmapnodetype) &middot; [CompiledMapTheme](#compiledmaptheme) &middot; [MapAuthoringCompiler](#mapauthoringcompiler) &middot; [MapBlueprintAsset](#mapblueprintasset) &middot; [MapBlueprintCompilation](#mapblueprintcompilation) &middot; [MapConstraintAsset](#mapconstraintasset) &middot; [MapEdgeGeometryKind](#mapedgegeometrykind) &middot; [MapFlowDirection](#mapflowdirection) &middot; [MapLayoutOrientation](#maplayoutorientation) &middot; [MapNodeTypeAsset](#mapnodetypeasset) &middot; [MapNodeTypeCompilation](#mapnodetypecompilation) &middot; [MapPropertyAuthoring](#mappropertyauthoring) &middot; [MapRulesAsset](#maprulesasset) &middot; [MapRulesCompilation](#maprulescompilation) &middot; [MapThemeAsset](#mapthemeasset) &middot; [MapThemeCompilation](#mapthemecompilation) &middot; [MapThemeLimits](#mapthemelimits)
+    [CompiledMapNodeType](#compiledmapnodetype) &middot; [CompiledMapTheme](#compiledmaptheme) &middot; [MapAuthoringCompiler](#mapauthoringcompiler) &middot; [MapBlueprintAsset](#mapblueprintasset) &middot; [MapBlueprintCompilation](#mapblueprintcompilation) &middot; [MapConstraintAsset](#mapconstraintasset) &middot; [MapEdgeGeometryKind](#mapedgegeometrykind) &middot; [MapExperienceAssetMapping](#mapexperienceassetmapping) &middot; [MapExperienceBackend](#mapexperiencebackend) &middot; [MapExperienceInteractionOptions](#mapexperienceinteractionoptions) &middot; [MapExperienceNodePlacement](#mapexperiencenodeplacement) &middot; [MapExperiencePreset](#mapexperiencepreset) &middot; [MapExperienceProgressionPolicy](#mapexperienceprogressionpolicy) &middot; [MapExperienceRouteAppearance](#mapexperiencerouteappearance) &middot; [MapExperienceRuntimeOptions](#mapexperienceruntimeoptions) &middot; [MapExperienceVisualPreset](#mapexperiencevisualpreset) &middot; [MapFlowDirection](#mapflowdirection) &middot; [MapLayoutOrientation](#maplayoutorientation) &middot; [MapNodeTypeAsset](#mapnodetypeasset) &middot; [MapNodeTypeCompilation](#mapnodetypecompilation) &middot; [MapPropertyAuthoring](#mappropertyauthoring) &middot; [MapRulesAsset](#maprulesasset) &middot; [MapRulesCompilation](#maprulescompilation) &middot; [MapThemeAsset](#mapthemeasset) &middot; [MapThemeCompilation](#mapthemecompilation) &middot; [MapThemeLimits](#mapthemelimits)
 
 ## CompiledMapNodeType
+
+:material-star: **Start here**
 
 ```csharp
 public sealed class CompiledMapNodeType
@@ -27,31 +29,31 @@ colors have finite channels.
 
 `public CompiledMapNodeType(StableId id, string displayLabel, MapNodePayload defaultPayload)`
 
-:   Creates an authored compiled Map Node Type row from the supplied fields; validation is deferred so the compiler can report every related issue together.
-    - `id` &mdash; Input id consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
-    - `displayLabel` &mdash; Input display Label consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
-    - `defaultPayload` &mdash; Input default Payload consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+:   Creates a compiled node type with built-in fallback colors and no custom presentation assets.
+    - `id` &mdash; Parsed identity used by graphs, rules, and persisted progression.
+    - `displayLabel` &mdash; Fallback player-facing label shown when localization supplies no value.
+    - `defaultPayload` &mdash; Payload supplied to consumers when a node has no per-node override.
 
-`public CompiledMapNodeType()`
+`public CompiledMapNodeType( StableId id, string displayLabel, string localizationKey, string tooltip, Sprite icon, GameObject canvasPrefab, GameObject worldPrefab, Color hiddenColor, Color lockedColor, Color availableColor, Color currentColor, Color visitedColor, Color completedColor, string rendererKey, string enterAudioCueId, string completeAudioCueId, MapNodePayload defaultPayload)`
 
-:   Creates an authored compiled Map Node Type row from the supplied fields; validation is deferred so the compiler can report every related issue together.
+:   The full constructor freezes every validated presentation reference, state color, cue ID, and default payload.
     - `localizationKey` &mdash; Adapter lookup key for the label; the tooltip uses the same key with `.tooltip` appended.
     - `tooltip` &mdash; Fallback tooltip used when the localized lookup yields nothing.
     - `rendererKey` &mdash; Optional pooling and styling discriminator; see `MapNodeTypeAsset.RendererKey`.
     - `defaultPayload` &mdash; Payload describing what the type means to your game; it is not applied to generated nodes.
-    - `id` &mdash; Input id consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
-    - `displayLabel` &mdash; Input display Label consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
-    - `icon` &mdash; Input icon consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
-    - `canvasPrefab` &mdash; Input canvas Prefab consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
-    - `worldPrefab` &mdash; Input world Prefab consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
-    - `hiddenColor` &mdash; Input hidden Color consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
-    - `lockedColor` &mdash; Input locked Color consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
-    - `availableColor` &mdash; Input available Color consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
-    - `currentColor` &mdash; Input current Color consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
-    - `visitedColor` &mdash; Input visited Color consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
-    - `completedColor` &mdash; Input completed Color consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
-    - `enterAudioCueId` &mdash; Stable identifier for enter Audio Cue; invalid or empty IDs are rejected before mutation.
-    - `completeAudioCueId` &mdash; Stable identifier for complete Audio Cue; invalid or empty IDs are rejected before mutation.
+    - `id` &mdash; Parsed identity used by graphs, rules, and persisted progression.
+    - `displayLabel` &mdash; Fallback player-facing label shown when localization supplies no value.
+    - `icon` &mdash; Optional sprite drawn inside built-in node views.
+    - `canvasPrefab` &mdash; Optional prefab instantiated by the built-in canvas node factory.
+    - `worldPrefab` &mdash; Optional prefab instantiated by the built-in world-space node factory.
+    - `hiddenColor` &mdash; Tint used before the node has been discovered.
+    - `lockedColor` &mdash; Tint used after discovery when the node cannot yet be entered.
+    - `availableColor` &mdash; Tint used for a node that is a valid next traversal target.
+    - `currentColor` &mdash; Tint used for the player's current, incomplete node.
+    - `visitedColor` &mdash; Tint used for a previously entered but incomplete node.
+    - `completedColor` &mdash; Tint used after completion data has been recorded for the node.
+    - `enterAudioCueId` &mdash; Optional audio-cue key emitted when traversal enters this node type.
+    - `completeAudioCueId` &mdash; Optional audio-cue key emitted when this node type is completed.
 
 **Properties**
 
@@ -127,6 +129,8 @@ colors have finite channels.
 
 ## CompiledMapTheme
 
+:material-star: **Start here**
+
 ```csharp
 public sealed class CompiledMapTheme
 ```
@@ -144,21 +148,21 @@ a diagnostic rather than clamped, so a presenter can use these numbers as they s
 
 **Constructors**
 
-`public CompiledMapTheme()`
+`public CompiledMapTheme( StableId id, MapLayoutOrientation orientation, int layerSpacing, int nodeSpacing, Color backgroundColor, Color edgeColor, MapEdgeGeometryKind edgeGeometry, int bezierSegments, int bezierControlOffset, float minimumZoom, float maximumZoom, float stateTransitionSeconds)`
 
-:   Creates an authored compiled Map Theme row from the supplied fields; validation is deferred so the compiler can report every related issue together.
+:   Freezes validated layout, geometry, color, zoom, and transition settings for runtime presentation.
     - `layerSpacing` &mdash; Distance between successive layers, in presentation units.
     - `nodeSpacing` &mdash; Distance between neighbouring nodes inside one layer, in presentation units.
     - `bezierSegments` &mdash; Line segments per curved edge; ignored unless `edgeGeometry` is Bezier.
     - `bezierControlOffset` &mdash; Curve control-point offset in normalized fixed point, 10,000 units per 1.0.
     - `stateTransitionSeconds` &mdash; How long a node or edge state change plays for; zero asks for an instant change, which the built-in views honour.
-    - `id` &mdash; Input id consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
-    - `orientation` &mdash; Input orientation consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
-    - `backgroundColor` &mdash; Input background Color consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
-    - `edgeColor` &mdash; Input edge Color consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
-    - `edgeGeometry` &mdash; Input edge Geometry consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
-    - `minimumZoom` &mdash; Input minimum Zoom consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
-    - `maximumZoom` &mdash; Input maximum Zoom consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `id` &mdash; Parsed identity of the source theme asset.
+    - `orientation` &mdash; Axis along which map layers advance during layout.
+    - `backgroundColor` &mdash; Fallback backdrop color carried for presentation adapters.
+    - `edgeColor` &mdash; Fallback route color used when no style preset supplies one.
+    - `edgeGeometry` &mdash; Straight, stepped polyline, or sampled cubic route shape.
+    - `minimumZoom` &mdash; Smallest permitted viewport zoom after compilation.
+    - `maximumZoom` &mdash; Largest permitted viewport zoom after compilation.
 
 **Properties**
 
@@ -235,26 +239,26 @@ holds no state between calls and never writes to the assets it reads.
 
 `public MapBlueprintCompilation CompileBlueprint(MapBlueprintAsset asset)`
 
-:   Validates and copies blueprint into immutable engine-neutral data; failure exposes diagnostics and no partial compiled value.
-    - `asset` &mdash; Input asset consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+:   Compiles persisted blueprint rows, generation pins, search budgets, and referenced rules into a regeneration request.
+    - `asset` &mdash; Blueprint asset to compile; null produces an empty failed compilation result.
     - **Returns** &mdash; The compiled blueprint and its diagnostics; check `MapBlueprintCompilation.Succeeded` before reading the rules.
 
 `public MapNodeTypeCompilation CompileNodeType(MapNodeTypeAsset asset)`
 
-:   Validates and copies node Type into immutable engine-neutral data; failure exposes diagnostics and no partial compiled value.
-    - `asset` &mdash; Input asset consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+:   Parses a node type's identity, payload, presentation references, colors, and optional cue IDs into a runtime value.
+    - `asset` &mdash; Node-type asset to validate; null produces an asset-missing diagnostic.
     - **Returns** &mdash; The compiled type and its diagnostics; check `MapNodeTypeCompilation.Succeeded` before reading the value.
 
 `public MapRulesCompilation CompileRules(MapRulesAsset asset)`
 
-:   Validates and copies rules into immutable engine-neutral data; failure exposes diagnostics and no partial compiled value.
-    - `asset` &mdash; Input asset consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+:   One traversal of the authored rules and referenced node types yields a validated deterministic generation snapshot.
+    - `asset` &mdash; Rules asset to traverse; null produces an asset-missing diagnostic and no snapshot.
     - **Returns** &mdash; The snapshot, the node types it referenced, and the diagnostics. The snapshot is discarded when any diagnostic is an error.
 
 `public MapThemeCompilation CompileTheme(MapThemeAsset asset)`
 
-:   Validates and copies theme into immutable engine-neutral data; failure exposes diagnostics and no partial compiled value.
-    - `asset` &mdash; Input asset consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+:   Checks a theme's layout, geometry, zoom, transition, and color bounds before freezing them for presentation.
+    - `asset` &mdash; Theme asset to validate; null produces an asset-missing diagnostic.
     - **Returns** &mdash; The compiled theme and its diagnostics; check `MapThemeCompilation.Succeeded` before reading the value.
 
 ---
@@ -350,11 +354,13 @@ the asset through Unity serialization instead, which is what keeps
 :   Replaces the configure For New Asset settings used by future operations; existing immutable graphs and saves are not rewritten.
     - `rulesAsset` &mdash; Rules to compile against; required, and may not be null at compile time.
     - `generationSeed` &mdash; Seed to generate with; must be zero for `MapGenerationMode.Manual`.
-    - `generationMode` &mdash; Input generation Mode consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `generationMode` &mdash; Procedural, manual, or hybrid policy used when this new blueprint is built.
 
 ---
 
 ## MapBlueprintCompilation
+
+:material-star: **Start here**
 
 ```csharp
 public sealed class MapBlueprintCompilation
@@ -369,18 +375,18 @@ authored, when it authored one. A successful compilation does not imply a graph,
 
 **Constructors**
 
-`public MapBlueprintCompilation()`
+`public MapBlueprintCompilation( MapRuleSnapshot rules, MapGraph graph, MapGenerationMode mode, uint seed, MapGenerationOverrides overrides, MapGenerationSearchOptions searchOptions, IEnumerable<StableId> lockedNodeIds, long authoringRevision, ValidationReport validation)`
 
 :   Pairs the compiled blueprint parts with the report that describes them. A null `overrides` or `searchOptions` is replaced by its empty or default value, and the locked IDs are copied and sorted, so the caller's collection is neither retained nor reordered.
-    - `rules` &mdash; Input rules consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
-    - `graph` &mdash; Input graph consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `rules` &mdash; Compiled rules used to validate or regenerate the blueprint, or null after rule failure.
+    - `graph` &mdash; Persisted authored graph, or null when the blueprint contains no complete graph.
     - `mode` &mdash; How much of the map the blueprint left to the generator.
     - `seed` &mdash; Explicit unsigned deterministic seed; equal inputs and seed produce equal canonical output.
-    - `overrides` &mdash; Input overrides consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
-    - `searchOptions` &mdash; Input search Options consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `overrides` &mdash; Pinned node fields and required or forbidden edges that generation must honor.
+    - `searchOptions` &mdash; Per-phase generation work budgets; null selects the documented defaults.
     - `lockedNodeIds` &mdash; Nodes the blueprint marked as locked against editing. May be null.
-    - `authoringRevision` &mdash; Input authoring Revision consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
-    - `validation` &mdash; Input validation consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `authoringRevision` &mdash; Editor revision used to detect stale blueprint writes; it does not affect generation identity.
+    - `validation` &mdash; Combined blueprint, graph, rule, and referenced node-type diagnostics.
 
 **Properties**
 
@@ -451,12 +457,14 @@ backtracking search and has to meet the purity and determinism requirements set 
 
 `public abstract IMapConstraint CompileConstraint()`
 
-:   Validates and copies constraint into immutable engine-neutral data; failure exposes diagnostics and no partial compiled value.
+:   Subclasses translate their Unity-authored fields into the deterministic rule evaluated during generation.
     - **Returns** &mdash; The compiled rule. Returning null fails the whole ruleset with a diagnostic rather than dropping this one constraint, and an exception thrown here is caught and reported the same way, so neither can leave a map generated under a rule that never ran.
 
 ---
 
 ## MapEdgeGeometryKind
+
+:material-star: **Start here**
 
 ```csharp
 public enum MapEdgeGeometryKind
@@ -482,7 +490,407 @@ them whichever kind you pick.
 
 ---
 
+## MapExperienceAssetMapping
+
+:material-star: **Start here**
+
+```csharp
+public sealed class MapExperienceAssetMapping
+```
+
+`BranchWeaver.Authoring` &middot; <small>BranchWeaver/Runtime/Authoring/MapExperiencePreset.cs</small>
+
+Maps authored node types to optional presentation assets without coupling Core to Unity objects.
+
+**Properties**
+
+`public string IconKey`
+
+:   Optional renderer-specific icon key for the mapped type.
+
+`public string NodeTypeId`
+
+:   Stable node-type identifier matched by this mapping.
+
+`public GameObject Prefab`
+
+:   Optional prefab used by world presentations.
+
+`public Sprite Sprite`
+
+:   Optional sprite used by 2D or Canvas presentations.
+
+`public bool TintPrefabWithState`
+
+:   Whether the World3D renderer may tint this authored prefab with node state.
+
+---
+
+## MapExperienceBackend
+
+:material-star: **Start here**
+
+```csharp
+public enum MapExperienceBackend
+```
+
+`BranchWeaver.Authoring` &middot; <small>BranchWeaver/Runtime/Authoring/MapExperiencePreset.cs</small>
+
+Presentation backend selected by a map experience preset.
+
+| Value | Meaning |
+| --- | --- |
+| `Canvas` | Canvas/uGUI presentation. |
+| `World2D` | World-space 2D presentation. |
+| `World3D` | World-space 3D presentation. |
+| `UIToolkit` | UI Toolkit presentation when supported by the Unity version. |
+
+---
+
+## MapExperienceInteractionOptions
+
+:material-star: **Start here**
+
+```csharp
+public struct MapExperienceInteractionOptions
+```
+
+`BranchWeaver.Authoring` &middot; <small>BranchWeaver/Runtime/Authoring/MapExperiencePreset.cs</small>
+
+Inspector-editable interaction settings shared by all presentation backends.
+
+**Properties**
+
+`public bool ConfirmOnSelection`
+
+:   Whether selecting a node immediately confirms it.
+
+`public static MapExperienceInteractionOptions Default`
+
+:   Returns the default interaction policy for a new preset.
+
+`public bool PanZoom`
+
+:   Whether viewport pan and zoom gestures are enabled.
+
+`public bool ReducedMotion`
+
+:   Whether renderers should reduce transition motion.
+
+---
+
+## MapExperienceNodePlacement
+
+:material-star: **Start here**
+
+```csharp
+public sealed class MapExperienceNodePlacement
+```
+
+`BranchWeaver.Authoring` &middot; <small>BranchWeaver/Runtime/Authoring/MapExperiencePreset.cs</small>
+
+Optional presentation offset that never changes the graph or its stable IDs.
+
+**Properties**
+
+`public float Elevation`
+
+:   Optional world-space elevation used by 3D presentations.
+
+`public string NodeId`
+
+:   Stable node identifier receiving this presentation offset.
+
+`public Vector2 Offset`
+
+:   Normalized visual offset applied without changing graph coordinates.
+
+---
+
+## MapExperiencePreset
+
+:material-star: **Start here**
+
+```csharp
+public sealed class MapExperiencePreset : ScriptableObject
+```
+
+`BranchWeaver.Authoring` &middot; <small>BranchWeaver/Runtime/Authoring/MapExperiencePreset.cs</small>
+
+Authoring configuration for a runtime map experience. It selects a renderer,
+style and progression policy while leaving the compiled graph and save identity untouched.
+
+**Properties**
+
+`public Color AccentColor`
+
+:   Accent color supplied to renderers and sample controls.
+
+`public bool AllowRepeatCompletion`
+
+:   Whether completed content may run again in revisitable sessions.
+
+`public IReadOnlyList<MapExperienceAssetMapping> AssetMappings`
+
+:   Detached copies of node-type asset mappings.
+
+`public MapExperienceBackend Backend`
+
+:   Presentation backend used by this preset.
+
+`public MapBlueprintAsset Blueprint`
+
+:   Blueprint that supplies the map graph or generation request.
+
+`public VisualTreeAsset DocumentTemplate`
+
+:   Optional UI Toolkit document template.
+
+`public MapExperienceInteractionOptions Interaction`
+
+:   Input and viewport behavior shared by presentations.
+
+`public Font LabelFont`
+
+:   Optional font supplied to labels.
+
+`public IReadOnlyList<MapExperienceNodePlacement> NodePlacements`
+
+:   Detached copies of presentation-only node placements.
+
+`public VisualTreeAsset NodeTemplate`
+
+:   Optional UI Toolkit node template.
+
+`public MapExperienceProgressionPolicy ProgressionPolicy`
+
+:   Progression policy used to create a new session.
+
+`public MapExperienceRouteAppearance RouteAppearance`
+
+:   Optional detached route geometry and curvature override.
+
+`public MapStylePreset Style`
+
+:   Optional authored style shared by compatible renderers.
+
+`public StyleSheet StyleSheet`
+
+:   Optional UI Toolkit stylesheet.
+
+`public MapThemeAsset Theme`
+
+:   Theme supplying node rules and map content metadata.
+
+`public MapExperienceVisualPreset VisualPreset`
+
+:   Ready-made visual look selected for the presentation.
+
+**Methods**
+
+`public MapExperienceRuntimeOptions CreateRuntimeOptions()`
+
+:   Creates a detached value object suitable for temporary Play Mode overrides.
+    - **Returns** &mdash; The immutable runtime options compiled from this authoring preset.
+
+---
+
+## MapExperienceProgressionPolicy
+
+:material-star: **Start here**
+
+```csharp
+public enum MapExperienceProgressionPolicy
+```
+
+`BranchWeaver.Authoring` &middot; <small>BranchWeaver/Runtime/Authoring/MapExperiencePreset.cs</small>
+
+Progression policy selected by an experience. Existing forward maps remain the default.
+
+| Value | Meaning |
+| --- | --- |
+| `Forward` | Use the existing one-way map session behavior. |
+| `Revisitable` | Allow policy-controlled movement back through discovered links. |
+
+---
+
+## MapExperienceRouteAppearance
+
+:material-star: **Start here**
+
+```csharp
+public struct MapExperienceRouteAppearance
+```
+
+`BranchWeaver.Authoring` &middot; <small>BranchWeaver/Runtime/Authoring/MapExperiencePreset.cs</small>
+
+Optional route appearance override carried by an experience preset.
+
+**Constructors**
+
+`public MapExperienceRouteAppearance(bool overrideTheme, MapEdgeGeometryKind geometry, float curveStrength)`
+
+:   Creates a route appearance override; invalid geometry and strength are sanitized by its getters.
+    - `overrideTheme` &mdash; Whether to use this route appearance instead of the theme geometry.
+    - `geometry` &mdash; Requested route geometry.
+    - `curveStrength` &mdash; Requested normalized Bezier curvature strength.
+
+**Properties**
+
+`public float CurveStrength`
+
+:   Normalized curvature strength, sanitized to the inclusive unit interval.
+
+`public static MapExperienceRouteAppearance Default`
+
+:   Default disabled route override using Bezier geometry and half strength.
+
+`public MapEdgeGeometryKind Geometry`
+
+:   Route geometry to use when `OverrideTheme` is enabled.
+
+`public bool OverrideTheme`
+
+:   Whether this preset supplies route geometry and curvature.
+
+---
+
+## MapExperienceRuntimeOptions
+
+:material-star: **Start here**
+
+```csharp
+public sealed class MapExperienceRuntimeOptions
+```
+
+`BranchWeaver.Authoring` &middot; <small>BranchWeaver/Runtime/Authoring/MapExperiencePreset.cs</small>
+
+Detached experience settings used by a host while a preset remains unchanged.
+
+**Constructors**
+
+`public MapExperienceRuntimeOptions(MapExperienceBackend backend, MapExperienceVisualPreset visualPreset, MapExperienceInteractionOptions interaction, MapExperienceProgressionPolicy policy, bool allowRepeatCompletion, Color accentColor, Font labelFont, IReadOnlyList<MapExperienceAssetMapping> assetMappings, IReadOnlyList<MapExperienceNodePlacement> nodePlacements = null, MapStylePreset style = null, VisualTreeAsset documentTemplate = null, VisualTreeAsset nodeTemplate = null, StyleSheet styleSheet = null)`
+
+:   Creates immutable runtime options from backend, visual, interaction, progression, asset, layout, and UI template settings.
+    - `backend` &mdash; Presentation backend to select.
+    - `visualPreset` &mdash; Ready-made visual look.
+    - `interaction` &mdash; Shared input and viewport behavior.
+    - `policy` &mdash; Progression policy for the session.
+    - `allowRepeatCompletion` &mdash; Whether revisitable content may repeat.
+    - `accentColor` &mdash; Accent color for presentation elements.
+    - `labelFont` &mdash; Optional label font.
+    - `assetMappings` &mdash; Node-type asset mappings to copy.
+    - `nodePlacements` &mdash; Presentation-only placements to copy.
+    - `style` &mdash; Optional authored style.
+    - `documentTemplate` &mdash; Optional UI Toolkit document template.
+    - `nodeTemplate` &mdash; Optional UI Toolkit node template.
+    - `styleSheet` &mdash; Optional UI Toolkit stylesheet.
+
+`public MapExperienceRuntimeOptions(MapExperienceBackend backend, MapExperienceVisualPreset visualPreset, MapExperienceInteractionOptions interaction, MapExperienceProgressionPolicy policy, bool allowRepeatCompletion, Color accentColor, Font labelFont, IReadOnlyList<MapExperienceAssetMapping> assetMappings, IReadOnlyList<MapExperienceNodePlacement> nodePlacements, MapStylePreset style, VisualTreeAsset documentTemplate, VisualTreeAsset nodeTemplate, StyleSheet styleSheet, MapExperienceRouteAppearance routeAppearance)`
+
+:   Copies authoring values into immutable runtime options, including route appearance settings and caller-owned asset references.
+    - `backend` &mdash; Presentation backend to select.
+    - `visualPreset` &mdash; Ready-made visual look.
+    - `interaction` &mdash; Shared input and viewport behavior.
+    - `policy` &mdash; Progression policy for the session.
+    - `allowRepeatCompletion` &mdash; Whether revisitable content may repeat.
+    - `accentColor` &mdash; Accent color for presentation elements.
+    - `labelFont` &mdash; Optional label font.
+    - `assetMappings` &mdash; Node-type asset mappings to copy.
+    - `nodePlacements` &mdash; Presentation-only placements to copy.
+    - `style` &mdash; Optional authored style.
+    - `documentTemplate` &mdash; Optional UI Toolkit document template.
+    - `nodeTemplate` &mdash; Optional UI Toolkit node template.
+    - `styleSheet` &mdash; Optional UI Toolkit stylesheet.
+    - `routeAppearance` &mdash; Route geometry and curvature override.
+
+**Properties**
+
+`public Color AccentColor`
+
+:   Accent color for renderer-owned UI.
+
+`public bool AllowRepeatCompletion`
+
+:   Whether revisitable content may repeat.
+
+`public IReadOnlyList<MapExperienceAssetMapping> AssetMappings`
+
+:   Immutable copies of mapped assets.
+
+`public MapExperienceBackend Backend`
+
+:   Selected presentation backend.
+
+`public CompiledMapStyle CompiledStyle`
+
+:   Immutable compiled style for renderer consumption.
+
+`public VisualTreeAsset DocumentTemplate`
+
+:   Optional UI Toolkit document template.
+
+`public MapExperienceInteractionOptions Interaction`
+
+:   Detached interaction settings.
+
+`public Font LabelFont`
+
+:   Optional label font.
+
+`public IReadOnlyList<MapExperienceNodePlacement> NodePlacements`
+
+:   Immutable copies of presentation placements.
+
+`public VisualTreeAsset NodeTemplate`
+
+:   Optional UI Toolkit node template.
+
+`public MapExperienceProgressionPolicy ProgressionPolicy`
+
+:   Active session progression policy.
+
+`public MapExperienceRouteAppearance RouteAppearance`
+
+:   Route geometry and curvature override.
+
+`public MapStylePreset Style`
+
+:   Optional authored style carried with the detached runtime options.
+
+`public StyleSheet StyleSheet`
+
+:   Optional UI Toolkit stylesheet.
+
+`public MapExperienceVisualPreset VisualPreset`
+
+:   Selected ready-made visual look.
+
+---
+
+## MapExperienceVisualPreset
+
+:material-star: **Start here**
+
+```csharp
+public enum MapExperienceVisualPreset
+```
+
+`BranchWeaver.Authoring` &middot; <small>BranchWeaver/Runtime/Authoring/MapExperiencePreset.cs</small>
+
+Small set of ready-to-style starting looks for a new experience.
+
+| Value | Meaning |
+| --- | --- |
+| `Slate` | Neutral slate starting appearance. |
+| `Parchment` | Illustrated parchment starting appearance. |
+| `Neon` | Bright science-fiction starting appearance. |
+
+---
+
 ## MapFlowDirection
+
+:material-star: **Start here**
 
 ```csharp
 public enum MapFlowDirection
@@ -508,6 +916,8 @@ direction change is still the same run, drawn the other way round.
 ---
 
 ## MapLayoutOrientation
+
+:material-star: **Start here**
 
 ```csharp
 public enum MapLayoutOrientation
@@ -628,7 +1038,7 @@ integration, and none of it takes part in generation or in a map's identity.
 
 **Methods**
 
-`public void Configure()`
+`public void Configure( string id, string label, string payloadId, IEnumerable<MapPropertyAuthoring> properties)`
 
 :   Replaces the configure settings used by future operations; existing immutable graphs and saves are not rewritten.
     - `id` &mdash; Stable ID text; a value that does not parse fails compilation rather than this call.
@@ -639,6 +1049,8 @@ integration, and none of it takes part in generation or in a map's identity.
 ---
 
 ## MapNodeTypeCompilation
+
+:material-star: **Start here**
 
 ```csharp
 public sealed class MapNodeTypeCompilation
@@ -655,8 +1067,8 @@ than thrown, so check `Succeeded` before reading `Value`.
 `public MapNodeTypeCompilation(CompiledMapNodeType value, ValidationReport validation)`
 
 :   Pairs a compiled node type with the report that describes it.
-    - `value` &mdash; Input value consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
-    - `validation` &mdash; Input validation consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `value` &mdash; Compiled node type, or null when authoring could not produce one.
+    - `validation` &mdash; Complete diagnostics collected while compiling the node-type asset.
 
 **Properties**
 
@@ -675,6 +1087,8 @@ than thrown, so check `Succeeded` before reading `Value`.
 ---
 
 ## MapPropertyAuthoring
+
+:material-star: **Start here**
 
 ```csharp
 public sealed class MapPropertyAuthoring
@@ -699,16 +1113,16 @@ names, so a row authored there cannot carry the leftover data that makes it non-
 
 `public MapPropertyAuthoring()`
 
-:   Creates an editable Unity-serialization row; required IDs and references are checked during authoring compilation.
+:   Creates an empty string-valued property row for inspector authoring.
 
-`public MapPropertyAuthoring()`
+`public MapPropertyAuthoring( string key, MapPropertyKind kind, long numericValue, string stringValue, string stableIdValue)`
 
-:   Creates an authored map Property Authoring row from the supplied fields; validation is deferred so the compiler can report every related issue together.
-    - `key` &mdash; Input key consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+:   One tagged-property row retains all serialized value slots; compilation enforces that only the selected kind is populated.
+    - `key` &mdash; Lowercase stable key under which the payload property is stored.
     - `kind` &mdash; Which of the three value parameters is the meaningful one.
-    - `numericValue` &mdash; Input numeric Value consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
-    - `stringValue` &mdash; Input string Value consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
-    - `stableIdValue` &mdash; Input stable Id Value consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `numericValue` &mdash; Raw boolean, integer, or fixed-point storage selected by `kind`.
+    - `stringValue` &mdash; Text storage used only when `kind` is `MapPropertyKind.String`.
+    - `stableIdValue` &mdash; Stable-ID text used only when `kind` is `MapPropertyKind.StableId`.
 
 **Properties**
 
@@ -819,17 +1233,17 @@ asset replaces the maps its seeds produce rather than refining them.
 
 **Methods**
 
-`public void Configure()`
+`public void Configure( MapNodeTypeAsset defaultType, IEnumerable<LayerRangeAuthoring> layerRows, IEnumerable<NodeTypeWeightAuthoring> weights)`
 
 :   Overwrites the core of this ruleset in place -- default node type, layer rows, and node type weights -- and stamps the schema and generator versions this build authors. It is the code path behind generated starter assets, samples, and tests: the lists are replaced wholesale, zones, quotas, forced nodes, adjacencies, connection limits, and custom constraints are left exactly as they were, nothing is validated here, and the asset is neither marked dirty nor saved, so an editor caller still has to do that.
-    - `defaultType` &mdash; Input default Type consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `defaultType` &mdash; Required fallback node type included in every compiled ruleset.
     - `layerRows` &mdash; One row per layer, in layer order; null clears the layers.
     - `weights` &mdash; Positive relative selection weight; zero or negative values are rejected by validation.
 
-`public void ConfigureAdvanced()`
+`public void ConfigureAdvanced( MapNodeTypeAsset defaultType, IEnumerable<LayerRangeAuthoring> layerRows, IEnumerable<NodeTypeWeightAuthoring> weights, IEnumerable<ZoneAuthoring> zoneRows, IEnumerable<QuotaAuthoring> quotaRows, IEnumerable<ForcedNodeAuthoring> forcedRows, IEnumerable<ForbiddenAdjacencyAuthoring> adjacencyRows, string connectionId, int maxOutgoing, int maxIncoming, int optionalChance, EdgeCrossingPolicy edgeCrossingPolicy, IEnumerable<MapConstraintAsset> constraints)`
 
 :   Overwrites every rule on this asset: everything `Configure` covers plus zones, quotas, forced nodes, forbidden adjacencies, the connection limits, and the custom constraints. Any sequence passed as null becomes an empty list, so unlike `Configure` -- which leaves the zone, quota, and connection settings untouched -- this resets every category and leaves nothing behind from an earlier configuration. It validates nothing -- contradictory rules surface when the asset is compiled -- and does not mark the asset dirty or save it.
-    - `defaultType` &mdash; Input default Type consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `defaultType` &mdash; Required fallback node type included in every compiled ruleset.
     - `layerRows` &mdash; One row per layer, in layer order.
     - `weights` &mdash; Positive relative selection weight; zero or negative values are rejected by validation.
     - `zoneRows` &mdash; Layer ranges with their permitted types, forbidden types, and local weight overrides.
@@ -847,6 +1261,8 @@ asset replaces the maps its seeds produce rather than refining them.
 
 ## MapRulesCompilation
 
+:material-star: **Start here**
+
 ```csharp
 public sealed class MapRulesCompilation
 ```
@@ -863,9 +1279,9 @@ whatever compiled cleanly, so a failed compilation is still worth reporting to a
 `public MapRulesCompilation(MapRuleSnapshot value, IEnumerable<CompiledMapNodeType> nodeTypes, ValidationReport validation)`
 
 :   Pairs a rule snapshot with the node types it referenced and the report that describes both. The node types are copied and sorted by ID, so the caller's collection is neither retained nor reordered, and a null collection is stored as an empty one.
-    - `value` &mdash; Input value consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `value` &mdash; Validated rule snapshot, or null when any rule failed compilation.
     - `nodeTypes` &mdash; Every node type the rules referenced. Null is treated as an empty set.
-    - `validation` &mdash; Input validation consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `validation` &mdash; Combined rule and referenced node-type diagnostics.
 
 **Properties**
 
@@ -968,23 +1384,25 @@ cosmetic styling - palette, node shapes, per-state emphasis - lives in
 
 **Methods**
 
-`public void ConfigureRuntime()`
+`public void ConfigureRuntime( string id, MapLayoutOrientation layoutOrientation, int authoredLayerSpacing, int authoredNodeSpacing, MapEdgeGeometryKind geometry, int segments, int controlOffset, float minZoom, float maxZoom, float transitionSeconds)`
 
 :   Writes this theme's identity, layout, edge, zoom, and transition fields in one call, for building a theme from code instead of the Inspector - a starter or sample asset, a test fixture, or an instance made with ScriptableObject.CreateInstance. `BackgroundColor` and `EdgeColor` are not among them and keep whatever they already held, which on a freshly created instance is their authored default. Nothing is validated or clamped here: the values are stored exactly as given, and a value out of range is reported later, by `MapAuthoringCompiler.CompileTheme`. The call assigns the serialized fields directly, so it registers no undo step and does not mark the asset dirty; an editor caller that wants the change on disk must save the asset itself.
-    - `id` &mdash; Input id consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `id` &mdash; Stable theme identity copied into the compiled presentation contract.
     - `authoredLayerSpacing` &mdash; Sets `LayerSpacing`.
     - `authoredNodeSpacing` &mdash; Sets `NodeSpacing`.
     - `segments` &mdash; Sets `BezierSegments`.
     - `controlOffset` &mdash; Sets `BezierControlOffset`, in normalized map units.
     - `transitionSeconds` &mdash; Sets `StateTransitionSeconds`.
-    - `layoutOrientation` &mdash; Input layout Orientation consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
-    - `geometry` &mdash; Input geometry consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
-    - `minZoom` &mdash; Input min Zoom consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
-    - `maxZoom` &mdash; Input max Zoom consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `layoutOrientation` &mdash; Axis along which successive map layers advance.
+    - `geometry` &mdash; Shape used when built-in views sample routes between nodes.
+    - `minZoom` &mdash; Smallest allowed viewport zoom, representing the furthest zoom-out.
+    - `maxZoom` &mdash; Largest allowed viewport zoom, representing the furthest zoom-in.
 
 ---
 
 ## MapThemeCompilation
+
+:material-star: **Start here**
 
 ```csharp
 public sealed class MapThemeCompilation
@@ -1001,8 +1419,8 @@ thrown, so check `Succeeded` before reading `Value`.
 `public MapThemeCompilation(CompiledMapTheme value, ValidationReport validation)`
 
 :   Pairs a compiled theme with the report that describes it. Pass null for `value` to record a failure.
-    - `value` &mdash; Input value consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
-    - `validation` &mdash; Input validation consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `value` &mdash; Compiled theme, or null when spacing, geometry, zoom, color, identity, or transition validation failed.
+    - `validation` &mdash; Complete diagnostics collected while compiling the theme asset.
 
 **Properties**
 
@@ -1022,6 +1440,8 @@ thrown, so check `Succeeded` before reading `Value`.
 
 ## MapThemeLimits
 
+:material-star: **Start here**
+
 ```csharp
 public static class MapThemeLimits
 ```
@@ -1031,6 +1451,24 @@ public static class MapThemeLimits
 The ceilings a map theme is compiled against. A `MapThemeAsset` that exceeds one
 of these is rejected with a diagnostic rather than clamped, so an authoring UI of your own
 should enforce them on its own fields instead of discovering them at compile time.
+
+**Fields**
+
+`public const long MaximumContentExtent`
+
+:   Ceiling on the laid-out extent of a map, in the same units as the spacing above and measured separately along and across the layers. Unlike the other limits this one is not a theme field: it is checked when presentation metrics are derived from a graph and a theme together, and a graph too large for its spacing throws instead of reporting a diagnostic.
+
+`public const int MaximumSpacing`
+
+:   Ceiling on both the layer spacing and the node spacing of a theme; the floor for each is 1.
+
+`public const float MaximumTransitionSeconds`
+
+:   Longest node or edge state transition a compiled theme may request, in seconds.
+
+`public const float MaximumZoom`
+
+:   Highest zoom multiplier a compiled theme may expose to a viewport.
 
 ---
 

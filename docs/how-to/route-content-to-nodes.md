@@ -80,6 +80,43 @@ private void OpenContent(MapContentSelection selection)
 Call `CompleteCurrent(payload)` when the content is finished. That commits the result and clears the
 active selection, and the next node the player picks gets its own.
 
+### Experience Studio hosts
+
+If the map was created from a `MapExperiencePreset`, `MapExperienceHost` raises the same content
+request with the node ID and an exact `long` visit token. Keep the token with the asynchronous
+encounter and pass it to `CompleteCurrent`:
+
+```csharp
+using BranchWeaver.Core;
+using BranchWeaver.Runtime;
+using UnityEngine;
+
+public sealed class ExperienceContentBridge : MonoBehaviour
+{
+    [SerializeField] private MapExperienceHost host;
+
+    private void OnEnable() { host.ContentRequested += OpenContent; }
+    private void OnDisable() { host.ContentRequested -= OpenContent; }
+
+    private void OpenContent(StableId nodeId, long visitToken)
+    {
+        // Replace this immediate demo completion with your encounter UI.
+        var result = new MapDataPayload(new StableId("campaign.result"), new[]
+        {
+            new MapProperty(new StableId("outcome"), MapPropertyValue.Id(new StableId("demo")))
+        });
+        if (!host.CompleteCurrent(visitToken, result))
+            Debug.LogWarning("The visit token was no longer active for " + nodeId.Value);
+    }
+}
+```
+
+This is a complete component for the public `MapExperienceHost` API. Replace the marked body with
+your encounter UI, but keep the captured `visitToken` in its callback. Do not read
+`host.CurrentVisitToken` when the callback returns. A callback from an older visit must be rejected
+rather than completing a newer encounter. A host configured with a revisitable policy uses its
+exploration session, but the content request and token rule stay the same.
+
 ## The same content comes back after a load
 
 The host writes the run's whole selection history and its active selection into the save alongside

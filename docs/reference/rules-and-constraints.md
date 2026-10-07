@@ -7,6 +7,8 @@
 
 ## ConstraintContext
 
+:material-star: **Start here**
+
 ```csharp
 public sealed class ConstraintContext
 ```
@@ -25,13 +27,13 @@ constraint in the pass, so treat it as read-only. During the search
 
 **Constructors**
 
-`public ConstraintContext()`
+`public ConstraintContext( MapRuleSnapshot rules, IEnumerable<MapNodeSlot> slots, IEnumerable<MapSlotEdge> edges, IEnumerable<MapNodeTypeAssignment> assignments, bool isComplete)`
 
 :   Captures one evaluation's view of an attempt. Slots, edges, and assignments are copied and sorted here, so later changes to the collections passed in cannot reach the constraint.
-    - `rules` &mdash; Input rules consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `rules` &mdash; The immutable rule snapshot in force; null throws `ArgumentNullException`.
     - `slots` &mdash; Every slot in the attempt, assigned or not. Null is read as empty.
-    - `edges` &mdash; Ordered edges input; implementations copy or enumerate it without taking caller ownership.
-    - `assignments` &mdash; Ordered assignments input; implementations copy or enumerate it without taking caller ownership.
+    - `edges` &mdash; Slot connections to copy and sort; null is treated as an empty sequence.
+    - `assignments` &mdash; Settled type choices to copy and sort; null is treated as an empty sequence.
     - `isComplete` &mdash; True only when every slot in `slots` has an assignment.
 
 **Properties**
@@ -60,6 +62,8 @@ constraint in the pass, so treat it as read-only. During the search
 
 ## ConstraintEvaluationState
 
+:material-star: **Start here**
+
 ```csharp
 public enum ConstraintEvaluationState
 ```
@@ -83,6 +87,8 @@ is still partial: once every slot has a type -- and whenever an existing graph i
 
 ## ConstraintResult
 
+:material-star: **Start here**
+
 ```csharp
 public sealed class ConstraintResult
 ```
@@ -99,10 +105,10 @@ reported a violation, so there is no "no answer" result to reach for.
 
 `public ConstraintResult(ConstraintEvaluationState state, string diagnosticCode, string message)`
 
-:   Creates an immutable constraint Result snapshot; invalid required identifiers, ranges, or null inputs are rejected before state is exposed.
-    - `diagnosticCode` &mdash; Input diagnostic Code consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
-    - `message` &mdash; Input message consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
-    - `state` &mdash; Input state consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+:   Records a constraint verdict and normalizes null diagnostic text to empty strings; it does not validate enum values.
+    - `diagnosticCode` &mdash; The stable machine-readable code to emit for a violation, or null for no code.
+    - `message` &mdash; The author-facing explanation to emit for a violation, or null for no message.
+    - `state` &mdash; The satisfied, undetermined, or violated verdict returned to the search.
 
 **Properties**
 
@@ -123,23 +129,25 @@ reported a violation, so there is no "no answer" result to reach for.
 `public static ConstraintResult Satisfied()`
 
 :   A result stating that the rule holds, carrying no code or message.
-    - **Returns** &mdash; The complete constraint Result outcome; inspect its typed status or diagnostics before consuming payload data.
+    - **Returns** &mdash; A new satisfied result with empty diagnostic code and message.
 
 `public static ConstraintResult Undetermined()`
 
 :   A result stating that the rule cannot be judged yet. Only useful while `ConstraintContext.IsComplete` is false; on a finished assignment it is treated as a failure rather than as a pass.
-    - **Returns** &mdash; The complete constraint Result outcome; inspect its typed status or diagnostics before consuming payload data.
+    - **Returns** &mdash; A new undetermined result with empty diagnostic code and message.
 
 `public static ConstraintResult Violated(string code, string message)`
 
 :   A result stating that the rule is broken, which makes the generator backtrack and record an error against the constraint that returned it.
-    - `code` &mdash; Input code consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
-    - `message` &mdash; Input message consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
-    - **Returns** &mdash; The complete constraint Result outcome; inspect its typed status or diagnostics before consuming payload data.
+    - `code` &mdash; The stable diagnostic code for the broken rule; null is stored as an empty code.
+    - `message` &mdash; The human-readable reason the assignment violates the rule; null is stored as an empty message.
+    - **Returns** &mdash; A new violated result carrying the normalized code and message.
 
 ---
 
 ## EdgeCrossingPolicy
+
+:material-star: **Start here**
 
 ```csharp
 public enum EdgeCrossingPolicy
@@ -157,12 +165,14 @@ each other.
 
 | Value | Meaning |
 | --- | --- |
-| `Forbid` | Choosing forbid configures `EdgeCrossingPolicy`; the serialized numeric value is part of the compatibility contract. |
-| `Allow` | Choosing allow configures `EdgeCrossingPolicy`; the serialized numeric value is part of the compatibility contract. |
+| `Forbid` | Rejects ordinal inversions between edges crossing the same pair of adjacent layers. |
+| `Allow` | Permits edge endpoint order to invert between adjacent layers. |
 
 ---
 
 ## ForbiddenAdjacencyDirection
+
+:material-star: **Start here**
 
 ```csharp
 public enum ForbiddenAdjacencyDirection
@@ -183,6 +193,8 @@ validation rather than silently behaving like one of these.
 
 ## ForbiddenAdjacencyRule
 
+:material-star: **Start here**
+
 ```csharp
 public readonly struct ForbiddenAdjacencyRule : IComparable<ForbiddenAdjacencyRule>
 ```
@@ -196,9 +208,9 @@ topology with no valid type assignment at all, rather than merely thinning the c
 
 **Constructors**
 
-`public ForbiddenAdjacencyRule()`
+`public ForbiddenAdjacencyRule( StableId ruleId, StableId firstTypeId, StableId secondTypeId, ForbiddenAdjacencyDirection direction)`
 
-:   Creates an immutable forbidden Adjacency Rule snapshot; invalid required identifiers, ranges, or null inputs are rejected before state is exposed.
+:   Records an adjacency ban and canonicalizes an order-insensitive pair into ascending type-id order; identifiers and direction remain available for later snapshot validation.
     - `ruleId` &mdash; Identity of the rule; must be non-empty and unique among all rules in the snapshot.
     - `firstTypeId` &mdash; Source-side type when `direction` is `ForbiddenAdjacencyDirection.Forward`.
     - `secondTypeId` &mdash; Target-side type when `direction` is `ForbiddenAdjacencyDirection.Forward`.
@@ -227,7 +239,7 @@ topology with no valid type assignment at all, rather than merely thinning the c
 `public int CompareTo(ForbiddenAdjacencyRule other)`
 
 :   Orders bans by rule ID, then first type, second type, and direction, which is how a rule snapshot canonicalises its adjacency list.
-    - `other` &mdash; Input other consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `other` &mdash; The adjacency ban to order against this value by rule id, type pair, then direction.
     - **Returns** &mdash; A negative value, zero, or a positive value as this rule sorts before, alongside, or after `other`.
 
 `public bool Forbids(StableId sourceType, StableId targetType)`
@@ -240,6 +252,8 @@ topology with no valid type assignment at all, rather than merely thinning the c
 ---
 
 ## ForcedNodeTypeRule
+
+:material-star: **Start here**
 
 ```csharp
 public readonly struct ForcedNodeTypeRule : IComparable<ForcedNodeTypeRule>
@@ -280,7 +294,7 @@ authored minimum and change which layer sizes remain feasible.
 `public int CompareTo(ForcedNodeTypeRule other)`
 
 :   Orders forced rules by rule ID, then slot, then type, which is how a rule snapshot canonicalises its forced list.
-    - `other` &mdash; Input other consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `other` &mdash; The forced placement to order against this value by rule id, slot, then type id.
     - **Returns** &mdash; A negative value, zero, or a positive value as this rule sorts before, alongside, or after `other`.
 
 ---
@@ -311,9 +325,29 @@ scanning `ConstraintContext.Assignments` is fine, building collections per call 
 not. Returning null counts as a violation, and a thrown exception is caught and turned into
 one, so neither can crash generation but both fail the map.
 
+**Properties**
+
+`public StableId Id`
+
+:   Stable identity for this rule. It names the rule in diagnostics, is hashed into the rules fingerprint, and decides evaluation order -- constraints run sorted by ID, not in the order they were registered. It must be non-empty, unique among the rules of one snapshot, and constant: `MapRuleSnapshot` reads it once, when it is built.
+
+`public string RevisionFingerprint`
+
+:   A 64-character lowercase SHA-256 hex string standing for this rule's logic. It is hashed into the rules fingerprint, so change it whenever the rule's decisions change -- otherwise a map generated under the old logic still fingerprints as current. Anything that is not lowercase SHA-256 hex is reported as a rules error, and like `Id` it is read once, when the snapshot is built.
+
+**Methods**
+
+`public ConstraintResult Evaluate(ConstraintContext context)`
+
+:   Judges one assignment. Report `ConstraintEvaluationState.Violated` only when the context already breaks the rule; while `ConstraintContext.IsComplete` is false, a rule that cannot be settled yet must answer `ConstraintEvaluationState.Undetermined` instead, or the search abandons partial maps that would have completed legally.
+    - `context` &mdash; The read-only snapshot of slots, edges, assignments, and rules for this evaluation pass.
+    - **Returns** &mdash; The verdict, carrying the code and message to report on a violation. Never return null -- that is recorded as a violation of this rule.
+
 ---
 
 ## MapConnectionRules
+
+:material-star: **Start here**
 
 ```csharp
 public sealed class MapConnectionRules
@@ -332,9 +366,9 @@ map, so an existing seed no longer reproduces the layout a player saw.
 
 **Constructors**
 
-`public MapConnectionRules()`
+`public MapConnectionRules( StableId ruleId, int maximumOutgoingPerNode, int maximumIncomingPerNode, int optionalEdgeChance, EdgeCrossingPolicy crossingPolicy)`
 
-:   Creates an immutable map Connection Rules snapshot; invalid required identifiers, ranges, or null inputs are rejected before state is exposed.
+:   Records topology limits without range checks; rule validation later enforces degree, chance, identity, and enum bounds.
     - `ruleId` &mdash; Identity reported in diagnostics and hashed into the fingerprint.
     - `maximumOutgoingPerNode` &mdash; Branch cap; validation requires 1 to 256.
     - `maximumIncomingPerNode` &mdash; Merge cap; validation requires 1 to 256.
@@ -371,6 +405,8 @@ map, so an existing seed no longer reproduces the layout a player saw.
 
 ## MapNodeSlot
 
+:material-star: **Start here**
+
 ```csharp
 public readonly struct MapNodeSlot : IEquatable<MapNodeSlot>, IComparable<MapNodeSlot>
 ```
@@ -386,7 +422,7 @@ meaning from one seed to the next.
 
 `public MapNodeSlot(int layer, int ordinal)`
 
-:   Creates an immutable map Node Slot snapshot; invalid required identifiers, ranges, or null inputs are rejected before state is exposed.
+:   Records a layer and within-layer ordinal without range checks; rule validation rejects negative or out-of-map slots.
     - `layer` &mdash; Zero-based index into the layer list of that rule snapshot.
     - `ordinal` &mdash; Zero-based position inside the layer.
 
@@ -400,39 +436,50 @@ meaning from one seed to the next.
 
 :   Zero-based position of the node inside its layer. Layers are filled contiguously from zero, so naming ordinal n in a forced rule or a pinned override obliges that layer to hold at least n + 1 nodes, which can raise its effective count above the authored minimum.
 
+**Fields**
+
+`public static bool operator`
+
+:   Reports whether two slots address the same layer and ordinal.
+    - `left` &mdash; The first slot coordinates in the equality comparison.
+    - `right` &mdash; The second slot coordinates in the equality comparison.
+    - **Returns** &mdash; The converted immutable value; the source operand remains unchanged.
+
 **Methods**
 
 `public int CompareTo(MapNodeSlot other)`
 
 :   Orders slots by layer first and then by ordinal. This is the canonical order applied wherever slot collections are sorted for deterministic output.
-    - `other` &mdash; Input other consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `other` &mdash; The slot to order against this one by layer and then ordinal.
     - **Returns** &mdash; A negative value, zero, or a positive value as this slot sorts before, alongside, or after `other`.
 
 `public bool Equals(MapNodeSlot other)`
 
 :   Reports whether both slots address the same layer and ordinal.
-    - `other` &mdash; Input other consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `other` &mdash; The slot whose layer and ordinal are compared with this value.
     - **Returns** &mdash; only when all preconditions are satisfied; otherwise with no partial mutation.
 
 `public override bool Equals(object obj)`
 
 :   Reports whether `obj` is a slot addressing the same layer and ordinal.
-    - `obj` &mdash; Input obj consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `obj` &mdash; The object to test; only a `MapNodeSlot` with equal coordinates can match.
     - **Returns** &mdash; only when all preconditions are satisfied; otherwise with no partial mutation.
 
 `public override int GetHashCode()`
 
 :   Returns a hash combining layer and ordinal, so slots are safe as dictionary keys; the generator keys its per-slot lookups this way.
-    - **Returns** &mdash; The requested immutable or borrowed value; ownership remains with the object documented by the return type.
+    - **Returns** &mdash; A deterministic combined hash of the zero-based layer and ordinal fields.
 
 `public override string ToString()`
 
 :   Returns the compact `layer:ordinal` form that slot-related diagnostics carry as their context text.
-    - **Returns** &mdash; The complete string outcome; inspect its typed status or diagnostics before consuming payload data.
+    - **Returns** &mdash; The compact decimal coordinate `layer:ordinal`.
 
 ---
 
 ## MapNodeTypeAssignment
+
+:material-star: **Start here**
 
 ```csharp
 public readonly struct MapNodeTypeAssignment : IComparable<MapNodeTypeAssignment>
@@ -450,9 +497,9 @@ sequence no matter what order the search settled them in.
 `public MapNodeTypeAssignment(MapNodeSlot slot, StableId nodeId, StableId typeId)`
 
 :   Pairs one slot with the node identity and node type chosen for it.
-    - `slot` &mdash; Input slot consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
-    - `nodeId` &mdash; Stable identifier for node; invalid or empty IDs are rejected before mutation.
-    - `typeId` &mdash; Stable identifier for type; invalid or empty IDs are rejected before mutation.
+    - `slot` &mdash; The layer-and-ordinal location whose type decision is being recorded.
+    - `nodeId` &mdash; The generated or existing node identity occupying the slot; stored without validation.
+    - `typeId` &mdash; The node-type identity chosen for the slot; stored without validating rule membership.
 
 **Properties**
 
@@ -473,12 +520,14 @@ sequence no matter what order the search settled them in.
 `public int CompareTo(MapNodeTypeAssignment other)`
 
 :   Orders by `Slot`, then `NodeId`, then `TypeId`.
-    - `other` &mdash; Input other consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
-    - **Returns** &mdash; The complete int outcome; inspect its typed status or diagnostics before consuming payload data.
+    - `other` &mdash; The assignment to order against this one by slot, node id, then type id.
+    - **Returns** &mdash; A negative value, zero, or a positive value according to the canonical assignment order.
 
 ---
 
 ## MapSlotEdge
+
+:material-star: **Start here**
 
 ```csharp
 public readonly struct MapSlotEdge : IEquatable<MapSlotEdge>, IComparable<MapSlotEdge>
@@ -496,8 +545,8 @@ never equals target-to-source.
 `public MapSlotEdge(MapNodeSlot source, MapNodeSlot target)`
 
 :   Connects one slot to another, leaving `source` and entering `target`.
-    - `source` &mdash; Input source consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
-    - `target` &mdash; Input target consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `source` &mdash; The layer-and-ordinal slot the directed connection leaves.
+    - `target` &mdash; The layer-and-ordinal slot the directed connection enters.
 
 **Properties**
 
@@ -514,34 +563,36 @@ never equals target-to-source.
 `public int CompareTo(MapSlotEdge other)`
 
 :   Orders by `Source`, then `Target`, which is how edge lists are kept in one deterministic order.
-    - `other` &mdash; Input other consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
-    - **Returns** &mdash; The complete int outcome; inspect its typed status or diagnostics before consuming payload data.
+    - `other` &mdash; The directed slot edge to order against this value.
+    - **Returns** &mdash; A negative value, zero, or a positive value after comparing source then target.
 
 `public bool Equals(MapSlotEdge other)`
 
 :   Two edges are equal only when both endpoints match in the same direction.
-    - `other` &mdash; Input other consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `other` &mdash; The slot edge whose directed endpoints are compared with this value.
     - **Returns** &mdash; only when all preconditions are satisfied; otherwise with no partial mutation.
 
 `public override bool Equals(object obj)`
 
 :   Value equality against another `MapSlotEdge`; any other object is unequal.
-    - `obj` &mdash; Input obj consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `obj` &mdash; The object to test; only a `MapSlotEdge` with equal endpoints can match.
     - **Returns** &mdash; only when all preconditions are satisfied; otherwise with no partial mutation.
 
 `public override int GetHashCode()`
 
 :   Hash of both endpoints, consistent with `Equals(MapSlotEdge)`.
-    - **Returns** &mdash; The requested immutable or borrowed value; ownership remains with the object documented by the return type.
+    - **Returns** &mdash; A deterministic combined hash of the source and target slots.
 
 `public override string ToString()`
 
 :   Formats the edge as "layer:ordinal->layer:ordinal".
-    - **Returns** &mdash; The complete string outcome; inspect its typed status or diagnostics before consuming payload data.
+    - **Returns** &mdash; The directed endpoint text `source->target` using each slot's canonical form.
 
 ---
 
 ## MapValidator
+
+:material-star: **Start here**
 
 ```csharp
 public sealed class MapValidator : IMapValidator
@@ -563,42 +614,27 @@ same report in the same order.
 
 **Methods**
 
-`public int Compare(MapEdge left, MapEdge right)`
-
-:   Orders edges the way the crossing sweep reads them: by source layer, then by source ordinal, then by target ordinal, falling back to the edges' own ordering so equal geometry still sorts deterministically. Both endpoints must be present in the node index the comparer was built with.
-    - **Returns** &mdash; A negative value, zero, or a positive value as `left` sorts before, alongside, or after `right`.
-
-`public bool Equals(EdgeConnection other)`
-
-:   Reports whether both values name the same directed source-to-target pair. Direction matters: a reversed pair is a different connection.
-
-`public override bool Equals(object obj)`
-
-:   Reports whether `obj` is a connection naming the same directed pair.
-
-`public override int GetHashCode()`
-
-:   Returns a hash combining the two endpoint IDs, so connections can be collected in a set and a repeated one spotted in a single pass over the edges.
-
 `public ValidationReport Validate(MapGraph graph, MapRuleSnapshot rules)`
 
 :   Judges a graph against the rules, taking the generation mode from the graph itself and comparing it against no authoring overrides. A version-two graph must still carry well-formed override metadata, but it is checked only for shape and self-consistency, not against any particular set of pins -- none were supplied. Use the overload taking a mode and overrides when the caller knows which ones the graph was generated under.
-    - `graph` &mdash; Input graph consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
-    - `rules` &mdash; Input rules consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `graph` &mdash; The immutable candidate to inspect; null produces a graph-missing diagnostic instead of throwing.
+    - `rules` &mdash; The expected rule snapshot; null and invalid snapshots contribute rule diagnostics and prevent deeper graph checks.
     - **Returns** &mdash; Every diagnostic found. Any error-severity diagnostic rejects the graph.
 
-`public ValidationReport Validate()`
+`public ValidationReport Validate( MapGraph graph, MapRuleSnapshot rules, MapGenerationMode mode, MapGenerationOverrides overrides)`
 
 :   Judges a graph against the rules, the generation mode, and the authoring overrides the caller believes it was produced under. This is the strict form, and the one an authoring pipeline wants: a version-two graph must also declare the same mode, carry an overrides fingerprint and generation key that match `overrides`, and preserve every pinned node field and every edge override. A procedural request additionally requires the overrides to be empty, and a manual one requires seed zero and forbids the graph from holding any node or edge the overrides did not spell out.
-    - `graph` &mdash; Input graph consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
-    - `rules` &mdash; Input rules consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
-    - `mode` &mdash; Input mode consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
-    - `overrides` &mdash; Input overrides consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `graph` &mdash; The immutable candidate to inspect; null produces a graph-missing diagnostic instead of throwing.
+    - `rules` &mdash; The expected rule snapshot; null and invalid snapshots contribute rule diagnostics and prevent deeper graph checks.
+    - `mode` &mdash; The procedural, manual, or hybrid contract the graph metadata and contents must satisfy.
+    - `overrides` &mdash; The exact authored pins and edge dispositions to verify; null is treated as an empty set.
     - **Returns** &mdash; Every diagnostic found. Any error-severity diagnostic rejects the graph.
 
 ---
 
 ## MapZoneDefinition
+
+:material-star: **Start here**
 
 ```csharp
 public sealed class MapZoneDefinition : IComparable<MapZoneDefinition>
@@ -614,9 +650,9 @@ node type table unchanged.
 
 **Constructors**
 
-`public MapZoneDefinition()`
+`public MapZoneDefinition( StableId id, int firstLayerInclusive, int lastLayerInclusive, IEnumerable<StableId> permittedTypeIds, IEnumerable<StableId> forbiddenTypeIds, IEnumerable<NodeTypeWeightOverride> weightOverrides)`
 
-:   Creates an immutable map Zone Definition snapshot; invalid required identifiers, ranges, or null inputs are rejected before state is exposed.
+:   Records a layer band and defensively copies each type-rule sequence into canonical order; identity, range, duplicates, and effective domain are checked by rule validation later.
     - `id` &mdash; Identity of the zone, which quota rules use to scope themselves to it.
     - `firstLayerInclusive` &mdash; Zero-based index of the first layer in the zone, counted into the layer list of the rule snapshot the zone belongs to.
     - `lastLayerInclusive` &mdash; Zero-based index of the last layer in the zone, itself included.
@@ -655,7 +691,7 @@ node type table unchanged.
 `public int CompareTo(MapZoneDefinition other)`
 
 :   Orders zones by ID first, then by layer range, then by their allowed, forbidden, and override contents. Comparing the whole contents rather than the ID alone is what lets a rule snapshot sort its zones into an order that depends only on what they say, which is a precondition for a stable rule fingerprint. A null zone sorts before any zone.
-    - `other` &mdash; Input other consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `other` &mdash; The zone to order by identity, layer bounds, and all canonicalized type rules; null sorts first.
     - **Returns** &mdash; A negative value, zero, or a positive value as this zone sorts before, alongside, or after `other`.
 
 `public bool ContainsLayer(int layer)`
@@ -667,6 +703,8 @@ node type table unchanged.
 ---
 
 ## NodeTypeQuotaRule
+
+:material-star: **Start here**
 
 ```csharp
 public readonly struct NodeTypeQuotaRule : IComparable<NodeTypeQuotaRule>
@@ -683,12 +721,12 @@ a diagnostic instead of returning a map that breaks the bound.
 
 `public NodeTypeQuotaRule(StableId ruleId, StableId typeId, StableId zoneId, int minimum, int maximum)`
 
-:   Creates an immutable node Type Quota Rule snapshot; invalid required identifiers, ranges, or null inputs are rejected before state is exposed.
+:   Records one scoped count interval without validation; snapshot validation checks identities, zone membership, and bounds.
     - `ruleId` &mdash; Identity of the rule; must be non-empty and unique among all rules in the snapshot.
     - `zoneId` &mdash; Scope of the bound: empty for the whole map, otherwise a zone declared in the snapshot.
     - `minimum` &mdash; Inclusive lower bound on the node count.
     - `maximum` &mdash; Inclusive upper bound on the node count; there is no value meaning unbounded.
-    - `typeId` &mdash; Stable identifier for type; invalid or empty IDs are rejected before mutation.
+    - `typeId` &mdash; The declared node type to count within the selected map or zone scope.
 
 **Properties**
 
@@ -717,12 +755,14 @@ a diagnostic instead of returning a map that breaks the bound.
 `public int CompareTo(NodeTypeQuotaRule other)`
 
 :   Orders quotas by rule ID, then type, zone, minimum, and maximum, which is how a rule snapshot canonicalises its quota list.
-    - `other` &mdash; Input other consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `other` &mdash; The quota to order against this value by rule id, type, zone, and bounds.
     - **Returns** &mdash; A negative value, zero, or a positive value as this quota sorts before, alongside, or after `other`.
 
 ---
 
 ## NodeTypeWeight
+
+:material-star: **Start here**
 
 ```csharp
 public readonly struct NodeTypeWeight : IComparable<NodeTypeWeight>
@@ -741,7 +781,7 @@ Zones retune the value for their own layers through `NodeTypeWeightOverride`.
 
 :   Declares a node type and its map-wide selection weight.
     - `weight` &mdash; Relative selection weight; rule validation requires 1 to 1,000,000.
-    - `typeId` &mdash; Stable identifier for type; invalid or empty IDs are rejected before mutation.
+    - `typeId` &mdash; The node-type identity whose relative weight is declared; validation later requires it to be non-empty and unique.
 
 **Properties**
 
@@ -758,12 +798,14 @@ Zones retune the value for their own layers through `NodeTypeWeightOverride`.
 `public int CompareTo(NodeTypeWeight other)`
 
 :   Orders entries by type ID and then by weight, which is how a rule snapshot canonicalises its weight table.
-    - `other` &mdash; Input other consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `other` &mdash; The weight entry to order against this value by type identity and then weight.
     - **Returns** &mdash; A negative value, zero, or a positive value as this entry sorts before, alongside, or after `other`.
 
 ---
 
 ## NodeTypeWeightOverride
+
+:material-star: **Start here**
 
 ```csharp
 public readonly struct NodeTypeWeightOverride : IComparable<NodeTypeWeightOverride>
@@ -799,7 +841,7 @@ with no effective type at all.
 `public int CompareTo(NodeTypeWeightOverride other)`
 
 :   Orders overrides by type ID and then by weight. This is the canonical order the owning zone sorts its overrides into, so that two zones authored in different orders produce the same rule fingerprint.
-    - `other` &mdash; Input other consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `other` &mdash; The zone-local weight entry to order by type identity and replacement weight.
     - **Returns** &mdash; A negative value, zero, or a positive value as this override sorts before, alongside, or after `other`.
 
 ---
@@ -828,8 +870,8 @@ be compared line by line. Warnings never make a report invalid.
 
 `public ValidationReport(IEnumerable<MapDiagnostic> diagnostics)`
 
-:   Creates an immutable validation Report snapshot; invalid required identifiers, ranges, or null inputs are rejected before state is exposed.
-    - `diagnostics` &mdash; Ordered diagnostics input; implementations copy or enumerate it without taking caller ownership.
+:   Copies and canonically sorts diagnostics, then counts error-severity entries to determine validity.
+    - `diagnostics` &mdash; Diagnostics to enumerate once; null means an empty valid report, while individual entries must be non-null.
 
 **Properties**
 
@@ -844,13 +886,6 @@ be compared line by line. Warnings never make a report invalid.
 `public bool IsValid`
 
 :   Whether the validated subject may be used: true when there are no errors, whatever warnings were raised.
-
-**Methods**
-
-`public int Compare(MapDiagnostic left, MapDiagnostic right)`
-
-:   Orders two diagnostics the way a report stores them: errors before warnings, then by code, context, related rules, related slots, related nodes, and finally message, every text comparison ordinal. Comparing all the way down to the message is what makes the order depend only on what was found and never on the order it was found in, so two runs over equivalent input produce reports that can be compared line by line. Nulls sort first rather than throwing.
-    - **Returns** &mdash; A negative value, zero, or a positive value as `left` sorts before, alongside, or after `right`.
 
 ---
 

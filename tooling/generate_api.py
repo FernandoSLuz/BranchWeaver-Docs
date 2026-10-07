@@ -74,8 +74,10 @@ def render_index(groups, order, product, total_types, tiers=None, excluded=0):
 
     tiers = tiers or {}
     headline = tiers.get('headline') or set()
-    if headline:
-        first = [(g, e) for g in order for e in groups.get(g, []) if e.get('headline')]
+    start_here = tiers.get('startHere') or headline
+    if start_here:
+        first = [(g, e) for g in order for e in groups.get(g, [])
+                 if e.get('name') in start_here]
         if first:
             out.append('## Start here')
             out.append('')
@@ -307,6 +309,7 @@ def load_tiers(tiers_path):
     raw = json.load(io.open(tiers_path, encoding='utf-8'))
     return {
         'headline': set(raw.get('headline', [])),
+        'startHere': set(raw.get('startHere', [])),
         'hidden': set(raw.get('hidden', [])),
         'internal': set(raw.get('internal', [])),
         'extensionPoints': set(raw.get('extensionPoints', [])),

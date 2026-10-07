@@ -1,11 +1,35 @@
 # Framing, input and navigation
 
-7 types in this area.
+9 types in this area.
 
 !!! abstract "On this page"
-    [InputSystemMapInputBridge](#inputsystemmapinputbridge) &middot; [MapAspectClass](#mapaspectclass) &middot; [MapFrameResult](#mapframeresult) &middot; [MapFrameUtility](#mapframeutility) &middot; [MapSafeAreaController](#mapsafeareacontroller) &middot; [MapViewportFrame](#mapviewportframe) &middot; [MapViewportResult](#mapviewportresult)
+    [InputSystemExperienceRegistration](#inputsystemexperienceregistration) &middot; [InputSystemMapInputBridge](#inputsystemmapinputbridge) &middot; [InputSystemMapInputSource](#inputsystemmapinputsource) &middot; [MapAspectClass](#mapaspectclass) &middot; [MapFrameResult](#mapframeresult) &middot; [MapFrameUtility](#mapframeutility) &middot; [MapSafeAreaController](#mapsafeareacontroller) &middot; [MapViewportFrame](#mapviewportframe) &middot; [MapViewportResult](#mapviewportresult)
+
+## InputSystemExperienceRegistration
+
+:material-star: **Start here**
+
+```csharp
+public static class InputSystemExperienceRegistration
+```
+
+`BranchWeaver.Integrations.InputSystem` &middot; <small>BranchWeaver/Runtime/Integrations/InputSystem/RuntimeExperienceInputRegistry.cs</small>
+
+Registers the optional Input System providers with the assembly-neutral runtime
+registry. Keeping this type in the optional assembly prevents Core from acquiring
+an Input System or uGUI dependency.
+
+**Methods**
+
+`public static void Register()`
+
+:   Installs the default Input System source and EventSystem module factories.
+
+---
 
 ## InputSystemMapInputBridge
+
+:material-star: **Start here**
 
 ```csharp
 public sealed class InputSystemMapInputBridge : MonoBehaviour
@@ -26,49 +50,49 @@ Optional PlayerInput UnityEvent bridge compiled only when com.unity.inputsystem 
 `public void Bind(InputSystemSignalAdapter adapter)`
 
 :   Points the bridge at an adapter from code, for a rig assembled at runtime rather than wired in the inspector.
-    - `adapter` &mdash; Input adapter consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `adapter` &mdash; Signal adapter that will receive subsequent action phases; null restores lazy resolution.
 
 `public void OnNavigate(InputAction.CallbackContext context)`
 
 :   Handler for the directional action: it posts the stick or D-pad vector while the action is performed, and a zero vector when it is cancelled. The zero on cancel is what stops a released stick from walking the focus onward, because the adapter holds the last axis it was given until told otherwise. Wire this to the action's UnityEvent on `PlayerInput`.
-    - `context` &mdash; Input context consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `context` &mdash; Navigation action phase and current two-axis stick or D-pad value.
 
 `public void OnPan(InputAction.CallbackContext context)`
 
 :   Handler for dragging the map about, posting the action's value as a pan movement. Bind it to an action that reports movement per event. Deltas are accumulated until the next frame is captured, so an action that reports an absolute pointer position instead would pan the map by that whole position on every event.
-    - `context` &mdash; Input context consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `context` &mdash; Pan action phase and per-event movement delta.
 
 `public void OnPinch(InputAction.CallbackContext context)`
 
 :   Handler for a two-finger pinch: the action's value is read as a scale factor while the gesture is performed, and the gesture is ended when it is cancelled. Ending it matters. While a pinch is marked active the adapter refuses pointer presses, so an action that never reaches its cancelled phase leaves the map ignoring taps for good.
-    - `context` &mdash; Input context consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `context` &mdash; Pinch action phase and multiplicative scale factor while performed.
 
 `public void OnPointer(InputAction.CallbackContext context)`
 
 :   Handler for the pointer position, in screen pixels. Position only: moving the pointer over a node never selects it, which is what `OnPointerPress` is for.
-    - `context` &mdash; Input context consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `context` &mdash; Pointer action phase and current screen-pixel position.
 
 `public void OnPointerPress(InputAction.CallbackContext context)`
 
 :   Handler for a click or tap on the map, acted on in the performed phase. The press is only queued here; the map decides what it hit when the next input frame is captured. The adapter drops it while a pinch is running, so a second finger landing on a node cannot select it.
-    - `context` &mdash; Input context consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `context` &mdash; Pointer-press action phase; only a performed phase queues a hit test.
 
 `public void OnSubmit(InputAction.CallbackContext context)`
 
 :   Handler for activating the focused node. Only the performed phase counts, so the same press is not acted on again when the action starts and when it is released. The request is queued for the next captured frame rather than sent straight to the map.
-    - `context` &mdash; Input context consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `context` &mdash; Submit action phase; only a performed phase queues activation.
 
 `public void OnZoom(InputAction.CallbackContext context)`
 
 :   Handler for a scroll wheel or zoom axis. The action's value is added to the zoom accumulated for the next captured frame, so several events between frames add up rather than replacing one another.
-    - `context` &mdash; Input context consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `context` &mdash; Zoom action phase and additive zoom delta for this event.
 
 `public void SignalNavigatePhase(bool performed, bool canceled, Vector2 value)`
 
 :   The phase-only form of `OnNavigate`, on the same terms as `SignalPinchPhase`. Cancellation wins over performed and posts a zero axis rather than nothing, because the adapter holds the last axis it was given until it is told the control was released.
     - `performed` &mdash; True while the control is held at `value`.
     - `canceled` &mdash; True when the control has been released.
-    - `value` &mdash; Input value consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `value` &mdash; Two-axis navigation direction held until cancellation posts zero.
 
 `public void SignalPanPhase(bool performed, Vector2 value)`
 
@@ -97,7 +121,40 @@ Optional PlayerInput UnityEvent bridge compiled only when com.unity.inputsystem 
 
 ---
 
+## InputSystemMapInputSource
+
+:material-star: **Start here**
+
+```csharp
+public sealed class InputSystemMapInputSource : MonoBehaviour, IMapInputSource
+```
+
+`BranchWeaver.Integrations.InputSystem` &middot; <small>BranchWeaver/Runtime/Integrations/InputSystem/InputSystemMapInputSource.cs</small>
+
+Optional polling adapter for the Unity Input System. It translates keyboard,
+gamepad, mouse, and primary-touch state into the package-neutral
+`MapInputFrame` contract. A pointer press is emitted on release only
+when the pointer stayed below the drag threshold; it never produces submit, so
+touch and mouse selection do not implicitly confirm.
+
+**Properties**
+
+`public float DragThreshold`
+
+:   Distance in screen pixels that turns a pointer press into a pan rather than a selection.
+
+**Methods**
+
+`public MapInputFrame Capture()`
+
+:   Captures one frame of raw device input.
+    - **Returns** &mdash; The current package-neutral device input frame.
+
+---
+
 ## MapAspectClass
+
+:material-star: **Start here**
 
 ```csharp
 public enum MapAspectClass
@@ -124,6 +181,8 @@ then split by orientation.
 
 ## MapFrameResult
 
+:material-star: **Start here**
+
 ```csharp
 public readonly struct MapFrameResult
 ```
@@ -136,15 +195,15 @@ keep it reachable.
 
 **Constructors**
 
-`public MapFrameResult()`
+`public MapFrameResult( bool valid, Rect areaPixels, float scale, Vector2 contentSizePixels, Vector2 minimumPan, Vector2 maximumPan)`
 
 :   Captures an already-resolved framing. Normally read from `MapViewportFrame.Frame` rather than constructed by hand; nothing here is validated or clamped.
-    - `valid` &mdash; Whether valid; false selects the documented conservative behavior.
-    - `areaPixels` &mdash; Input area Pixels consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
-    - `scale` &mdash; Input scale consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
-    - `contentSizePixels` &mdash; Input content Size Pixels consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
-    - `minimumPan` &mdash; Input minimum Pan consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
-    - `maximumPan` &mdash; Input maximum Pan consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `valid` &mdash; Whether the supplied area and scale describe a usable frame.
+    - `areaPixels` &mdash; Safe-area- and margin-adjusted rect available to the map.
+    - `scale` &mdash; Uniform fitted scale after applying the requested zoom.
+    - `contentSizePixels` &mdash; Unscaled content extent before padding and zoom.
+    - `minimumPan` &mdash; Lowest allowed X and Y pan offsets in pixels.
+    - `maximumPan` &mdash; Highest allowed X and Y pan offsets in pixels.
 
 **Properties**
 
@@ -177,12 +236,14 @@ keep it reachable.
 `public Vector2 ClampPan(Vector2 pan)`
 
 :   Clamps a pan offset into the allowed range.
-    - `pan` &mdash; Input pan consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
-    - **Returns** &mdash; The complete vector2 outcome; inspect its typed status or diagnostics before consuming payload data.
+    - `pan` &mdash; Requested pixel offset before axis-wise limit enforcement.
+    - **Returns** &mdash; The requested offset clamped independently between the stored minimum and maximum axes.
 
 ---
 
 ## MapFrameUtility
+
+:material-star: **Start here**
 
 ```csharp
 public static class MapFrameUtility
@@ -195,21 +256,23 @@ without a scene, a canvas, or a device.
 
 **Methods**
 
-`public static MapFrameResult Resolve()`
+`public static MapFrameResult Resolve( Rect availablePixels, Rect safeAreaPixels, Vector2 contentSizePixels, MapFramingTokens framing, float zoom, float minimumZoom, float maximumZoom)`
 
 :   Resolves the area, scale, and pan limits for a map. `availablePixels` is the full rectangle the map is allowed to consider, normally the canvas rect or the screen. `safeAreaPixels` is the device safe area in the same space; pass the full rectangle when there is none.
-    - `availablePixels` &mdash; Input available Pixels consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
-    - `safeAreaPixels` &mdash; Input safe Area Pixels consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
-    - `contentSizePixels` &mdash; Input content Size Pixels consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
-    - `framing` &mdash; Input framing consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
-    - `zoom` &mdash; Input zoom consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
-    - `minimumZoom` &mdash; Input minimum Zoom consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
-    - `maximumZoom` &mdash; Input maximum Zoom consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
-    - **Returns** &mdash; The complete map Frame Result outcome; inspect its typed status or diagnostics before consuming payload data.
+    - `availablePixels` &mdash; Full host rectangle from which safe area and authored margins are carved.
+    - `safeAreaPixels` &mdash; Device-safe rectangle in the same pixel coordinate system.
+    - `contentSizePixels` &mdash; Unscaled map content extent before authored padding.
+    - `framing` &mdash; Fit, margin, safe-area, padding, pan, and zoom policy to sanitize and apply.
+    - `zoom` &mdash; Player zoom multiplier over the fitted scale; non-positive values behave as one.
+    - `minimumZoom` &mdash; Lowest theme-supported player zoom multiplier.
+    - `maximumZoom` &mdash; Highest theme-supported player zoom multiplier.
+    - **Returns** &mdash; A resolved drawable rect, scale, and symmetric pan range, or an invalid result when no positive area remains.
 
 ---
 
 ## MapSafeAreaController
+
+:material-star: **Start here**
 
 ```csharp
 public sealed class MapSafeAreaController : MonoBehaviour
@@ -244,6 +307,8 @@ on a child instead.
 ---
 
 ## MapViewportFrame
+
+:material-star: **Start here**
 
 ```csharp
 public sealed class MapViewportFrame : MonoBehaviour
@@ -287,7 +352,7 @@ asset rather than by hand-positioning transforms.
 `public bool FocusOn(BranchWeaver.Core.StableId nodeId)`
 
 :   Centres the view on a node without changing zoom, clamped so the map cannot be pushed out of reach.
-    - `nodeId` &mdash; Stable identifier for node; invalid or empty IDs are rejected before mutation.
+    - `nodeId` &mdash; Presented node identity whose unanimated layout position should be centered.
     - **Returns** &mdash; True when the pan was updated and the framing reapplied. False, leaving the view untouched, when no presenter is assigned or found in the parents, or when that presenter has no presentation position for the node yet.
 
 `public void FrameAll()`
@@ -297,6 +362,8 @@ asset rather than by hand-positioning transforms.
 ---
 
 ## MapViewportResult
+
+:material-star: **Start here**
 
 ```csharp
 public readonly struct MapViewportResult
@@ -313,10 +380,10 @@ rather than a usable fallback.
 
 `public MapViewportResult(bool valid, Rect normalizedSafeArea, MapAspectClass aspectClass)`
 
-:   Creates an immutable map Viewport Result snapshot; invalid required identifiers, ranges, or null inputs are rejected before state is exposed.
+:   One screen measurement captures validity, a normalized safe area, and a coarse aspect bucket.
     - `valid` &mdash; Whether the measurement produced usable values.
     - `normalizedSafeArea` &mdash; Safe area as fractions of the screen, not pixels.
-    - `aspectClass` &mdash; Input aspect Class consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `aspectClass` &mdash; Classified display shape, or `MapAspectClass.Invalid` for an unusable measurement.
 
 **Properties**
 

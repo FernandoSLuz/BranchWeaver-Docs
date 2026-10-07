@@ -1,9 +1,9 @@
 # API reference
 
-The types you are meant to use in BranchWeaver, grouped by what they are for rather than by namespace. **193 types.**
+The types you are meant to use in BranchWeaver, grouped by what they are for rather than by namespace. **248 types.**
 
 !!! info "What is not listed here"
-    72 further types are public in the source but left out of this reference. They are public only because `internal` is per-assembly in C# and the package spans several assemblies -- plumbing, not API. They carry `[EditorBrowsable(Never)]` in the source to say so. Nothing you need is hidden: if a documented type exposes it, it is documented too.
+    65 further types are public in the source but left out of this reference. They are public only because `internal` is per-assembly in C# and the package spans several assemblies -- plumbing, not API. They carry `[EditorBrowsable(Never)]` in the source to say so. Nothing you need is hidden: if a documented type exposes it, it is documented too.
 
 ## Start here
 
@@ -11,42 +11,16 @@ The types a new project meets first.
 
 | Type | Area | What it is for |
 | --- | --- | --- |
-| [`BranchWeaverMapHost`](host-and-content-routing.md#branchweavermaphost) | Host and content routing | Designer-first scene host for one complete BranchWeaver run. |
-| [`MapContentPoolAsset`](host-and-content-routing.md#mapcontentpoolasset) | Host and content routing | A dependency-free deterministic resolver authored in the Inspector. |
-| [`MapContentSelection`](host-and-content-routing.md#mapcontentselection) | Host and content routing | The durable result of resolving game content for one entered node. |
 | [`LayeredMapGenerator`](getting-a-map.md#layeredmapgenerator) | Getting a map | Generator version 1. |
-| [`MapGenerationMode`](getting-a-map.md#mapgenerationmode) | Getting a map | How much of a map a generation request may invent for itself, and therefore what role `MapGenerationOverrides` plays: Procedural rejects overrides outright, Manual builds nothing t... |
-| [`MapGenerationRequest`](getting-a-map.md#mapgenerationrequest) | Getting a map | Everything one generation attempt needs, in one immutable object: the compiled rules, the seed, how much of the map the generator may invent, the authoring overrides it must honour... |
-| [`MapGenerationResult`](getting-a-map.md#mapgenerationresult) | Getting a map | The single outcome of a generation attempt: on success a complete graph and its `MapGenerationManifest`, on failure a `MapGenerationFailureKind` naming what went wrong, and either ... |
-| [`MapProgressionState`](traversal-and-progression.md#mapprogressionstate) | Traversal and progression | An immutable traversal snapshot. |
-| [`MapSession`](traversal-and-progression.md#mapsession) | Traversal and progression | Standalone traversal orchestration over immutable graph and progression snapshots. |
-| [`MapTransitionEvent`](traversal-and-progression.md#maptransitionevent) | Traversal and progression | One immutable thing that happened during a traversal transition: a node was entered or completed, the choosable set changed, or the run ended. |
-| [`MapAuthoringCompiler`](authoring-assets.md#mapauthoringcompiler) | Authoring assets | Turns authoring assets into the immutable compiled types the runtime works with: node types, themes, rule snapshots, and blueprints. |
-| [`MapBlueprintAsset`](authoring-assets.md#mapblueprintasset) | Authoring assets | The saved form of one map: the rules it came from, the mode and seed it was generated with, the complete node and edge rows the editor persisted, the budgets a regeneration is allo... |
-| [`MapNodeTypeAsset`](authoring-assets.md#mapnodetypeasset) | Authoring assets | One kind of node a map may contain: its stable identity, the label and tooltip shown for it, the prefabs, icon, and per-state colors the built-in views draw it with, and the defaul... |
+| [`MapExplorationSession`](traversal-and-progression.md#mapexplorationsession) | Traversal and progression | Bidirectional exploration over the immutable graph, independent from MapSession. |
+| [`MapExperiencePreset`](authoring-assets.md#mapexperiencepreset) | Authoring assets | Authoring configuration for a runtime map experience. |
 | [`MapRulesAsset`](authoring-assets.md#maprulesasset) | Authoring assets | The inspector-authored ruleset every BranchWeaver map is generated from: how many nodes each layer may hold, which node types may appear and how often they are chosen, the zones th... |
-| [`MapThemeAsset`](authoring-assets.md#mapthemeasset) | Authoring assets | The authored asset that decides how a generated map is laid out and drawn: layer and node spacing, which axis the layers run along, how edges are shaped, the two colours the built-... |
-| [`MapStylePreset`](styling-and-appearance.md#mapstylepreset) | Styling and appearance | Everything the map draws itself with, in one asset: palette, node shape and treatment, per-state emphasis, edge stroke, backdrop, typography, motion, and on-screen framing. |
+| [`BranchWeaverMapHost`](presentation-and-views.md#branchweavermaphost) | Presentation and views | Designer-first scene host for one complete BranchWeaver run. |
 | [`CanvasMapPresenter`](presentation-and-views.md#canvasmappresenter) | Presentation and views | Draws a map inside a uGUI Canvas. |
-| [`IMapEdgeView`](presentation-and-views.md#imapedgeview) | Presentation and views | The contract for anything that draws a single map edge. |
-| [`IMapEdgeViewFactory`](presentation-and-views.md#imapedgeviewfactory) | Presentation and views | Creates and reclaims edge views for a presenter. |
-| [`IMapNodeView`](presentation-and-views.md#imapnodeview) | Presentation and views | The contract for anything that draws a single map node. |
-| [`IMapNodeViewFactory`](presentation-and-views.md#imapnodeviewfactory) | Presentation and views | Creates and reclaims node views for a presenter. |
-| [`MapEdgeViewData`](presentation-and-views.md#mapedgeviewdata) | Presentation and views | Everything an edge view needs to draw one route in one presented state: the graph edge, the sampled path along it, the colour to draw it in, and its fog state. |
-| [`MapInputController`](presentation-and-views.md#mapinputcontroller) | Presentation and views | The component that turns input frames into map interaction: it moves focus between nodes, submits the focused or pressed node to a `MapTraversalController`, and pans and zooms the ... |
-| [`MapNodeViewData`](presentation-and-views.md#mapnodeviewdata) | Presentation and views | Everything a node view needs to draw one node in one presented state: the graph node, where it sits, its compiled type, and its visual and fog state. |
-| [`MapRuntimeContent`](presentation-and-views.md#mapruntimecontent) | Presentation and views | Everything needed to draw a map that the graph itself does not carry: the node types its type IDs resolve to, and the theme they are laid out and styled with. |
+| [`MapExperienceHost`](presentation-and-views.md#mapexperiencehost) | Presentation and views | Owns a map session independently of its renderer, preserving legacy forward saves. |
 | [`MapTraversalController`](presentation-and-views.md#maptraversalcontroller) | Presentation and views | The scene component that owns one traversal run: it holds the graph, the progression, and the compiled content, applies every move through a `MapSession`, and reports what happened... |
 | [`WorldMapPresenter`](presentation-and-views.md#worldmappresenter) | Presentation and views | Draws a map as ordinary scene objects rather than UI. |
-| [`ValidationReport`](rules-and-constraints.md#validationreport) | Rules and constraints | Everything one validation pass had to say, plus the single number that decides whether the pass succeeded. |
 | [`MapGraph`](graph-layout-and-geometry.md#mapgraph) | Graph, layout and geometry | An immutable graph snapshot. |
-| [`MapNode`](graph-layout-and-geometry.md#mapnode) | Graph, layout and geometry | One node of a generated map: its identity, the node type chosen for it, its slot in the layered grid, and any authored payload. |
-| [`IMapSaveAdapter`](saving-and-migration.md#imapsaveadapter) | Saving and migration | The storage boundary for map saves: read, write, and delete one slot of complete save data. |
-| [`MapSaveEnvelope`](saving-and-migration.md#mapsaveenvelope) | Saving and migration | A complete, versioned graph and traversal snapshot. |
-| [`MapDiagnostic`](determinism-and-diagnostics.md#mapdiagnostic) | Determinism and diagnostics | One problem found while compiling authoring assets, running generation preflight, validating a graph, or loading a save: a severity, a stable machine-readable code, a message writt... |
-| [`StableId`](determinism-and-diagnostics.md#stableid) | Determinism and diagnostics | A stable, serialization-safe identifier. |
-| [`IMapGenerator`](other.md#imapgenerator) | Other | The generation boundary of the package: one call turns a `MapGenerationRequest` into either a complete map or a typed failure. |
-| [`MapRuleSnapshot`](other.md#maprulesnapshot) | Other | Immutable, engine-independent rules compiled from authoring assets: the layer widths, the node type table, the zones, the quota, forced-type and forbidden-adjacency rules, the conn... |
 
 ## Every type
 
@@ -60,22 +34,6 @@ The types a new project meets first.
 
 | Type | Kind | Area | What it is for |
 | --- | --- | --- | --- |
-| [`BranchWeaverMapHost`](host-and-content-routing.md#branchweavermaphost) | class | Host and content routing | Designer-first scene host for one complete BranchWeaver run. |
-| [`IMapNodeContentResolver`](host-and-content-routing.md#imapnodecontentresolver) | interface | Host and content routing | Resolves one stable content ID for a node. |
-| [`IMapNodeContentSelectionValidator`](host-and-content-routing.md#imapnodecontentselectionvalidator) | interface | Host and content routing | Optional compatibility check used while restoring persisted selections. |
-| [`MapContentPoolAsset`](host-and-content-routing.md#mapcontentpoolasset) | class | Host and content routing | A dependency-free deterministic resolver authored in the Inspector. |
-| [`MapContentPoolEntry`](host-and-content-routing.md#mapcontentpoolentry) | class | Host and content routing | One weighted and filtered row in a `MapContentPoolAsset`. |
-| [`MapContentResolutionFailureKind`](host-and-content-routing.md#mapcontentresolutionfailurekind) | enum | Host and content routing | Why a node-content request did not produce a selection. |
-| [`MapContentResolutionRequest`](host-and-content-routing.md#mapcontentresolutionrequest) | class | Host and content routing | Immutable input to an `IMapNodeContentResolver`. |
-| [`MapContentResolutionResult`](host-and-content-routing.md#mapcontentresolutionresult) | class | Host and content routing | Typed success or refusal returned by a node-content resolver. |
-| [`MapContentRoutingDiagnosticCodes`](host-and-content-routing.md#mapcontentroutingdiagnosticcodes) | class | Host and content routing | Stable diagnostics emitted by content routing. |
-| [`MapContentSelection`](host-and-content-routing.md#mapcontentselection) | class | Host and content routing | The durable result of resolving game content for one entered node. |
-| [`MapHostDiagnosticCodes`](host-and-content-routing.md#maphostdiagnosticcodes) | class | Host and content routing | Stable diagnostic identifiers emitted by `BranchWeaverMapHost`. |
-| [`MapHostFailureKind`](host-and-content-routing.md#maphostfailurekind) | enum | Host and content routing | Why a host operation did not complete. |
-| [`MapHostOperationKind`](host-and-content-routing.md#maphostoperationkind) | enum | Host and content routing | Controls map Host Operation Kind decisions; numeric values are serialized and must remain stable across package upgrades. |
-| [`MapHostOperationResult`](host-and-content-routing.md#maphostoperationresult) | class | Host and content routing | Typed outcome returned by every operation on `BranchWeaverMapHost`. |
-| [`MapHostSaveAdapterKind`](host-and-content-routing.md#maphostsaveadapterkind) | enum | Host and content routing | Which persistence source the host creates or resolves from the scene. |
-| [`MapHostSeedPolicy`](host-and-content-routing.md#maphostseedpolicy) | enum | Host and content routing | Where the parameterless `BranchWeaverMapHost.StartNew()` obtains its seed. |
 | [`EdgeGenerationOverride`](getting-a-map.md#edgegenerationoverride) | struct | Getting a map | One authored constraint on a single slot-to-slot connection: require it and fix the ID the edge will carry, or forbid it. |
 | [`EdgeOverrideDisposition`](getting-a-map.md#edgeoverridedisposition) | enum | Getting a map | Whether an edge override demands a connection or bans one. |
 | [`LayeredMapGenerator`](getting-a-map.md#layeredmapgenerator) | class | Getting a map | Generator version 1. |
@@ -89,6 +47,12 @@ The types a new project meets first.
 | [`PinnedNodeFields`](getting-a-map.md#pinnednodefields) | enum | Getting a map | Which of a pinned node's authored values the generator must reproduce exactly. |
 | [`PinnedNodeOverride`](getting-a-map.md#pinnednodeoverride) | struct | Getting a map | One authored node pinned to a map slot: the identity that slot must hold, plus whichever of its type, position, and payload the generator is not free to choose. |
 | [`MapDataPayload`](traversal-and-progression.md#mapdatapayload) | class | Traversal and progression | Generic tagged data for traversal results and customer-owned save metadata. |
+| [`MapExplorationFailureKind`](traversal-and-progression.md#mapexplorationfailurekind) | enum | Traversal and progression | Reason an exploration command was refused. |
+| [`MapExplorationOptions`](traversal-and-progression.md#mapexplorationoptions) | class | Traversal and progression | Configuration for bidirectional exploration. |
+| [`MapExplorationResult`](traversal-and-progression.md#mapexplorationresult) | class | Traversal and progression | Outcome of an exploration command. |
+| [`MapExplorationSession`](traversal-and-progression.md#mapexplorationsession) | class | Traversal and progression | Bidirectional exploration over the immutable graph, independent from MapSession. |
+| [`MapExplorationState`](traversal-and-progression.md#mapexplorationstate) | class | Traversal and progression | Immutable exploration snapshot. |
+| [`MapExplorationVisit`](traversal-and-progression.md#mapexplorationvisit) | class | Traversal and progression | An immutable record of one arrival at a node. |
 | [`MapNodeCompletion`](traversal-and-progression.md#mapnodecompletion) | class | Traversal and progression | One finished node paired with whatever the game reported for it. |
 | [`MapProgressionState`](traversal-and-progression.md#mapprogressionstate) | class | Traversal and progression | An immutable traversal snapshot. |
 | [`MapSession`](traversal-and-progression.md#mapsession) | class | Traversal and progression | Standalone traversal orchestration over immutable graph and progression snapshots. |
@@ -103,6 +67,15 @@ The types a new project meets first.
 | [`MapBlueprintCompilation`](authoring-assets.md#mapblueprintcompilation) | class | Authoring assets | The result of compiling one `MapBlueprintAsset`: everything a generation request needs -- rules, mode, seed, overrides, and search budgets -- plus the graph the blueprint authored,... |
 | [`MapConstraintAsset`](authoring-assets.md#mapconstraintasset) | class | Authoring assets | The ScriptableObject base for a generation rule of your own: subclass it, author whatever fields the rule needs in the Inspector, and hand back an `IMapConstraint` that judges a ma... |
 | [`MapEdgeGeometryKind`](authoring-assets.md#mapedgegeometrykind) | enum | Authoring assets | How a route between two nodes is shaped when the built-in views sample it. |
+| [`MapExperienceAssetMapping`](authoring-assets.md#mapexperienceassetmapping) | class | Authoring assets | Maps authored node types to optional presentation assets without coupling Core to Unity objects. |
+| [`MapExperienceBackend`](authoring-assets.md#mapexperiencebackend) | enum | Authoring assets | Presentation backend selected by a map experience preset. |
+| [`MapExperienceInteractionOptions`](authoring-assets.md#mapexperienceinteractionoptions) | struct | Authoring assets | Inspector-editable interaction settings shared by all presentation backends. |
+| [`MapExperienceNodePlacement`](authoring-assets.md#mapexperiencenodeplacement) | class | Authoring assets | Optional presentation offset that never changes the graph or its stable IDs. |
+| [`MapExperiencePreset`](authoring-assets.md#mapexperiencepreset) | class | Authoring assets | Authoring configuration for a runtime map experience. |
+| [`MapExperienceProgressionPolicy`](authoring-assets.md#mapexperienceprogressionpolicy) | enum | Authoring assets | Progression policy selected by an experience. |
+| [`MapExperienceRouteAppearance`](authoring-assets.md#mapexperiencerouteappearance) | struct | Authoring assets | Optional route appearance override carried by an experience preset. |
+| [`MapExperienceRuntimeOptions`](authoring-assets.md#mapexperienceruntimeoptions) | class | Authoring assets | Detached experience settings used by a host while a preset remains unchanged. |
+| [`MapExperienceVisualPreset`](authoring-assets.md#mapexperiencevisualpreset) | enum | Authoring assets | Small set of ready-to-style starting looks for a new experience. |
 | [`MapFlowDirection`](authoring-assets.md#mapflowdirection) | enum | Authoring assets | Which screen direction the map's progress runs in. |
 | [`MapLayoutOrientation`](authoring-assets.md#maplayoutorientation) | enum | Authoring assets | Which axis a map's layers advance along once it is laid out. |
 | [`MapNodeTypeAsset`](authoring-assets.md#mapnodetypeasset) | class | Authoring assets | One kind of node a map may contain: its stable identity, the label and tooltip shown for it, the prefabs, icon, and per-state colors the built-in views draw it with, and the defaul... |
@@ -134,21 +107,37 @@ The types a new project meets first.
 | [`MapSurfaceRequest`](styling-and-appearance.md#mapsurfacerequest) | struct | Styling and appearance | The complete parameter set for one map surface material. |
 | [`MapSurfaceTokens`](styling-and-appearance.md#mapsurfacetokens) | struct | Styling and appearance | Fill, stroke, glow, and shadow for a drawn surface. |
 | [`MapTypographyTokens`](styling-and-appearance.md#maptypographytokens) | struct | Styling and appearance | Label sizing and treatment. |
+| [`BranchWeaverMapHost`](presentation-and-views.md#branchweavermaphost) | class | Presentation and views | Designer-first scene host for one complete BranchWeaver run. |
+| [`CanvasExperienceNodeClick`](presentation-and-views.md#canvasexperiencenodeclick) | class | Presentation and views | Canvas pointer bridge for one stable node ID. |
+| [`CanvasExperienceRenderer`](presentation-and-views.md#canvasexperiencerenderer) | class | Presentation and views | Snapshot-driven Canvas adapter with pooled node buttons and route segments. |
 | [`CanvasMapEdgeView`](presentation-and-views.md#canvasmapedgeview) | class | Presentation and views | Draws one edge between two map nodes as a chain of uGUI images, and is the edge view the Canvas presentation builds by default. |
 | [`CanvasMapNodeView`](presentation-and-views.md#canvasmapnodeview) | class | Presentation and views | Draws one map node as a uGUI element inside a Canvas, and is the node view the Canvas presentation builds by default. |
 | [`CanvasMapPresenter`](presentation-and-views.md#canvasmappresenter) | class | Presentation and views | Draws a map inside a uGUI Canvas. |
 | [`DefaultMapNodeHitTester`](presentation-and-views.md#defaultmapnodehittester) | class | Presentation and views | The shipped hit tester. |
 | [`IMapAudioCueAdapter`](presentation-and-views.md#imapaudiocueadapter) | interface | Presentation and views | Plays the cue ids authored on node types, so the package never has to know which audio system a project uses. |
 | [`IMapBackgroundPresenter`](presentation-and-views.md#imapbackgroundpresenter) | interface | Presentation and views | Optional hook for drawing whatever sits behind the map: a backdrop image, a parallax layer, a shader quad. |
-| [`IMapDevelopmentHost`](presentation-and-views.md#imapdevelopmenthost) | interface | Presentation and views | The command surface behind the development overlay: reveal, unlock, teleport, reset, force a result, regenerate, and copy the generation manifest. |
 | [`IMapEdgeAvailabilityView`](presentation-and-views.md#imapedgeavailabilityview) | interface | Presentation and views | Implemented by an edge view that can emphasize routes leading to a reachable node. |
 | [`IMapEdgeTransitionView`](presentation-and-views.md#imapedgetransitionview) | interface | Presentation and views | Optional on an `IMapEdgeView`: the edge counterpart of `IMapNodeTransitionView`, driven in the same order and under the same condition that no `IMapPresentationTransitionAdapter` i... |
 | [`IMapEdgeView`](presentation-and-views.md#imapedgeview) | interface | Presentation and views | The contract for anything that draws a single map edge. |
 | [`IMapEdgeViewFactory`](presentation-and-views.md#imapedgeviewfactory) | interface | Presentation and views | Creates and reclaims edge views for a presenter. |
+| [`IMapExperienceAnimationRenderer`](presentation-and-views.md#imapexperienceanimationrenderer) | interface | Presentation and views | Advances renderer-owned presentation animation without changing game state. |
+| [`IMapExperienceCameraRenderer`](presentation-and-views.md#imapexperiencecamerarenderer) | interface | Presentation and views | Optional renderer capability for scene and preview camera setup. |
+| [`IMapExperienceConditions`](presentation-and-views.md#imapexperienceconditions) | interface | Presentation and views | Typed game integration for conditions and content without reflection. |
+| [`IMapExperienceElementRenderer`](presentation-and-views.md#imapexperienceelementrenderer) | interface | Presentation and views | Mounts a document renderer in an editor panel using the same live visual tree. |
+| [`IMapExperienceInputOwnership`](presentation-and-views.md#imapexperienceinputownership) | interface | Presentation and views | Allows one input owner to suppress a renderer's duplicate keyboard polling. |
+| [`IMapExperienceInteractiveRenderer`](presentation-and-views.md#imapexperienceinteractiverenderer) | interface | Presentation and views | Optional renderer capabilities for real-time input and camera configuration. |
+| [`IMapExperienceLayoutEditingRenderer`](presentation-and-views.md#imapexperiencelayouteditingrenderer) | interface | Presentation and views | Converts a pointer to layout coordinates for visual authoring without changing topology. |
+| [`IMapExperienceLayoutManipulationRenderer`](presentation-and-views.md#imapexperiencelayoutmanipulationrenderer) | interface | Presentation and views | Optional editor gesture surface for changing presentation offsets with undo. |
+| [`IMapExperiencePickingRenderer`](presentation-and-views.md#imapexperiencepickingrenderer) | interface | Presentation and views | Screen projection and picking shared by editor previews and runtime input. |
+| [`IMapExperienceRenderer`](presentation-and-views.md#imapexperiencerenderer) | interface | Presentation and views | Renderer boundary independent of Unity Transform and presentation assemblies. |
+| [`IMapExperienceUiInputOwnership`](presentation-and-views.md#imapexperienceuiinputownership) | interface | Presentation and views | Distinguishes map input from other controls sharing a UI Toolkit panel. |
+| [`IMapExperienceViewportRenderer`](presentation-and-views.md#imapexperienceviewportrenderer) | interface | Presentation and views | Optional presentation area reserved by a game's surrounding interface. |
 | [`IMapFocusIndicatorPresenter`](presentation-and-views.md#imapfocusindicatorpresenter) | interface | Presentation and views | Optional hook for one shared focus indicator drawn at the focused node, as an alternative to every node styling its own focus. |
 | [`IMapFocusView`](presentation-and-views.md#imapfocusview) | interface | Presentation and views | Optional on an `IMapNodeView`: lets a view show keyboard or gamepad focus. |
 | [`IMapInputSource`](presentation-and-views.md#imapinputsource) | interface | Presentation and views | Supplies the map with input frames. |
 | [`IMapLocalizationAdapter`](presentation-and-views.md#imaplocalizationadapter) | interface | Presentation and views | Bridges node labels and tooltips to whatever localization system a project already uses. |
+| [`IMapNodeContentResolver`](presentation-and-views.md#imapnodecontentresolver) | interface | Presentation and views | Resolves one stable content ID for a node. |
+| [`IMapNodeContentSelectionValidator`](presentation-and-views.md#imapnodecontentselectionvalidator) | interface | Presentation and views | Optional compatibility check used while restoring persisted selections. |
 | [`IMapNodeHitState`](presentation-and-views.md#imapnodehitstate) | interface | Presentation and views | Optional on an `IMapNodeView`: lets the view decide for itself whether it can be clicked. |
 | [`IMapNodeHitTester`](presentation-and-views.md#imapnodehittester) | interface | Presentation and views | Resolves a screen position to a map node. |
 | [`IMapNodeTransitionView`](presentation-and-views.md#imapnodetransitionview) | interface | Presentation and views | Optional on an `IMapNodeView`: lets a view animate its own state changes, which is how the shipped node views cross-fade. |
@@ -162,11 +151,33 @@ The types a new project meets first.
 | [`InputSystemSignalAdapter`](presentation-and-views.md#inputsystemsignaladapter) | class | Presentation and views | Package-neutral bridge for Input System PlayerInput UnityEvents. |
 | [`LegacyMapInputSource`](presentation-and-views.md#legacymapinputsource) | class | Presentation and views | Input source for Unity's legacy Input Manager: axes for navigation, Return, Space or the Submit button for activation, the mouse for pointing, middle-drag to pan and the wheel to z... |
 | [`MapCameraBloom`](presentation-and-views.md#mapcamerabloom) | class | Presentation and views | Optional map bloom and vignette. |
-| [`MapDevelopmentCommandResult`](presentation-and-views.md#mapdevelopmentcommandresult) | class | Presentation and views | The outcome of one development command: success, optionally carrying a value, or a refusal with a reason fit to show in a debug overlay. |
-| [`MapDevelopmentFailureKind`](presentation-and-views.md#mapdevelopmentfailurekind) | enum | Presentation and views | Why a development command was refused. |
+| [`MapContentPoolAsset`](presentation-and-views.md#mapcontentpoolasset) | class | Presentation and views | A dependency-free deterministic resolver authored in the Inspector. |
+| [`MapContentPoolEntry`](presentation-and-views.md#mapcontentpoolentry) | class | Presentation and views | One weighted and filtered row in a `MapContentPoolAsset`. |
+| [`MapContentResolutionFailureKind`](presentation-and-views.md#mapcontentresolutionfailurekind) | enum | Presentation and views | Why a node-content request did not produce a selection. |
+| [`MapContentResolutionRequest`](presentation-and-views.md#mapcontentresolutionrequest) | class | Presentation and views | Immutable input to an `IMapNodeContentResolver`. |
+| [`MapContentResolutionResult`](presentation-and-views.md#mapcontentresolutionresult) | class | Presentation and views | Typed success or refusal returned by a node-content resolver. |
+| [`MapContentRoutingDiagnosticCodes`](presentation-and-views.md#mapcontentroutingdiagnosticcodes) | class | Presentation and views | Stable diagnostics emitted by content routing. |
+| [`MapContentSelection`](presentation-and-views.md#mapcontentselection) | class | Presentation and views | The durable result of resolving game content for one entered node. |
 | [`MapEdgeViewData`](presentation-and-views.md#mapedgeviewdata) | struct | Presentation and views | Everything an edge view needs to draw one route in one presented state: the graph edge, the sampled path along it, the colour to draw it in, and its fog state. |
+| [`MapExperienceCommandResult`](presentation-and-views.md#mapexperiencecommandresult) | class | Presentation and views | Outcome of a presentation-independent command; refusals never change progression. |
+| [`MapExperienceDemoControls`](presentation-and-views.md#mapexperiencedemocontrols) | class | Presentation and views | Optional contextual HUD used by the experience examples. |
+| [`MapExperienceEdgeSnapshot`](presentation-and-views.md#mapexperienceedgesnapshot) | struct | Presentation and views | Immutable directed edge information passed to an experience renderer. |
+| [`MapExperienceHost`](presentation-and-views.md#mapexperiencehost) | class | Presentation and views | Owns a map session independently of its renderer, preserving legacy forward saves. |
+| [`MapExperienceInputGuard`](presentation-and-views.md#mapexperienceinputguard) | class | Presentation and views | Optional ownership hooks used to prevent map input from crossing another UI. |
+| [`MapExperienceNodeSnapshot`](presentation-and-views.md#mapexperiencenodesnapshot) | struct | Presentation and views | Immutable node information passed to an experience renderer. |
+| [`MapExperienceRendererRegistry`](presentation-and-views.md#mapexperiencerendererregistry) | class | Presentation and views | Optional assembly-neutral renderer registry. |
+| [`MapExperienceSnapshot`](presentation-and-views.md#mapexperiencesnapshot) | class | Presentation and views | Coherent immutable graph and visual state supplied to a renderer. |
+| [`MapExperienceTraversalStamp`](presentation-and-views.md#mapexperiencetraversalstamp) | struct | Presentation and views | Immutable traversal metadata identifying the current route, node, and completion state. |
+| [`MapExperienceVisitEvent`](presentation-and-views.md#mapexperiencevisitevent) | class | Presentation and views | Inspector callback carrying node ID and an exact, runtime-only completion token. |
 | [`MapFogSettings`](presentation-and-views.md#mapfogsettings) | struct | Presentation and views | How far ahead of the traveller the map is revealed. |
 | [`MapFogState`](presentation-and-views.md#mapfogstate) | enum | Presentation and views | How visible a node is, derived from its `MapNodeVisualState`: a hidden node reports `MapFogState.Hidden`, a locked one `MapFogState.Dimmed`, and anything the traveller has reached ... |
+| [`MapHostDiagnosticCodes`](presentation-and-views.md#maphostdiagnosticcodes) | class | Presentation and views | Stable diagnostic identifiers emitted by `BranchWeaverMapHost`. |
+| [`MapHostFailureKind`](presentation-and-views.md#maphostfailurekind) | enum | Presentation and views | Why a host operation did not complete. |
+| [`MapHostOperationKind`](presentation-and-views.md#maphostoperationkind) | enum | Presentation and views | Each value names the host command represented by a typed operation result. |
+| [`MapHostOperationResult`](presentation-and-views.md#maphostoperationresult) | class | Presentation and views | Typed outcome returned by every operation on `BranchWeaverMapHost`. |
+| [`MapHostSaveAdapterKind`](presentation-and-views.md#maphostsaveadapterkind) | enum | Presentation and views | Which persistence source the host creates or resolves from the scene. |
+| [`MapHostSeedPolicy`](presentation-and-views.md#maphostseedpolicy) | enum | Presentation and views | Where the parameterless `BranchWeaverMapHost.StartNew()` obtains its seed. |
+| [`MapHostStarterPanel`](presentation-and-views.md#maphoststarterpanel) | class | Presentation and views | Small removable uGUI control panel created by the Setup Wizard's one-click starter flow. |
 | [`MapInputController`](presentation-and-views.md#mapinputcontroller) | class | Presentation and views | The component that turns input frames into map interaction: it moves focus between nodes, submits the focused or pressed node to a `MapTraversalController`, and pans and zooms the ... |
 | [`MapInputFrame`](presentation-and-views.md#mapinputframe) | struct | Presentation and views | One update's worth of map input, reduced to the six signals the controller acts on: a directional axis, a submit request, a pointer, pan and zoom deltas, and a pinch flag. |
 | [`MapNavigationDirection`](presentation-and-views.md#mapnavigationdirection) | enum | Presentation and views | A directional focus step, named in normalized layout space: Up is increasing Y and Right is increasing X, whatever the presenter later does with those axes on screen. |
@@ -180,13 +191,29 @@ The types a new project meets first.
 | [`MapRuntimeStateSnapshot`](presentation-and-views.md#mapruntimestatesnapshot) | class | Presentation and views | The whole map's derived display state for one progression revision: one entry per node, sorted by node ID and addressable by ID. |
 | [`MapSelectionResult`](presentation-and-views.md#mapselectionresult) | class | Presentation and views | The outcome of asking the controller to move to a node. |
 | [`MapSetupHierarchyBinding`](presentation-and-views.md#mapsetuphierarchybinding) | class | Presentation and views | Durable identity for scene objects created and owned by the BranchWeaver setup wizard. |
+| [`MapStringUnityEvent`](presentation-and-views.md#mapstringunityevent) | class | Presentation and views | Inspector-serializable event that publishes one stable ID as text. |
 | [`MapSurfaceStyling`](presentation-and-views.md#mapsurfacestyling) | class | Presentation and views | Turns a node's compiled type, visual state, and fog state into the surface request that draws it. |
 | [`MapTraversalController`](presentation-and-views.md#maptraversalcontroller) | class | Presentation and views | The scene component that owns one traversal run: it holds the graph, the progression, and the compiled content, applies every move through a `MapSession`, and reports what happened... |
+| [`MapUnityEvent`](presentation-and-views.md#mapunityevent) | class | Presentation and views | Inspector-serializable signal used when listeners can read details from the controller. |
 | [`PassthroughLocalizationAdapter`](presentation-and-views.md#passthroughlocalizationadapter) | class | Presentation and views | The `IMapLocalizationAdapter` used when a project has no localization system wired up: it returns the authored fallback text unchanged, falling back to the key itself when no text ... |
+| [`RuntimeExperienceInputRegistry`](presentation-and-views.md#runtimeexperienceinputregistry) | class | Presentation and views | Assembly-neutral factories for optional experience input integrations. |
+| [`UIToolkitMapRenderer`](presentation-and-views.md#uitoolkitmaprenderer) | class | Presentation and views | Renders BranchWeaver snapshots with UI Toolkit. |
+| [`World2DExperienceNodeClick`](presentation-and-views.md#world2dexperiencenodeclick) | class | Presentation and views | World2D pointer bridge for one stable node ID. |
+| [`World2DExperienceRenderer`](presentation-and-views.md#world2dexperiencerenderer) | class | Presentation and views | Snapshot-driven World2D adapter using pooled sprites and line routes. |
+| [`World3DEdgeFactory`](presentation-and-views.md#world3dedgefactory) | class | Presentation and views | Creates and pools World3D line routes with a shared local projection scale. |
+| [`World3DExperienceNodeClick`](presentation-and-views.md#world3dexperiencenodeclick) | class | Presentation and views | Stable node bridge retained for renderer-owned picking metadata. |
+| [`World3DExperienceRenderer`](presentation-and-views.md#world3dexperiencerenderer) | class | Presentation and views | Snapshot-driven World3D adapter. |
+| [`World3DMapEdgeView`](presentation-and-views.md#world3dmapedgeview) | class | Presentation and views | Draws an edge as one pooled LineRenderer projected from XY to XZ. |
+| [`World3DMapNodeView`](presentation-and-views.md#world3dmapnodeview) | class | Presentation and views | Draws one node with a mesh, optional authored prefab, label and stable hit transform. |
+| [`World3DMapPresenter`](presentation-and-views.md#world3dmappresenter) | class | Presentation and views | Presents a BranchWeaver map as pooled scene objects on the XZ plane. |
+| [`World3DNodeFactory`](presentation-and-views.md#world3dnodefactory) | class | Presentation and views | Creates and pools World3D node views, partitioned by node type and prefab. |
 | [`WorldMapEdgeView`](presentation-and-views.md#worldmapedgeview) | class | Presentation and views | Draws one edge between two map nodes as a world-space line, and is the edge view the World2D presentation builds by default. |
 | [`WorldMapNodeView`](presentation-and-views.md#worldmapnodeview) | class | Presentation and views | Draws one map node as a world-space sprite, and is the node view the World2D presentation builds by default. |
 | [`WorldMapPresenter`](presentation-and-views.md#worldmappresenter) | class | Presentation and views | Draws a map as ordinary scene objects rather than UI. |
+| [`WorldMapSurface`](presentation-and-views.md#worldmapsurface) | class | Presentation and views | Draws one styled map surface in world space, so a World2D map gets the same shapes, gradients, strokes, rings and glow the Canvas presentation has. |
+| [`InputSystemExperienceRegistration`](framing-input-and-navigation.md#inputsystemexperienceregistration) | class | Framing, input and navigation | Registers the optional Input System providers with the assembly-neutral runtime registry. |
 | [`InputSystemMapInputBridge`](framing-input-and-navigation.md#inputsystemmapinputbridge) | class | Framing, input and navigation | Optional PlayerInput UnityEvent bridge compiled only when com.unity.inputsystem is installed. |
+| [`InputSystemMapInputSource`](framing-input-and-navigation.md#inputsystemmapinputsource) | class | Framing, input and navigation | Optional polling adapter for the Unity Input System. |
 | [`MapAspectClass`](framing-input-and-navigation.md#mapaspectclass) | enum | Framing, input and navigation | Coarse bucket for a screen's shape, so framing and layout can be chosen per display class instead of per resolution. |
 | [`MapFrameResult`](framing-input-and-navigation.md#mapframeresult) | struct | Framing, input and navigation | The resolved on-screen placement of a map: the rectangle it may occupy, the scale that fits its content into that rectangle, and the pan limits that keep it reachable. |
 | [`MapFrameUtility`](framing-input-and-navigation.md#mapframeutility) | class | Framing, input and navigation | Pure framing maths, separated from the component so it can be tested without a scene, a canvas, or a device. |
@@ -224,6 +251,9 @@ The types a new project meets first.
 | [`FileMapSaveAdapter`](saving-and-migration.md#filemapsaveadapter) | class | Saving and migration | Rooted file persistence. |
 | [`IMapSaveAdapter`](saving-and-migration.md#imapsaveadapter) | interface | Saving and migration | The storage boundary for map saves: read, write, and delete one slot of complete save data. |
 | [`IMapSaveMigration`](saving-and-migration.md#imapsavemigration) | interface | Saving and migration | One step of the save upgrade chain: it accepts an envelope at its declared source version and returns the same run at its target version. |
+| [`MapExplorationLoadResult`](saving-and-migration.md#mapexplorationloadresult) | class | Saving and migration | Result of exploration deserialization. |
+| [`MapExplorationSaveCodec`](saving-and-migration.md#mapexplorationsavecodec) | class | Saving and migration | Separate, strict persistence codec for exploration sessions. |
+| [`MapExplorationSerializationResult`](saving-and-migration.md#mapexplorationserializationresult) | class | Saving and migration | Result of exploration serialization. |
 | [`MapSaveEnvelope`](saving-and-migration.md#mapsaveenvelope) | class | Saving and migration | A complete, versioned graph and traversal snapshot. |
 | [`MapSaveFailureKind`](saving-and-migration.md#mapsavefailurekind) | enum | Saving and migration | Why a save read, write, or delete did not succeed. |
 | [`MapSaveOperationResult`](saving-and-migration.md#mapsaveoperationresult) | class | Saving and migration | The outcome of a save write or delete: whether it committed, the typed reason when it did not, and the diagnostics behind that reason. |
@@ -233,10 +263,11 @@ The types a new project meets first.
 | [`MapSaveSerializer`](saving-and-migration.md#mapsaveserializer) | class | Saving and migration | Strict, culture-invariant JSON persistence for complete map save envelopes. |
 | [`MapSaveV1ToV2Migration`](saving-and-migration.md#mapsavev1tov2migration) | class | Saving and migration | Save format 1 had no customer metadata field. |
 | [`MemoryMapSaveAdapter`](saving-and-migration.md#memorymapsaveadapter) | class | Saving and migration | An in-memory adapter that stores canonical JSON rather than live object references. |
+| [`MapExperienceExamples`](editor-tools.md#mapexperienceexamples) | class | Editor tools | Editor helpers that create reproducible BranchWeaver example scenes from authoring presets. |
+| [`MapExperienceStudioWindow`](editor-tools.md#mapexperiencestudiowindow) | class | Editor tools | Edits a detached preset while rendering and simulating an isolated map. |
 | [`MapStudioCommandResult`](editor-tools.md#mapstudiocommandresult) | class | Editor tools | What one Map Studio command did: whether it was accepted, the snapshot to display afterwards, and the error that explains a rejection. |
 | [`MapStudioSession`](editor-tools.md#mapstudiosession) | class | Editor tools | The editing model behind the Map Studio window: it holds one `MapStudioSnapshot` at a time and turns each authoring gesture -- regenerate, move, retype, pin, connect, undo -- into ... |
 | [`MapStudioSnapshot`](editor-tools.md#mapstudiosnapshot) | class | Editor tools | Immutable picture of one Map Studio preview: the compiled rules the preview is pinned to, the generation mode and seed, the graph as it currently stands, the overrides and search b... |
-| [`MapDevelopmentOverlay`](determinism-and-diagnostics.md#mapdevelopmentoverlay) | class | Determinism and diagnostics | A draggable IMGUI window that drives the development commands of a running map: reveal everything, unlock or teleport to a node by ID, complete the current node, force a completion... |
 | [`MapDiagnostic`](determinism-and-diagnostics.md#mapdiagnostic) | class | Determinism and diagnostics | One problem found while compiling authoring assets, running generation preflight, validating a graph, or loading a save: a severity, a stable machine-readable code, a message writt... |
 | [`StableId`](determinism-and-diagnostics.md#stableid) | struct | Determinism and diagnostics | A stable, serialization-safe identifier. |
 | [`IMapGenerator`](other.md#imapgenerator) | interface | Other | The generation boundary of the package: one call turns a `MapGenerationRequest` into either a complete map or a typed failure. |
@@ -250,8 +281,6 @@ The types a new project meets first.
 | [`MapPropertyKind`](other.md#mappropertykind) | enum | Other | Which of a `MapPropertyValue`'s fields carries the data. |
 | [`MapPropertyValue`](other.md#mappropertyvalue) | struct | Other | A Unity-independent tagged value used by map payloads. |
 | [`MapRuleSnapshot`](other.md#maprulesnapshot) | class | Other | Immutable, engine-independent rules compiled from authoring assets: the layer widths, the node type table, the zones, the quota, forced-type and forbidden-adjacency rules, the conn... |
-| [`SampleProceduralVisuals`](other.md#sampleproceduralvisuals) | class | Other | Creates the sample-only scenery and traveler markers from deterministic geometry at runtime. |
-| [`SampleSceneBootstrap`](other.md#samplescenebootstrap) | class | Other | Self-contained sample host. |
 | [`XorShift32Random`](other.md#xorshift32random) | class | Other | Version 1 of BranchWeaver's deterministic random stream. |
 
 </div>

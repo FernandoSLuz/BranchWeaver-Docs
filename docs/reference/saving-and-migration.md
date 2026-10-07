@@ -1,11 +1,13 @@
 # Saving and migration
 
-12 types in this area.
+15 types in this area.
 
 !!! abstract "On this page"
-    [FileMapSaveAdapter](#filemapsaveadapter) &middot; [IMapSaveAdapter](#imapsaveadapter) &middot; [IMapSaveMigration](#imapsavemigration) &middot; [MapSaveEnvelope](#mapsaveenvelope) &middot; [MapSaveFailureKind](#mapsavefailurekind) &middot; [MapSaveOperationResult](#mapsaveoperationresult) &middot; [MapSaveReadResult](#mapsavereadresult) &middot; [MapSaveRecoverySource](#mapsaverecoverysource) &middot; [MapSaveSerializationResult](#mapsaveserializationresult) &middot; [MapSaveSerializer](#mapsaveserializer) &middot; [MapSaveV1ToV2Migration](#mapsavev1tov2migration) &middot; [MemoryMapSaveAdapter](#memorymapsaveadapter)
+    [FileMapSaveAdapter](#filemapsaveadapter) &middot; [IMapSaveAdapter](#imapsaveadapter) &middot; [IMapSaveMigration](#imapsavemigration) &middot; [MapExplorationLoadResult](#mapexplorationloadresult) &middot; [MapExplorationSaveCodec](#mapexplorationsavecodec) &middot; [MapExplorationSerializationResult](#mapexplorationserializationresult) &middot; [MapSaveEnvelope](#mapsaveenvelope) &middot; [MapSaveFailureKind](#mapsavefailurekind) &middot; [MapSaveOperationResult](#mapsaveoperationresult) &middot; [MapSaveReadResult](#mapsavereadresult) &middot; [MapSaveRecoverySource](#mapsaverecoverysource) &middot; [MapSaveSerializationResult](#mapsaveserializationresult) &middot; [MapSaveSerializer](#mapsaveserializer) &middot; [MapSaveV1ToV2Migration](#mapsavev1tov2migration) &middot; [MemoryMapSaveAdapter](#memorymapsaveadapter)
 
 ## FileMapSaveAdapter
+
+:material-star: **Start here**
 
 ```csharp
 public sealed class FileMapSaveAdapter : IMapSaveAdapter
@@ -21,44 +23,20 @@ backup without repairing or otherwise mutating any candidate.
 
 `public FileMapSaveAdapter(string rootDirectory)`
 
-:   Creates an immutable file Map Save Adapter snapshot; invalid required identifiers, ranges, or null inputs are rejected before state is exposed.
+:   Validates and normalizes an absolute, non-root, non-reparse storage directory and uses the built-in save serializer.
     - `rootDirectory` &mdash; Absolute path of the directory slot files live in, typically a folder under the platform's persistent data path. It does not have to exist yet; it is created on the first write.
 
 `public FileMapSaveAdapter(string rootDirectory, MapSaveSerializer serializer)`
 
-:   Creates an immutable file Map Save Adapter snapshot; invalid required identifiers, ranges, or null inputs are rejected before state is exposed.
+:   Validates and normalizes the storage root, then retains a caller-supplied serializer for every slot operation.
     - `rootDirectory` &mdash; Absolute path of the directory slot files live in. It does not have to exist yet; it is created on the first write.
     - `serializer` &mdash; Serializer used for every read and write through this adapter.
 
 **Properties**
 
-`public string Backup`
-
-:   Full path holding the bytes the previous write replaced, and the last candidate a read falls back to.
-
-`public string Path`
-
-:   Full path of the file this candidate would be read from.
-
-`public string Primary`
-
-:   Full path of the slot's committed save, and the first candidate a read tries.
-
 `public string RootDirectory`
 
 :   The directory every slot file is resolved inside, normalised to an absolute path with any trailing separator removed. It is a boundary rather than a hint: a slot ID whose resolved path would land outside this directory, or in a subdirectory of it, is refused instead of followed.
-
-`public MapSaveRecoverySource Source`
-
-:   Which of the three save files this candidate is. It is reported back to the caller when this candidate is the one that loads, and used as the context on any diagnostic raised against it, so a failure names the file it came from.
-
-`public string Temporary`
-
-:   Full path a write publishes to before swapping it over the committed save. One left behind means a write was interrupted after the bytes were safely on disk, so a read treats it as the second candidate.
-
-`public string Tombstone`
-
-:   Full path of the deletion marker. While it exists the slot reads as not found, whatever save files happen to remain beside it.
 
 **Methods**
 
@@ -78,7 +56,7 @@ backup without repairing or otherwise mutating any candidate.
 
 :   Serialises a save and publishes it to the slot, keeping the bytes it replaced as a backup. The new save is written to a private staging file, flushed all the way to the device, promoted to the slot's temporary file, and only then swapped over the committed save. A crash at any point therefore leaves either the previous save or a complete temporary file that `TryRead` can recover from; a half-written save is never left where a read would find it. Writing to a slot that was deleted revives it and clears its deletion marker.
     - `slotId` &mdash; Slot to publish to; an empty ID is refused as an unsafe path.
-    - `envelope` &mdash; Input envelope consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `envelope` &mdash; The current-format snapshot to validate and encode before any filesystem entry is changed.
     - **Returns** &mdash; Failure when the envelope will not serialise, when one of the slot's paths is a reparse point or the wrong kind of entry, or when the commit throws. In that last case any temporary file already published is deliberately left in place, because it is a valid recovery candidate.
 
 ---
@@ -105,6 +83,27 @@ persist serialized bytes from `MapSaveSerializer` rather than keeping live
 aliases live objects is not a save. Decoding through that same serializer is what
 migrates older formats and validates every field before a caller sees the envelope.
 
+**Methods**
+
+`public MapSaveOperationResult TryDelete(StableId slotId)`
+
+:   Attempts to delete without throwing for expected invalid input; failure leaves output parameters at documented defaults.
+    - `slotId` &mdash; The non-empty logical slot to clear; empty must fail without touching storage.
+    - **Returns** &mdash; Success, or the typed reason the slot may still hold data.
+
+`public MapSaveReadResult TryRead(StableId slotId)`
+
+:   Attempts to read without throwing for expected invalid input; failure leaves output parameters at documented defaults.
+    - `slotId` &mdash; The non-empty logical slot to load; an empty id must return `MapSaveFailureKind.UnsafePath`.
+    - **Returns** &mdash; On success, the loaded envelope and the candidate that supplied it; on failure, a typed kind and the diagnostics behind it.
+
+`public MapSaveOperationResult TryWrite(StableId slotId, MapSaveEnvelope envelope)`
+
+:   Writes one slot, replacing whatever it held. The envelope must be valid at the current save format; an invalid one is rejected before any storage is touched.
+    - `slotId` &mdash; The non-empty logical slot whose serialized bytes should be replaced.
+    - `envelope` &mdash; The current-format immutable snapshot to validate and serialize without retaining live graph references.
+    - **Returns** &mdash; Success, or the typed reason the save did not commit.
+
 ---
 
 ## IMapSaveMigration
@@ -130,6 +129,119 @@ re-checks all of that after the call, so a step that throws, drifts, or returns 
 version fails the load as `MapSaveFailureKind.MigrationFailed` instead of
 quietly rewriting a player's save.
 
+**Properties**
+
+`public int SourceVersion`
+
+:   The stored format version this step accepts. Must be at least 1, and no two steps in the chain may declare the same source.
+
+`public int TargetVersion`
+
+:   The format version this step produces. Must be `SourceVersion` plus one; an out-of-step target invalidates the whole configured chain.
+
+**Methods**
+
+`public MapSaveEnvelope Migrate(MapSaveEnvelope previous)`
+
+:   Raises one envelope by exactly one save format version.
+    - `previous` &mdash; The immutable source-version envelope to read without mutation while constructing its successor.
+    - **Returns** &mdash; A new envelope reporting `TargetVersion` and carrying the same graph and manifest fields as `previous`.
+
+---
+
+## MapExplorationLoadResult
+
+:material-star: **Start here**
+
+```csharp
+public sealed class MapExplorationLoadResult
+```
+
+`BranchWeaver.Core` &middot; <small>BranchWeaver/Runtime/Core/Persistence/MapExplorationSaveCodec.cs</small>
+
+Result of exploration deserialization.
+
+**Properties**
+
+`public string Error`
+
+:   Failure diagnostic.
+
+`public MapExplorationSession Session`
+
+:   Restored session, or null on failure.
+
+`public bool Succeeded`
+
+:   Whether a session was restored.
+
+---
+
+## MapExplorationSaveCodec
+
+:material-star: **Start here**
+
+```csharp
+public sealed class MapExplorationSaveCodec
+```
+
+`BranchWeaver.Core` &middot; <small>BranchWeaver/Runtime/Core/Persistence/MapExplorationSaveCodec.cs</small>
+
+Separate, strict persistence codec for exploration sessions. Legacy save bytes are embedded as text.
+
+**Fields**
+
+`public const int FormatVersion`
+
+:   Version of the exploration envelope, independent from legacy save versions.
+
+`public const int MaximumJsonLength`
+
+:   Maximum accepted and emitted JSON length.
+
+**Methods**
+
+`public MapExplorationLoadResult TryDeserialize(string json, MapGraph expectedGraph = null)`
+
+:   Parses and validates bounded JSON, then restores immutable history only when graph identity and encoded policy data are compatible.
+    - `json` &mdash; Exploration JSON.
+    - `expectedGraph` &mdash; Optional graph identity required by the caller.
+    - **Returns** &mdash; A restored session or a typed failure result.
+
+`public MapExplorationSerializationResult TrySerialize(MapExplorationSession session)`
+
+:   Builds a bounded, canonical JSON envelope containing graph identity, progression counters, history, payloads, and revisit policy.
+    - `session` &mdash; Session to serialize.
+    - **Returns** &mdash; A strict JSON result; invalid sessions are returned as failures.
+
+---
+
+## MapExplorationSerializationResult
+
+:material-star: **Start here**
+
+```csharp
+public sealed class MapExplorationSerializationResult
+```
+
+`BranchWeaver.Core` &middot; <small>BranchWeaver/Runtime/Core/Persistence/MapExplorationSaveCodec.cs</small>
+
+Result of exploration serialization.
+
+**Properties**
+
+`public string Error`
+
+:   Failure diagnostic.
+
+`public string Json`
+
+:   Exploration envelope JSON, empty on failure.
+
+`public bool Succeeded`
+
+:   Whether JSON was produced.
+
 ---
 
 ## MapSaveEnvelope
@@ -146,15 +258,15 @@ A complete, versioned graph and traversal snapshot.
 
 **Constructors**
 
-`public MapSaveEnvelope()`
+`public MapSaveEnvelope( int formatVersion, int generatorVersion, uint seed, string rulesFingerprint, string graphFingerprint, MapGraph graph, MapProgressionState progression, MapDataPayload customerMetadata)`
 
 :   Assembles an envelope from its parts, without checking that they agree. Prefer `CreateCurrent` for a save you are about to write, since it fills the version and manifest fields from the graph itself. This constructor exists for the two cases that must state a version rather than assume the current one: reading a save back, and migrating one forward.
-    - `formatVersion` &mdash; Input format Version consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
-    - `generatorVersion` &mdash; Input generator Version consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `formatVersion` &mdash; The serialized envelope schema revision represented by these fields.
+    - `generatorVersion` &mdash; The map algorithm revision repeated from the embedded graph.
     - `seed` &mdash; Explicit unsigned deterministic seed; equal inputs and seed produce equal canonical output.
-    - `rulesFingerprint` &mdash; Input rules Fingerprint consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
-    - `graphFingerprint` &mdash; Input graph Fingerprint consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
-    - `graph` &mdash; Input graph consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `rulesFingerprint` &mdash; The embedded graph's canonical rules digest; null is stored as empty text.
+    - `graphFingerprint` &mdash; The canonical digest expected for the embedded graph; null is stored as empty text.
+    - `graph` &mdash; The immutable map snapshot to retain by reference; this constructor permits null for deserialization diagnostics.
     - `progression` &mdash; How far the run had got on that map.
     - `customerMetadata` &mdash; Your own data to carry alongside the run. Null is stored as `MapDataPayload.Empty`.
 
@@ -192,12 +304,26 @@ A complete, versioned graph and traversal snapshot.
 
 :   The seed the map was generated from, repeated from the embedded graph and required to match it.
 
+**Fields**
+
+`public const int CurrentFormatVersion`
+
+:   The only envelope schema this build writes; older supported data is migrated to this revision first.
+
+`public const int FormatVersion1`
+
+:   The original save schema containing graph and progression data without customer metadata.
+
+`public const int FormatVersion2`
+
+:   The save schema that adds canonical customer metadata and version-two graph fields.
+
 **Methods**
 
-`public static MapSaveEnvelope CreateCurrent()`
+`public static MapSaveEnvelope CreateCurrent( MapGraph graph, MapProgressionState progression, MapDataPayload customerMetadata = null)`
 
-:   Constructs create Current from validated inputs and returns an independently usable result without transferring caller ownership.
-    - `graph` &mdash; Input graph consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+:   Creates a version-two envelope by copying generation metadata from the graph and computing its current canonical fingerprint; graph and progression references remain shared.
+    - `graph` &mdash; The complete immutable graph to embed and fingerprint; null throws `ArgumentNullException`.
     - `progression` &mdash; How far the run has got.
     - `customerMetadata` &mdash; Your own data to carry with the run. Null is stored as `MapDataPayload.Empty`.
     - **Returns** &mdash; An envelope at the current format, ready to serialize.
@@ -205,6 +331,8 @@ A complete, versioned graph and traversal snapshot.
 ---
 
 ## MapSaveFailureKind
+
+:material-star: **Start here**
 
 ```csharp
 public enum MapSaveFailureKind
@@ -234,6 +362,8 @@ deserves its own player-facing message and support data.
 
 ## MapSaveOperationResult
 
+:material-star: **Start here**
+
 ```csharp
 public sealed class MapSaveOperationResult
 ```
@@ -261,6 +391,8 @@ a caller reads a result rather than building one.
 ---
 
 ## MapSaveReadResult
+
+:material-star: **Start here**
 
 ```csharp
 public sealed class MapSaveReadResult
@@ -300,6 +432,8 @@ is a slot with no save, not a broken one.
 
 ## MapSaveRecoverySource
 
+:material-star: **Start here**
+
 ```csharp
 public enum MapSaveRecoverySource
 ```
@@ -322,6 +456,8 @@ instead; the read reports that as a warning and leaves every stored file as it f
 ---
 
 ## MapSaveSerializationResult
+
+:material-star: **Start here**
 
 ```csharp
 public sealed class MapSaveSerializationResult
@@ -361,6 +497,8 @@ instead.
 
 ## MapSaveSerializer
 
+:material-star: **Start here**
+
 ```csharp
 public sealed class MapSaveSerializer
 ```
@@ -373,30 +511,46 @@ Strict, culture-invariant JSON persistence for complete map save envelopes.
 
 `public MapSaveSerializer()`
 
-:   Creates an immutable map Save Serializer snapshot; invalid required identifiers, ranges, or null inputs are rejected before state is exposed.
+:   Configures the built-in one-step migration from save format 1 to the current format 2.
 
 `public MapSaveSerializer(IEnumerable<IMapSaveMigration> migrations)`
 
-:   Creates an immutable map Save Serializer snapshot; invalid required identifiers, ranges, or null inputs are rejected before state is exposed.
-    - `migrations` &mdash; Ordered migrations input; implementations copy or enumerate it without taking caller ownership.
+:   Indexes caller-provided one-version migration steps by source version. Null, duplicate, or non-consecutive steps mark the configuration invalid so loads fail with a typed migration error.
+    - `migrations` &mdash; The migration steps to enumerate once and retain by reference; the sequence itself is not retained.
+
+**Fields**
+
+`public const int MaximumJsonLength`
+
+:   The maximum accepted or emitted save text length: 16,777,216 UTF-16 code units.
+
+`public const int MaximumPayloadProperties`
+
+:   The maximum property count allowed in each node, completion, or customer-metadata payload.
+
+`public const int MaximumSavedEdges`
+
+:   The deserialization and envelope-validation ceiling for graph edges: 256 per supported node slot.
 
 **Methods**
 
 `public MapSaveSerializationResult TryDeserialize(string json)`
 
 :   Reads saved JSON back into an envelope at the current save format, running whatever migration steps stand between the stored version and this one. The parse is strict rather than forgiving: an object carrying an unknown field, or missing one, is corrupt data rather than something to read on a best-effort basis, and so is a value of the wrong JSON type or outside its numeric range. A save written by a newer build is reported as `MapSaveFailureKind.UnsupportedVersion` instead of being read partially. Each migration step is checked after it runs, not trusted: the seed, generator version, rules fingerprint, stored graph fingerprint, and canonical graph bytes must all come back unchanged, and the step must report exactly the version it declared. A step that throws or drifts fails the load as `MapSaveFailureKind.MigrationFailed`, which is what stops a faulty upgrade from quietly rewriting a player's run. The envelope is validated both as it was stored and again after the last step, so a caller never sees a half-migrated save.
-    - `json` &mdash; Input json consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `json` &mdash; Canonical save text no longer than `MaximumJsonLength`; null or malformed text returns a corrupt-data result.
     - **Returns** &mdash; The migrated, validated envelope, or the typed reason it could not be loaded. The JSON field of the result is empty either way.
 
 `public MapSaveSerializationResult TrySerialize(MapSaveEnvelope envelope)`
 
 :   Writes one envelope to canonical JSON. The envelope is validated at the current save format first, so an invalid one is refused rather than written out and rejected on the way back in. Field order, number formatting, and string escaping are all fixed and culture-invariant, which is what makes the text comparable byte for byte between two runs, two machines, and two locales. Text longer than `MaximumJsonLength` is refused, as is anything that throws while being written, so this never propagates an exception from the writer.
-    - `envelope` &mdash; Input envelope consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `envelope` &mdash; The current-format graph and progression snapshot to validate and encode; it is not mutated or retained by the serializer.
     - **Returns** &mdash; The JSON text and the envelope it came from, or the typed reason nothing was produced.
 
 ---
 
 ## MapSaveV1ToV2Migration
+
+:material-star: **Start here**
 
 ```csharp
 public sealed class MapSaveV1ToV2Migration : IMapSaveMigration
@@ -422,12 +576,14 @@ progression objects, so their canonical bytes and graph fingerprint remain uncha
 `public MapSaveEnvelope Migrate(MapSaveEnvelope previous)`
 
 :   Rebuilds a version 1 envelope as a version 2 one, carrying every field across unchanged and giving the new customer metadata field its empty value, since a version 1 save had nowhere to store any. The result is a new envelope; `previous` is not modified, and the graph and progression objects are shared with it rather than copied, which is what keeps the canonical graph bytes and the graph fingerprint identical across the step.
-    - `previous` &mdash; Input previous consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `previous` &mdash; The non-null format-one envelope whose graph and progression references are carried into the new wrapper unchanged.
     - **Returns** &mdash; The same run reported at version 2.
 
 ---
 
 ## MemoryMapSaveAdapter
+
+:material-star: **Start here**
 
 ```csharp
 public sealed class MemoryMapSaveAdapter : IMapSaveAdapter
@@ -441,32 +597,32 @@ An in-memory adapter that stores canonical JSON rather than live object referenc
 
 `public MemoryMapSaveAdapter()`
 
-:   Creates an immutable memory Map Save Adapter snapshot; invalid required identifiers, ranges, or null inputs are rejected before state is exposed.
+:   Starts an empty, thread-safe memory store using a serializer with the built-in format-one migration.
 
 `public MemoryMapSaveAdapter(MapSaveSerializer serializer)`
 
-:   Creates an immutable memory Map Save Adapter snapshot; invalid required identifiers, ranges, or null inputs are rejected before state is exposed.
-    - `serializer` &mdash; Input serializer consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+:   Starts an empty, thread-safe memory store that encodes and decodes each slot through the supplied serializer.
+    - `serializer` &mdash; The serializer instance retained for all reads and writes; null throws `ArgumentNullException`.
 
 **Methods**
 
 `public MapSaveOperationResult TryDelete(StableId slotId)`
 
 :   Drops whatever the slot held. Clearing a slot that holds no save still succeeds, and nothing survives the call: this adapter keeps no backup and writes no deletion marker, so a later read of the same slot reports `MapSaveFailureKind.NotFound`.
-    - `slotId` &mdash; Stable identifier for slot; invalid or empty IDs are rejected before mutation.
+    - `slotId` &mdash; The non-empty logical save slot to clear; a missing valid slot is still successful.
     - **Returns** &mdash; Success, or the typed reason the slot may still hold data.
 
 `public MapSaveReadResult TryRead(StableId slotId)`
 
 :   Attempts to read without throwing for expected invalid input; failure leaves output parameters at documented defaults.
-    - `slotId` &mdash; Stable identifier for slot; invalid or empty IDs are rejected before mutation.
+    - `slotId` &mdash; The non-empty logical save slot; empty returns `MapSaveFailureKind.UnsafePath` without reading.
     - **Returns** &mdash; The decoded and migrated envelope on success, or the typed reason the read failed.
 
 `public MapSaveOperationResult TryWrite(StableId slotId, MapSaveEnvelope envelope)`
 
 :   Attempts to write without throwing for expected invalid input; failure leaves output parameters at documented defaults.
-    - `slotId` &mdash; Stable identifier for slot; invalid or empty IDs are rejected before mutation.
-    - `envelope` &mdash; Input envelope consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `slotId` &mdash; The non-empty logical save slot to replace atomically.
+    - `envelope` &mdash; The current-format snapshot to validate and serialize; only its JSON text is retained.
     - **Returns** &mdash; Success, or the typed reason nothing was stored.
 
 ---

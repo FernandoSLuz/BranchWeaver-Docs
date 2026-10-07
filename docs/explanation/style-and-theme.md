@@ -4,6 +4,11 @@ Three assets decide what a map looks like, and none of them decides what the map
 After this page you can place any appearance setting in the theme, the style, or the node
 type, and you will know why nothing on the drawing side is ever asked a question.
 
+Experience Studio adds a renderer selection above these assets. Its four registered backends are
+Canvas, World2D, World3D, and UI Toolkit. Renderer changes are presentation changes: the host
+keeps the same graph, progression policy, and save contract. UI Toolkit is available only in
+the Unity 6.3 guarded build; Canvas, World2D, and World3D use native Unity components.
+
 ## The presenter draws and nothing else
 
 `MapPresenterBase` is handed a `MapGraph`, a `MapProgressionState`, the compiled
@@ -14,6 +19,10 @@ releases views. It holds no rules, no legality check, and no traversal history o
 | --- | --- | --- |
 | `CanvasMapPresenter` | Screen-space uGUI | The map is an overlay or a menu screen |
 | `WorldMapPresenter` | World-space | The map lives in the scene, with a camera |
+
+The Experience Studio `World3D` and `UIToolkit` backends implement the same snapshot boundary
+through `IMapExperienceRenderer`. They do not make the legacy Canvas and World2D presenters
+decide legality or own save data.
 
 Both are driven by the same session, the same compiled content, and the same style, so
 swapping one for the other changes where the map is drawn and nothing else.

@@ -104,6 +104,7 @@ extra_css:
 
 extra_javascript:
   - assets/js/api-filter.js
+  - assets/js/studio-video.js
 
 extra:
   social:
@@ -115,10 +116,11 @@ nav:
   - Home: index.md
   - Tutorials:
       - 1. Install and run the samples: tutorials/install-and-samples.md
-      - 2. Generate a map in Map Studio: tutorials/generate-a-map.md
-      - 3. Create a playable map in one click: tutorials/create-a-playable-map.md
-      - 4. Add a map to your scene: tutorials/add-a-map-to-your-scene.md
-      - 5. Restyle your map: tutorials/restyle-your-map.md
+      - "2. Experience Studio: preview, apply, and create a demo": tutorials/experience-studio.md
+      - 3. Generate a map in Map Studio: tutorials/generate-a-map.md
+      - 4. Create a playable map in one click: tutorials/create-a-playable-map.md
+      - 5. Add a map to your scene: tutorials/add-a-map-to-your-scene.md
+      - 6. Restyle your map: tutorials/restyle-your-map.md
   - How-to:
       - Create node types: how-to/create-node-types.md
       - Write map rules: how-to/write-map-rules.md

@@ -66,7 +66,7 @@ different signed distance field, so all five stay crisp at any zoom and cost one
 
 `Node.Size` is the node's edge length in presentation pixels, from 8 to 512; every shipped style uses
 64. `CornerRadius` accepts 0 to 64 and is read by `RoundedRect` alone. A node type's icon, when it has
-one, sits inside the node inset by `IconInset` — a fraction of node size up to 0.45, so it never
+one, sits inside the node inset by `IconInset` - a fraction of node size up to 0.45, so it never
 touches the border. The icon stays white unless `TintIcon` is on, which tints it with `TextPrimary`.
 
 !!! note "When your own art replaces the shape"
@@ -93,7 +93,7 @@ Because that second stop is derived, a gradient keeps working when a node type's
 
 `StrokeWidth` runs from 0 to 16 presentation pixels, and zero removes the border.
 
-Leaving `StrokeColor` at zero alpha — the default in every shipped style — means *derive the
+Leaving `StrokeColor` at zero alpha - the default in every shipped style - means *derive the
 border from this node's own colour*, lightened. That is what keeps a map of differently coloured
 node types coherent without the style naming a border colour per type. Give `StrokeColor` a real
 alpha to force one border colour on every node instead; that alpha is multiplied by the node's
@@ -108,7 +108,7 @@ volumes or renderer features.
 
 Each state's **Glow Scale** multiplies that intensity, so a node glows only when the surface and the
 state both ask for it. In the shipped styles that means available and current nodes glow and the rest
-do not — covered in [Emphasise node states](style-node-states.md).
+do not - covered in [Emphasise node states](style-node-states.md).
 
 `ShadowRadius` (0 to 32) softens a drop shadow at `ShadowOffset`, in `ShadowColor`, whose alpha
 scales the effect and is scaled again by the node's own opacity. Zero radius disables it.

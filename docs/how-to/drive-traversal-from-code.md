@@ -111,6 +111,20 @@ outgoing neighbours available; completing one with no outgoing route completes t
     returns a null `Transition`, and a re-entrant `CompleteCurrent` is rejected with
     `TransitionInProgress`. Queue the move and make it on your next frame.
 
+## Use an Experience Studio host
+
+`MapExperienceHost` wraps the same forward controller or owns a revisitable exploration session,
+then sends immutable snapshots to the selected Canvas, World2D, World3D, or UI Toolkit renderer.
+For content integration, subscribe to `host.ContentRequested`. The event includes the node ID and
+an exact visit token; pass that token to `host.CompleteCurrent(token, payload)` when the game-owned
+content finishes. An old callback is refused after a new visit, a load, or a direct controller
+mutation invalidates the token.
+
+Use `host.Save` and `host.Load` for a forward preset, or `host.SaveExploration` and
+`host.LoadExploration` for a revisitable preset. Do not run both content event paths for one game:
+direct controller events and host events update the same snapshot, but direct controller commands
+do not raise a second host content event.
+
 ## Generate without the controller
 
 `BranchWeaver.Core` declares no engine references, so generation runs anywhere: an edit-mode

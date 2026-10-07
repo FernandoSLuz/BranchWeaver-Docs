@@ -15,7 +15,7 @@ requests, pan, and zoom. It picks its source in this order: a source you passed 
 | Action | Mouse and keyboard | Touch |
 | --- | --- | --- |
 | Select a node | Left click, or `Return`, `Space`, or **Submit** on the focused node | Tap |
-| Move focus | The **Horizontal** and **Vertical** axes | — |
+| Move focus | The **Horizontal** and **Vertical** axes | - |
 | Pan | Middle-button drag | One-finger drag, or two fingers moving together |
 | Zoom | Scroll wheel | Two-finger pinch |
 
@@ -26,7 +26,7 @@ therefore cannot enter a node by accident.
 
 Selection hit-tests the node views themselves, topmost first. Nodes hidden by fog and nodes
 whose graphic or renderer is disabled are skipped, which is why revealing a node is all it
-takes to make it clickable — see [Control what the player can see](reveal-and-fog.md). If a
+takes to make it clickable - see [Control what the player can see](reveal-and-fog.md). If a
 click does nothing, work through
 [Troubleshooting](troubleshooting.md#clicking-a-node-does-nothing).
 
@@ -41,7 +41,7 @@ presenter is told at the same time so the ring follows without extra wiring.
 An axis reading below 0.5 counts as no direction at all, and the larger of the two axes wins,
 so a diagonal stick never moves focus twice. From the focused node the map picks the nearest
 visible node lying in that direction, breaking a tie by the smaller sideways offset and then
-by node ID — which makes the same press move the same way every run.
+by node ID - which makes the same press move the same way every run.
 
 Holding a direction moves focus once, waits 0.35 seconds, then steps every 0.12 seconds.
 `ConfigureNavigationRepeat(initialDelaySeconds, intervalSeconds)` changes both at runtime.
@@ -64,7 +64,7 @@ node, any node at all. Only a map with nothing visible clears focus.
 
 `MapInputController.Pan` and `Zoom` are the live player view, read-only from outside because
 both are clamped as they change. Zoom stays between the active theme's **Minimum Zoom** and
-**Maximum Zoom** — 0.5 and 2.5 on a new theme asset — and is anchored: the point under the
+**Maximum Zoom** - 0.5 and 2.5 on a new theme asset - and is anchored: the point under the
 pointer stays put, or the focused node does when there is no pointer. Pan is clamped so
 content cannot be dragged out of reach. **Pan Sensitivity** (1) and **Zoom Sensitivity** (0.2)
 scale the incoming deltas.
@@ -81,8 +81,8 @@ frame.Zoom = 1.5f;                    // 1.5x the fitted scale, clamped to 0.5-2
 frame.Pan = new Vector2(-120f, 40f);  // pixels, clamped on assignment
 ```
 
-`frame.Frame` exposes what was resolved — the area in pixels, the fitted scale, the content
-size, and the pan limits — which is the value to log when a map lands somewhere unexpected.
+`frame.Frame` exposes what was resolved - the area in pixels, the fitted scale, the content
+size, and the pan limits - which is the value to log when a map lands somewhere unexpected.
 Margins, fit mode, padding, and the pan limits come from the assigned style, so placement is
 edited in a style asset rather than by dragging transforms:
 [Place the map on screen](place-the-map-on-screen.md).
@@ -129,13 +129,13 @@ public sealed class PadMapInput : MonoBehaviour, IMapInputSource
 For one-off moves, skip input entirely. `map.RequestNodeSelection(nodeId)` is exactly what a
 click does, legality included, and
 `input.Navigation.TrySetFocus(nodeId, map.GetRuntimeState())` moves focus without entering
-anything — it refuses a hidden node, which is why it takes the runtime state.
+anything - it refuses a hidden node, which is why it takes the runtime state.
 
 ## Next
 
-- **[Place the map on screen](place-the-map-on-screen.md)** — the framing tokens the viewport
+- **[Place the map on screen](place-the-map-on-screen.md)** - the framing tokens the viewport
   frame reads: direction, fit mode, margins, and the pan and zoom limits.
-- **[Drive traversal from code](drive-traversal-from-code.md)** — what happens after a
+- **[Drive traversal from code](drive-traversal-from-code.md)** - what happens after a
   selection request: events, progression state, and completing a node.
 - **[Framing, input, and navigation reference](../reference/framing-input-and-navigation.md)**
-  — the full signatures.
+  - the full signatures.

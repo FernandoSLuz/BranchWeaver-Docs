@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "capturedAtUtc": "2026-10-07T08:02:05.547870+00:00",
+  "source": "native Unity Editor client window; public Studio controls and isolated host simulation",
+  "unity": "6000.3.25f1",
+  "driverSha256": "a3f9ea6b182c55bc33d58fd078043bb585bb7dc7302bf1613f31a43889664840",
+  "steps": [
+    {
+      "action": "enter-visit",
+      "unity": "6000.3.25f1",
+      "windowId": -1407136,
+      "width": 1260,
+      "height": 801,
+      "nodes": 14,
+      "edges": 18,
+      "backend": "Canvas",
+      "draft": false,
+      "fingerprint": "2b7ebeffcb06c5c91faa57afb74a4ee1a6d60a4b5f29a48c2714067177c0474b",
+      "visitToken": 1,
+      "exploration": false,
+      "available": []
+    },
+    {
+      "action": "mechanics",
+      "unity": "6000.3.25f1",
+      "windowId": -1407136,
+      "width": 1260,
+      "height": 801,
+      "nodes": 14,
+      "edges": 18,
+      "backend": "Canvas",
+      "draft": true,
+      "fingerprint": "2b7ebeffcb06c5c91faa57afb74a4ee1a6d60a4b5f29a48c2714067177c0474b",
+      "visitToken": 0,
+      "exploration": true,
+      "available": [
+        "example.expedition.node.0.0"
+      ]
+    }
+  ],
+  "files": [
+    {
+      "name": "studio-visit-pending.png",
+      "bytes": 284948,
+      "sha256": "daa8152b7d70fe3edf71458bf46dff14ff5c8f8715967f07b06569a31e59a267"
+    },
+    {
+      "name": "studio-mechanics-revisitable.png",
+      "bytes": 311838,
+      "sha256": "d70de5f553fa05cb5847b2ab08a417209cf199f077f3e052b6414341d4d164c6"
+    }
+  ],
+  "limits": [
+    "No physical-input test or human usability study",
+    "No live game session modified",
+    "No art acceptance inferred"
+  ],
+  "validation": "Images reviewed against public snapshot and visible controls; mechanics image recaptured after the Editor repaint. The stale first mechanics frame is excluded."
+}

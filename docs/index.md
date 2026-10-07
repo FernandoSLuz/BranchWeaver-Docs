@@ -36,6 +36,16 @@ Open both shipped samples and walk a map with mouse, keyboard, or touch.
 
 <div markdown>
 
+### Author an experience
+
+Preview a preset, apply or undo visual changes, switch backend, and create a demo scene.
+
+[Open Experience Studio](tutorials/experience-studio.md)
+
+</div>
+
+<div markdown>
+
 ### Generate from rules
 
 Generate a map from a seed, reproduce it exactly, and audit a range of seeds.
@@ -120,15 +130,21 @@ player did and leaves those decisions to your code.
 
 | Item | Detail |
 | --- | --- |
-| Unity | 2022.3.62f1 is the verified editor version |
+| Unity | 2022.3.62f1 serialization baseline; current Experience Studio validation in 6000.3.25f1 |
 | Required package | uGUI (`com.unity.ugui`), present in standard Unity projects |
 | Optional package | `com.unity.inputsystem`, which compiles the typed input bridge in |
-| Render pipeline | Built-in, URP, or HDRP; no render-pipeline package is required |
+| Experience Studio backends | Canvas, World2D, World3D, and UI Toolkit |
+| Render pipeline | Built-in is the verified baseline; URP and HDRP are pending current Experience Studio verification |
 | Dependencies | No paid dependency, no DLL, no DRM, no telemetry, no network service |
 
-!!! note "Other editor versions"
-    Versions, platforms, and pipelines beyond that baseline are treated as pending rather
-    than assumed. The evidence and the pending list ship in the package, at
+!!! note "Validation scope"
+    The current Unity 6000.3.25f1 task passed 597 EditMode cases (two Windows-only cases
+    ignored on Linux) and 28 PlayMode cases. The native Studio walkthrough demonstrates
+    editing, applying, and changing the presentation backend. Broader version, platform,
+    hardware-input, and pipeline coverage remains pending. BranchWeaver.Core retains its
+    Unity 2022.3 compatibility contract. The UI Toolkit
+    Experience Studio backend is compiled and registered only with `UNITY_6000_3_OR_NEWER`.
+    The evidence and pending list ship in the package, at
     `Assets/BranchWeaver/Documentation/Compatibility-and-Release.md`.
 
 !!! info "Documentation only"
@@ -137,5 +153,6 @@ player did and leaves those decisions to your code.
 ## Next
 
 - [Install and run the samples](tutorials/install-and-samples.md) &mdash; the shortest route from import to a map you can walk.
+- [Experience Studio](tutorials/experience-studio.md) &mdash; preview, apply, and turn a preset into a demo scene.
 - [Core concepts](explanation/architecture.md) &mdash; the pipeline stages and which stage decides what.
 - [API reference](reference/index.md) &mdash; every public type, grouped by what it is for and filterable as you type.

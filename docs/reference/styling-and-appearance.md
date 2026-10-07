@@ -7,6 +7,8 @@
 
 ## CompiledMapStyle
 
+:material-star: **Start here**
+
 ```csharp
 public sealed class CompiledMapStyle
 ```
@@ -20,20 +22,20 @@ assigned.
 
 **Constructors**
 
-`public CompiledMapStyle()`
+`public CompiledMapStyle( string stableIdText, string displayName, string description, MapPaletteTokens palette, MapTypographyTokens typography, MapNodeStyleTokens node, CompiledMapNodeStates states, MapEdgeStyleTokens edge, MapBackdropTokens backdrop, MapMotionTokens motion, MapFramingTokens framing)`
 
 :   Assembles a style from token values that are already in range. Nothing is clamped or defaulted here beyond the text fields, so prefer `MapStylePreset.Compile` or `MapStyleDefaults` over building one from raw authored values.
-    - `stableIdText` &mdash; Stable identifier for stable; invalid or empty IDs are rejected before mutation.
-    - `displayName` &mdash; Input display Name consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
-    - `description` &mdash; Input description consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
-    - `palette` &mdash; Input palette consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
-    - `typography` &mdash; Input typography consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
-    - `node` &mdash; Input node consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
-    - `states` &mdash; Input states consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
-    - `edge` &mdash; Input edge consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
-    - `backdrop` &mdash; Input backdrop consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
-    - `motion` &mdash; Input motion consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
-    - `framing` &mdash; Input framing consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `stableIdText` &mdash; Persistent style identity retained across asset renames.
+    - `displayName` &mdash; Player- or author-facing name shown by style selection tools.
+    - `description` &mdash; Short explanation displayed beside the style name.
+    - `palette` &mdash; Semantic colors referenced by nodes, edges, labels, and backdrop tokens.
+    - `typography` &mdash; Font, size, and label treatment used by built-in views.
+    - `node` &mdash; Shared node shape, dimensions, outline, and surface settings.
+    - `states` &mdash; Non-null emphasis treatments for all six node progression states.
+    - `edge` &mdash; Route width, cap, dash, arrow, and clearance settings.
+    - `backdrop` &mdash; Surface, vignette, and grid settings drawn behind the map.
+    - `motion` &mdash; Focus and pulse timing, easing, and reduced-motion settings.
+    - `framing` &mdash; Anchor, padding, pan, zoom, and fit policy for the viewport.
 
 **Properties**
 
@@ -86,15 +88,15 @@ assigned.
 `public Color EdgeColor(bool traversed, bool leadsToAvailable, bool locked)`
 
 :   The edge colour for a route, chosen from the traversal roles so an available route reads differently from one already walked.
-    - `traversed` &mdash; Whether traversed; false selects the documented conservative behavior.
-    - `leadsToAvailable` &mdash; Whether leads To Available; false selects the documented conservative behavior.
-    - `locked` &mdash; Whether locked; false selects the documented conservative behavior.
+    - `traversed` &mdash; Whether progression has already crossed this route.
+    - `leadsToAvailable` &mdash; Whether the target node is currently enterable.
+    - `locked` &mdash; Whether traversal through the route is currently prohibited.
     - **Returns** &mdash; The palette role for the strongest state that applies: locked wins over leads-to-available, which wins over traversed.
 
 `public Font ResolveFont()`
 
 :   The font labels are drawn with, falling back to Unity's built-in runtime font so no third-party font ships with the package.
-    - **Returns** &mdash; The complete font outcome; inspect its typed status or diagnostics before consuming payload data.
+    - **Returns** &mdash; The authored font when assigned; otherwise Unity's built-in legacy runtime font.
 
 ---
 
@@ -115,9 +117,23 @@ The presenter discovers this optionally, so a customer's own view
 implementation keeps working without it. A view that does not implement it
 simply renders unstyled, exactly as before styles existed.
 
+**Methods**
+
+`public void ApplyStyle(CompiledMapStyle style)`
+
+:   Supplies the style this view draws with. The presenter never passes null, and calls this again on a live view whenever the style changes, so an implementation must be able to restyle in place rather than assume it is dressed once when it is created.
+    - `style` &mdash; Non-null compiled token set that replaces the view's current appearance.
+
+`public void TickStyle(float presentationDeltaSeconds)`
+
+:   Advances style-driven animation such as focus easing, the current-node pulse, and edge flow, by a presentation delta in seconds. Presentation only: nothing advanced here can reach a graph, a save envelope, or a fingerprint. The presenter calls this once per style tick per view, and never with a zero or negative delta.
+    - `presentationDeltaSeconds` &mdash; Positive presentation-clock interval in seconds.
+
 ---
 
 ## MapBackdropTokens
+
+:material-star: **Start here**
 
 ```csharp
 public struct MapBackdropTokens
@@ -151,7 +167,7 @@ The backdrop drawn behind the map.
 
 `public bool Visible`
 
-:   Whether a backdrop is meant to be drawn. Nothing reads it today: the built-in presenters draw no backdrop of their own, and the editor style preview draws these tokens unconditionally. Test it from whatever object supplies your backdrop if you want a style able to switch it off.
+:   Whether a backdrop is meant to be drawn. The experience World3D renderer uses it for the tabletop backdrop. Custom presenters can use it to show their own scene art through the map.
 
 **Methods**
 
@@ -163,6 +179,8 @@ The backdrop drawn behind the map.
 ---
 
 ## MapEasing
+
+:material-star: **Start here**
 
 ```csharp
 public enum MapEasing
@@ -184,6 +202,8 @@ Easing curve for a styled transition.
 
 ## MapEdgeCap
 
+:material-star: **Start here**
+
 ```csharp
 public enum MapEdgeCap
 ```
@@ -201,6 +221,8 @@ End treatment for a drawn edge.
 ---
 
 ## MapEdgeStyleTokens
+
+:material-star: **Start here**
 
 ```csharp
 public struct MapEdgeStyleTokens
@@ -267,6 +289,8 @@ distance-field stroke instead.
 
 ## MapFillMode
 
+:material-star: **Start here**
+
 ```csharp
 public enum MapFillMode
 ```
@@ -284,6 +308,8 @@ How a surface fills its area.
 ---
 
 ## MapFitMode
+
+:material-star: **Start here**
 
 ```csharp
 public enum MapFitMode
@@ -303,6 +329,8 @@ How the map is fitted into the area it is given.
 ---
 
 ## MapFramingTokens
+
+:material-star: **Start here**
 
 ```csharp
 public struct MapFramingTokens
@@ -382,9 +410,9 @@ the camera so a player cannot lose the map off-screen.
 `public Vector2 Orient(Vector2 normalized, bool progressIsVertical)`
 
 :   Transforms a normalized position for display in this flow direction. `progressIsVertical` comes from the theme's orientation: it says which axis the layout advanced layers along. The result is a normalized position in screen terms, where y increases upward.
-    - `normalized` &mdash; Input normalized consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
-    - `progressIsVertical` &mdash; Whether progress Is Vertical; false selects the documented conservative behavior.
-    - **Returns** &mdash; The complete vector2 outcome; inspect its typed status or diagnostics before consuming payload data.
+    - `normalized` &mdash; Layout-space position whose components are expected in the normalized zero-to-one range.
+    - `progressIsVertical` &mdash; Whether the theme placed layer progress on the input's Y axis instead of X.
+    - **Returns** &mdash; The screen-oriented normalized position after applying the configured flow direction.
 
 `public MapFramingTokens Sanitized()`
 
@@ -394,6 +422,8 @@ the camera so a player cannot lose the map off-screen.
 ---
 
 ## MapMotionTokens
+
+:material-star: **Start here**
 
 ```csharp
 public struct MapMotionTokens
@@ -433,9 +463,9 @@ Transition timings. Every duration scales by `MotionScale`.
 
 `public static float Ease(MapEasing easing, float t)`
 
-:   Runs ease against validated inputs and returns a complete result rather than exposing partially updated state.
+:   The selected motion curve remaps a clamped normalized time, including BackOut overshoot between its endpoints.
     - `t` &mdash; Normalized time. Clamped into 0-1 before evaluating.
-    - `easing` &mdash; Input easing consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `easing` &mdash; Linear, quadratic, or overshooting curve used to remap `t`.
     - **Returns** &mdash; The eased fraction: 0 at the start and exactly 1 at the end. `MapEasing.BackOut` rises above 1 in between, so a caller interpolating with it must tolerate overshoot.
 
 `public MapMotionTokens Sanitized()`
@@ -446,12 +476,14 @@ Transition timings. Every duration scales by `MotionScale`.
 `public float Scale(float seconds)`
 
 :   The effective duration for `seconds` under this style.
-    - `seconds` &mdash; Input seconds consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `seconds` &mdash; Unscaled transition duration in seconds.
     - **Returns** &mdash; Zero while `ReduceMotion` is set, otherwise `seconds` times `MotionScale`. Never negative.
 
 ---
 
 ## MapNodeShape
+
+:material-star: **Start here**
 
 ```csharp
 public enum MapNodeShape
@@ -472,6 +504,8 @@ Silhouette drawn for a map node.
 ---
 
 ## MapNodeStateStyle
+
+:material-star: **Start here**
 
 ```csharp
 public struct MapNodeStateStyle
@@ -520,7 +554,7 @@ without touching a single node type asset.
 `public static MapNodeStateStyle Plain(bool showLabel)`
 
 :   A plain state treatment at full brightness and opacity.
-    - `showLabel` &mdash; Whether show Label; false selects the documented conservative behavior.
+    - `showLabel` &mdash; Whether the otherwise plain treatment keeps the node label visible.
     - **Returns** &mdash; A treatment at the authored size with no glow and no ring, showing the label only when `showLabel` is set.
 
 `public MapNodeStateStyle Sanitized()`
@@ -531,6 +565,8 @@ without touching a single node type asset.
 ---
 
 ## MapNodeStyleTokens
+
+:material-star: **Start here**
 
 ```csharp
 public struct MapNodeStyleTokens
@@ -576,6 +612,8 @@ Shape and size shared by every node before per-state treatment.
 ---
 
 ## MapPaletteTokens
+
+:material-star: **Start here**
 
 ```csharp
 public struct MapPaletteTokens
@@ -643,6 +681,8 @@ focus rings, and labels together.
 
 ## MapStyleDefaults
 
+:material-star: **Start here**
+
 ```csharp
 public static class MapStyleDefaults
 ```
@@ -662,182 +702,134 @@ The Style Browser turns any of these into an editable
 
 **Fields**
 
-`public float CornerRadius`
+`public const string DefaultStyleId`
 
-:   Corner rounding in presentation pixels; only `MapNodeShape.RoundedRect` reads it.
-
-`public float DashGap`
-
-:   Gap between dashes in presentation pixels; only meaningful with a non-zero `DashLength`.
-
-`public float DashLength`
-
-:   Dash length in presentation pixels. Zero draws routes as solid lines.
-
-`public MapEdgeCap EdgeCap`
-
-:   End treatment for a route. Choosing `MapEdgeCap.Arrow` is what gives the recipe a non-zero arrowhead length; the other caps leave it at zero.
-
-`public float EdgeWidth`
-
-:   Route thickness in presentation pixels, before the available-route width multiplier.
-
-`public MapFillMode FillMode`
-
-:   How a node fills its silhouette. It governs nodes only; the backdrop is always built as a linear gradient between the palette's two background colours.
-
-`public float FlowSpeed`
-
-:   Dash scroll speed in whole dash periods -- one `DashLength` plus one `DashGap` -- per second, with negative values running the pattern backwards. It is applied only to routes leading to an available node, so motion marks where the player may go next rather than animating the whole map. Zero holds every route still, as does a zero `DashLength`, which leaves no pattern to scroll.
-
-`public float GlowIntensity`
-
-:   Node glow strength; above 1 reads as bloom with no post-processing stack. It doubles as the look's "how bright is this" signal: routes take half of it, a value above 1 deepens the backdrop vignette, and a value of zero on a palette with dark label text flips the label outline from black to white.
-
-`public float GlowRadius`
-
-:   Node glow radius in presentation pixels. Routes reuse it at half strength, so edge glow stays in proportion to node glow without a second number to keep in step.
-
-`public float GradientSpread`
-
-:   Gradient spread over the node fill, from -1 to 1: negative darkens the second stop and positive lightens it. Ignored while `FillMode` is `MapFillMode.Flat`.
-
-`public float ShadowRadius`
-
-:   Drop-shadow softness in presentation pixels. Zero also zeroes the shadow colour's alpha, so a look with no shadow radius casts nothing rather than a hard black edge.
-
-`public MapNodeShape Shape`
-
-:   Silhouette every node in the style is drawn with.
-
-`public float StrokeWidth`
-
-:   Node border thickness in presentation pixels. The recipe pairs it with a stroke colour of alpha zero, which means "derive the border from the node's own state colour", so a look sets border weight without committing every node type to one border colour.
+:   Identity of the style loaded when a scene assigns none.
 
 **Methods**
 
 `public static IReadOnlyList<CompiledMapStyle> All()`
 
 :   Every shipped style, in browser order.
-    - **Returns** &mdash; The complete i Read Only List outcome; inspect its typed status or diagnostics before consuming payload data.
+    - **Returns** &mdash; A newly allocated browser-ordered list containing all four shipped compiled styles.
 
 `public static MapNodeStateStyle AvailableState()`
 
 :   An available node: full brightness with a soft glow.
-    - **Returns** &mdash; The complete map Node State Style outcome; inspect its typed status or diagnostics before consuming payload data.
+    - **Returns** &mdash; A full-brightness available-node treatment with a soft glow.
 
 `public static MapNodeStateStyle CompletedState()`
 
 :   A completed node: settled, no glow.
-    - **Returns** &mdash; The complete map Node State Style outcome; inspect its typed status or diagnostics before consuming payload data.
+    - **Returns** &mdash; A nearly full-size completed-node treatment without glow or ring.
 
 `public static MapNodeStateStyle CurrentState()`
 
 :   The current node: largest, ringed, and brightest.
-    - **Returns** &mdash; The complete map Node State Style outcome; inspect its typed status or diagnostics before consuming payload data.
+    - **Returns** &mdash; An enlarged, bright current-node treatment with glow and a three-pixel ring.
 
 `public static CompiledMapStyle Default()`
 
 :   The style used when a scene assigns none.
-    - **Returns** &mdash; The complete compiled Map Style outcome; inspect its typed status or diagnostics before consuming payload data.
+    - **Returns** &mdash; A new Slate Nocturne style, which is the fallback used when no preset is assigned.
 
 `public static MapFramingTokens DefaultFraming()`
 
 :   On-screen framing shared by every shipped style.
-    - **Returns** &mdash; The complete map Framing Tokens outcome; inspect its typed status or diagnostics before consuming payload data.
+    - **Returns** &mdash; Shared bottom-to-top fit framing with safe-area support, pan, zoom, and bounded overscroll.
 
 `public static MapMotionTokens DefaultMotion()`
 
 :   Transition timings shared by every shipped style.
-    - **Returns** &mdash; The complete map Motion Tokens outcome; inspect its typed status or diagnostics before consuming payload data.
+    - **Returns** &mdash; Shared focus and current-node pulse timings with EaseOut motion enabled.
 
 `public static MapTypographyTokens DefaultTypography()`
 
 :   Label sizing shared by every shipped style.
-    - **Returns** &mdash; The complete map Typography Tokens outcome; inspect its typed status or diagnostics before consuming payload data.
+    - **Returns** &mdash; Shared fourteen-pixel label tokens using the built-in font fallback and dark outline.
 
 `public static MapNodeStateStyle HiddenState()`
 
 :   A hidden node: fully transparent rather than absent. The label object is kept (at zero opacity) instead of being destroyed, so revealing a node does not have to rebuild its label, and so callers can still inspect it. Visibility comes from opacity alone.
-    - **Returns** &mdash; The complete map Node State Style outcome; inspect its typed status or diagnostics before consuming payload data.
+    - **Returns** &mdash; A transparent, slightly reduced node treatment that retains its label object.
 
 `public static MapNodeStateStyle LockedState()`
 
 :   A locked node: dimmed and slightly smaller.
-    - **Returns** &mdash; The complete map Node State Style outcome; inspect its typed status or diagnostics before consuming payload data.
+    - **Returns** &mdash; A dimmed, partially transparent, and slightly reduced locked-node treatment.
 
 `public static CompiledMapStyle MinimalMono()`
 
 :   Light, flat, glowless; the neutral base to customize from.
-    - **Returns** &mdash; The complete compiled Map Style outcome; inspect its typed status or diagnostics before consuming payload data.
+    - **Returns** &mdash; A new compiled Minimal Mono style with flat light surfaces and no glow.
 
 `public static MapPaletteTokens MinimalMonoPalette()`
 
 :   Light, flat, glowless. The neutral base to customize from. The accent is a saturated blue rather than the near-black used for text and borders. On a light backdrop an almost-black accent makes a reachable node darker than a locked one, which inverts the reading order: the node the player can actually use must be the most prominent, not the least.
-    - **Returns** &mdash; The complete map Palette Tokens outcome; inspect its typed status or diagnostics before consuming payload data.
+    - **Returns** &mdash; A fresh light neutral palette whose blue accent keeps available nodes prominent.
 
 `public static CompiledMapStyle NeonCircuit()`
 
 :   Deep indigo with neon hex nodes and flowing routes.
-    - **Returns** &mdash; The complete compiled Map Style outcome; inspect its typed status or diagnostics before consuming payload data.
+    - **Returns** &mdash; A new compiled Neon Circuit style with hex nodes and animated available routes.
 
 `public static MapPaletteTokens NeonCircuitPalette()`
 
 :   Deep indigo with saturated neon rims. The loudest look.
-    - **Returns** &mdash; The complete map Palette Tokens outcome; inspect its typed status or diagnostics before consuming payload data.
+    - **Returns** &mdash; A fresh indigo palette with cyan, magenta, and yellow neon roles.
 
 `public static CompiledMapStyle ParchmentAtlas()`
 
 :   Warm paper with inked circular nodes and dashed routes.
-    - **Returns** &mdash; The complete compiled Map Style outcome; inspect its typed status or diagnostics before consuming payload data.
+    - **Returns** &mdash; A new compiled Parchment Atlas style with warm surfaces and dashed routes.
 
 `public static MapPaletteTokens ParchmentAtlasPalette()`
 
 :   Warm paper and ink. Suits adventure and campaign framing.
-    - **Returns** &mdash; The complete map Palette Tokens outcome; inspect its typed status or diagnostics before consuming payload data.
+    - **Returns** &mdash; A fresh warm-paper palette with ink, terracotta, and teal semantic roles.
 
 `public static CompiledMapStyle Resolve(MapStylePreset preset)`
 
 :   Resolves the style a view should draw with: the assigned asset when present, otherwise the shipped default. Never returns null, so callers need no null branch.
-    - `preset` &mdash; Input preset consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
-    - **Returns** &mdash; The complete compiled Map Style outcome; inspect its typed status or diagnostics before consuming payload data.
+    - `preset` &mdash; Optional authored preset to compile; null selects Slate Nocturne.
+    - **Returns** &mdash; The compiled assigned preset, or a fresh shipped default when `preset` is null.
 
 `public static CompiledMapStyle SlateNocturne()`
 
 :   Dark slate with cyan routes and an amber focus ring.
-    - **Returns** &mdash; The complete compiled Map Style outcome; inspect its typed status or diagnostics before consuming payload data.
+    - **Returns** &mdash; A new compiled Slate Nocturne style with its complete palette and look profile.
 
 `public static MapBackdropTokens SlateNocturneBackdrop()`
 
 :   The default backdrop, used to seed a new preset asset.
-    - **Returns** &mdash; The complete map Backdrop Tokens outcome; inspect its typed status or diagnostics before consuming payload data.
+    - **Returns** &mdash; The gradient, vignette, and subtle-grid backdrop used by a new Slate Nocturne preset.
 
 `public static MapEdgeStyleTokens SlateNocturneEdge()`
 
 :   The default edge style, used to seed a new preset asset.
-    - **Returns** &mdash; The complete map Edge Style Tokens outcome; inspect its typed status or diagnostics before consuming payload data.
+    - **Returns** &mdash; The solid rounded route tokens used by a new Slate Nocturne preset.
 
 `public static MapNodeStyleTokens SlateNocturneNode()`
 
 :   The default node style, used to seed a new preset asset.
-    - **Returns** &mdash; The complete map Node Style Tokens outcome; inspect its typed status or diagnostics before consuming payload data.
+    - **Returns** &mdash; The rounded, softly glowing node tokens used by a new Slate Nocturne preset.
 
 `public static MapPaletteTokens SlateNocturnePalette()`
 
 :   Dark slate with cyan and amber accents. The default look.
-    - **Returns** &mdash; The complete map Palette Tokens outcome; inspect its typed status or diagnostics before consuming payload data.
+    - **Returns** &mdash; A fresh dark palette with cyan navigation accents and an amber focus role.
 
 `public static bool TryFind(string stableId, out CompiledMapStyle style)`
 
 :   Finds a shipped style by its stable id.
-    - `stableId` &mdash; Stable identifier for stable; invalid or empty IDs are rejected before mutation.
-    - `style` &mdash; Input style consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `stableId` &mdash; Exact ordinal style identity to compare with each shipped preset.
+    - `style` &mdash; Receives the matching compiled style, or null when no shipped identity matches.
     - **Returns** &mdash; only when all preconditions are satisfied; otherwise with no partial mutation.
 
 `public static MapNodeStateStyle VisitedState()`
 
 :   A visited node: present but receded.
-    - **Returns** &mdash; The complete map Node State Style outcome; inspect its typed status or diagnostics before consuming payload data.
+    - **Returns** &mdash; A slightly dimmed and reduced visited-node treatment.
 
 ---
 
@@ -883,18 +875,20 @@ saved blueprints keep working untouched.
 `public CompiledMapStyle Compile()`
 
 :   Resolves this asset into the immutable value set the views consume. Out-of-range authored values are clamped rather than rejected, so a half-edited style still renders instead of throwing at runtime.
-    - **Returns** &mdash; The complete compiled Map Style outcome; inspect its typed status or diagnostics before consuming payload data.
+    - **Returns** &mdash; A new immutable style whose authored token groups have been sanitized into supported ranges.
 
 `public void CopyFrom(CompiledMapStyle source, string newStableId, string newDisplayName)`
 
 :   Overwrites every field from `source`. Used by "Create editable copy" in the Style Browser; it is the supported way to author a style from code.
-    - `source` &mdash; Input source consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `source` &mdash; Compiled style whose identity, metadata, and token groups are copied into this preset.
     - `newStableId` &mdash; Identity for this asset. Leave null or empty to keep the source's identity, which produces two assets sharing one style ID.
     - `newDisplayName` &mdash; Name shown in the Style Browser. Leave null or empty to keep the source's name.
 
 ---
 
 ## MapStyleRuntime
+
+:material-star: **Start here**
 
 ```csharp
 public static class MapStyleRuntime
@@ -916,7 +910,7 @@ any dependency on the runtime assembly.
     - `fog` &mdash; The derived visibility role to convert.
     - **Returns** &mdash; Zero for hidden, 0.75 for dimmed, and one for visible or unknown values.
 
-`public static void ResolveNodeColors()`
+`public static void ResolveNodeColors( CompiledMapStyle style, Color stateColor, MapNodeStateStyle stateStyle, MapFogState fog, out Color primary, out Color secondary, out Color stroke)`
 
 :   Resolves the final node colours for a state: the node type's identity colour adjusted by the style's brightness and opacity, plus the second gradient stop derived from the style's spread.
     - `style` &mdash; The compiled surface style; null disables authored gradient spread and stroke override.
@@ -944,6 +938,8 @@ any dependency on the runtime assembly.
 ---
 
 ## MapSurfaceGraphic
+
+:material-star: **Start here**
 
 ```csharp
 public sealed class MapSurfaceGraphic : Image
@@ -981,23 +977,25 @@ sprite, type, or border behaviour is inherited.
 
 `public void Apply(MapSurfaceRequest request)`
 
-:   Updates apply state only after validating supplied inputs, preserving the owning type's deterministic invariants.
-    - `request` &mdash; Input request consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+:   The supplied surface request recalculates effect padding and refreshes both mesh and pooled material.
+    - `request` &mdash; Shape, stroke, glow, shadow, and gradient values to render on this graphic.
 
 `public static float ComputePadding(MapSurfaceRequest request)`
 
 :   The padding a request needs for its glow, ring, and shadow.
-    - `request` &mdash; Input request consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
-    - **Returns** &mdash; The complete float outcome; inspect its typed status or diagnostics before consuming payload data.
+    - `request` &mdash; Surface effects whose visible extents must fit outside the layout rect.
+    - **Returns** &mdash; Extra presentation pixels required on every side, including a two-pixel safety border.
 
 `public void SetDashOffset(float offset)`
 
 :   Updates only the dash scroll offset. Separate from `Apply` so an animated flowing edge does not rebuild its mesh every frame.
-    - `offset` &mdash; Input offset consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `offset` &mdash; Shader-space dash phase used to scroll the current edge pattern.
 
 ---
 
 ## MapSurfaceRequest
+
+:material-star: **Start here**
 
 ```csharp
 public struct MapSurfaceRequest
@@ -1013,11 +1011,11 @@ keeps a map of many same-looking nodes cheap.
 
 `public float ArrowLength`
 
-:   Exposes arrow Length as part of the map Surface Request data contract; validation rejects values outside the owning type's documented bounds.
+:   Length of the optional directional arrowhead at the target end.
 
 `public bool CapEnd`
 
-:   Exposes cap End as part of the map Surface Request data contract; validation rejects values outside the owning type's documented bounds.
+:   Whether the target endpoint receives its cap or arrow treatment on this segment.
 
 `public float CornerRadius`
 
@@ -1025,27 +1023,27 @@ keeps a map of many same-looking nodes cheap.
 
 `public float DashGap`
 
-:   Exposes dash Gap as part of the map Surface Request data contract; validation rejects values outside the owning type's documented bounds.
+:   Clear distance between consecutive route dashes in local units.
 
 `public float DashLength`
 
-:   Exposes dash Length as part of the map Surface Request data contract; validation rejects values outside the owning type's documented bounds.
+:   Length of each visible dash in local units; zero produces a solid route.
 
 `public float DashOffset`
 
-:   Exposes dash Offset as part of the map Surface Request data contract; validation rejects values outside the owning type's documented bounds.
+:   Animated displacement of the dash pattern along the route, in local units.
 
 `public MapEdgeCap EdgeCap`
 
-:   Exposes edge Cap as part of the map Surface Request data contract; validation rejects values outside the owning type's documented bounds.
+:   Butt, round, or square treatment applied at route-segment endpoints.
 
 `public float EdgeLength`
 
-:   Exposes edge Length as part of the map Surface Request data contract; validation rejects values outside the owning type's documented bounds.
+:   Source-to-target route-segment length used to normalize caps and dash placement.
 
 `public float EdgeWidth`
 
-:   Exposes edge Width as part of the map Surface Request data contract; validation rejects values outside the owning type's documented bounds.
+:   Rendered route thickness in local presentation units.
 
 `public Vector2 Extent`
 
@@ -1053,7 +1051,7 @@ keeps a map of many same-looking nodes cheap.
 
 `public MapFillMode FillMode`
 
-:   Selects solid, linear, or radial fill evaluation.
+:   Chooses whether the shader samples one color or interpolates two colors linearly or radially.
 
 `public Color FillPrimary`
 
@@ -1081,19 +1079,19 @@ keeps a map of many same-looking nodes cheap.
 
 `public Color GridColor`
 
-:   Exposes grid Color as part of the map Surface Request data contract; validation rejects values outside the owning type's documented bounds.
+:   RGBA contribution of the optional repeating backdrop grid.
 
 `public float GridLineWidth`
 
-:   Exposes grid Line Width as part of the map Surface Request data contract; validation rejects values outside the owning type's documented bounds.
+:   Thickness of each backdrop grid line in local units.
 
 `public float GridSpacing`
 
-:   Exposes grid Spacing as part of the map Surface Request data contract; validation rejects values outside the owning type's documented bounds.
+:   Distance between repeating backdrop grid lines in local units.
 
 `public MapSurfaceMode Mode`
 
-:   Selects node/backdrop shape rendering or edge-segment rendering.
+:   Switches the shader between signed-distance surfaces and oriented route segments.
 
 `public Color RingColor`
 
@@ -1137,27 +1135,29 @@ keeps a map of many same-looking nodes cheap.
 
 `public float VignetteSoftness`
 
-:   Exposes vignette Softness as part of the map Surface Request data contract; validation rejects values outside the owning type's documented bounds.
+:   Width of the smooth transition between the clear center and vignetted edge.
 
 `public float VignetteStrength`
 
-:   Exposes vignette Strength as part of the map Surface Request data contract; validation rejects values outside the owning type's documented bounds.
+:   Amount by which the backdrop darkens toward its outer boundary.
 
 **Methods**
 
 `public void ApplyTo(Material material)`
 
 :   Writes every request value onto a material.
-    - `material` &mdash; Input material consumed by this operation; caller ownership is retained unless the type documents a defensive copy.
+    - `material` &mdash; Material whose BranchWeaver shader properties receive every request field; null is ignored.
 
 `public string Key()`
 
 :   A stable key over every value that reaches the material. Lengths and sizes quantize to whole pixels and the dash offset to 1/4 pixel, so a flowing edge does not allocate a new material every frame.
-    - **Returns** &mdash; The complete string outcome; inspect its typed status or diagnostics before consuming payload data.
+    - **Returns** &mdash; An ordinal cache key with quantized dimensions, colors, dashes, and backdrop settings.
 
 ---
 
 ## MapSurfaceTokens
+
+:material-star: **Start here**
 
 ```csharp
 public struct MapSurfaceTokens
@@ -1220,6 +1220,8 @@ both resolve to one of these.
 ---
 
 ## MapTypographyTokens
+
+:material-star: **Start here**
 
 ```csharp
 public struct MapTypographyTokens
