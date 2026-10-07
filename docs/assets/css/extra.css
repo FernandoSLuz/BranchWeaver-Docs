@@ -122,12 +122,12 @@
 }
 
 .studio-video-controls button,
-#studio-video-transcript button {
+[data-studio-time] {
   cursor: pointer;
 }
 
 .studio-video-controls button,
-#studio-video-transcript button {
+[data-studio-time] {
   min-height: 2.75rem;
   padding: 0.45rem 0.75rem;
   color: var(--md-default-fg-color);
@@ -137,12 +137,12 @@
 }
 
 .studio-video-controls button:hover,
-#studio-video-transcript button:hover {
+[data-studio-time]:hover {
   border-color: var(--md-accent-fg-color);
 }
 
 .studio-video-controls button:focus-visible,
-#studio-video-transcript button:focus-visible {
+[data-studio-time]:focus-visible {
   outline: 2px solid var(--md-accent-fg-color);
   outline-offset: 2px;
 }

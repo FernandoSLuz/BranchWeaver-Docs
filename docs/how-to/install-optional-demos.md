@@ -1,10 +1,14 @@
-# Install the optional Marcos da Mare demos
+# Install the optional Tidebound Landmarks demos
 
-The Marcos da Mare packages are a **technical preview candidate** for BranchWeaver. They are
+The Tidebound Landmarks packages are a **technical preview candidate** for BranchWeaver. They are
 separate from the base product and add presentation assets and demo scenes; they do not change
 the Core graph, save schema, or progression rules. Art acceptance and commercial redistribution
 clearance are still pending, so treat these packages as local technical material and do not
 redistribute them.
+
+The public demo name is **Tidebound Landmarks**. Package IDs, scene filenames, folders and C#
+types retain the existing `marcos` / `MarcosDaMare` identifiers shown below so references keep
+working.
 
 ## Packages and requirements
 
@@ -58,12 +62,12 @@ The frames show GameView after the scene was opened and Play Mode started; those
 precede the recording. The preview documents technical flow and composition.
 
 <figure markdown id="optional-marcos-2d">
-  <img class="shot" src="../../assets/images/optional-marcos-2d-scene.png" alt="Native Marcos da Mare 2D optional demo scene in Play Mode">
+  <img class="shot" src="../../assets/images/optional-marcos-2d-scene.png" alt="Native Tidebound Landmarks 2D optional demo scene in Play Mode">
   <figcaption>The installed 2D scene after confirming the Porto visit, with adjacent destinations available.</figcaption>
 </figure>
 
 <figure markdown id="optional-marcos-3d">
-  <img class="shot" src="../../assets/images/optional-marcos-3d-scene.png" alt="Native Marcos da Mare 3D optional demo scene in Play Mode">
+  <img class="shot" src="../../assets/images/optional-marcos-3d-scene.png" alt="Native Tidebound Landmarks 3D optional demo scene in Play Mode">
   <figcaption>The installed 3D scene after confirming Porto, with Iara on its island and the actor anchor following the map.</figcaption>
 </figure>
 

@@ -5,6 +5,9 @@ a keyboard, a gamepad, or a touchscreen. No code is involved.
 
 ## Install
 
+Watch the editor walkthroughs: [create and configure a starter map](create-a-playable-map.md#starter-authoring-video)
+(2 min 48 s) or [save and restore a route](create-a-playable-map.md#starter-runtime-video) (50 s).
+
 1. Import BranchWeaver into a Unity project. That is the whole install: no third-party
    dependency, no render-pipeline package, no setup step. Everything ships under
    `Assets/BranchWeaver/` without writing anything outside it.
@@ -33,7 +36,7 @@ first, use [Experience Studio](experience-studio.md) instead: create an example 
 it, apply the preset, and create a demo in the current scene. The Studio route is optional and
 does not replace either shipped sample.
 
-The separate Marcos da Mare 2D and 3D packages are technical preview candidates rather than
+The separate Tidebound Landmarks 2D and 3D packages are technical preview candidates rather than
 shipped samples. See [Install the optional demos](../how-to/install-optional-demos.md) for their
 versioned package order, customization points, and removal steps.
 

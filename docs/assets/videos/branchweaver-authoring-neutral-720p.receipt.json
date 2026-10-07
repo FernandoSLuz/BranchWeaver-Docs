@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "scope": "Starter Canvas mouse/keyboard walkthrough, map authoring",
+  "unityVersion": "6000.3.25f1",
+  "videoSha256": "010e77b2097604c6f1c282b1d5833eb7bee51b415f2dc0072d78e9c23f711b2b",
+  "sourceRawSha256": "5ea689d4b9aeb4a00beb43d75cb20a17ef311cd9b8dc6e1eb827add41f6db33d",
+  "probe": {
+    "durationSeconds": 167.808,
+    "frames": 5034,
+    "width": 1280,
+    "height": 720,
+    "fps": "30/1",
+    "codec": "h264",
+    "pixelFormat": "yuv420p",
+    "colorSpace": "bt709",
+    "audioCodec": "aac",
+    "audioSampleRate": 48000,
+    "audioChannels": 2
+  },
+  "capture": "Real mouse and keyboard input on an isolated desktop; waits trimmed and recorded UI enlarged. English captions are included in the picture.",
+  "music": {
+    "title": "Exploration Theme",
+    "artist": "Cleyton Kauffman",
+    "license": "CC0",
+    "url": "https://opengameart.org/content/exploration-theme",
+    "mixIntegratedLufs": -28.1,
+    "loudnessRangeLu": 7.6,
+    "truePeakDbfs": -11.1,
+    "loopVolumeCurve": "extend; 1.5s fade-in/out"
+  },
+  "limitations": [
+    "This starter tutorial does not show Experience Studio or optional demo art.",
+    "This is not artistic acceptance, physical-input certification or complete Editor-operation coverage.",
+    "The wizard is already open in the edited recording; opening it is not demonstrated."
+  ]
+}

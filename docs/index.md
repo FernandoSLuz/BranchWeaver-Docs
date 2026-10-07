@@ -20,6 +20,12 @@ rendering code.</p>
 
 ---
 
+## Watch the editor walkthroughs
+
+[Create and configure a starter map](tutorials/create-a-playable-map.md#starter-authoring-video)
+(2 min 48 s) · [Save and restore a route](tutorials/create-a-playable-map.md#starter-runtime-video)
+(50 s). Both videos have English captions and selectable chapters.
+
 ## Choose your path
 
 <div class="cards" markdown>

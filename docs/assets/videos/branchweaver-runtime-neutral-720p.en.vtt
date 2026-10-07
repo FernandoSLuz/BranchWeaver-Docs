@@ -1,0 +1,33 @@
+WEBVTT
+
+00:00:02.000 --> 00:00:08.000
+Start a fresh run and enter the Gateway.
+This creates the first playable state.
+
+00:00:08.000 --> 00:00:14.000
+Save the Gateway, then complete it.
+Saving records progress before traversal continues.
+
+00:00:14.000 --> 00:00:24.000
+Focus the Game view and press Up.
+Keyboard focus moves to the available Route.
+
+00:00:24.000 --> 00:00:30.500
+Press Return to enter the Route.
+The selected node becomes the current content.
+
+00:00:30.500 --> 00:00:34.300
+Save the Route checkpoint, then complete it.
+The checkpoint preserves the new progress.
+
+00:00:34.300 --> 00:00:37.300
+Enter the Landmark.
+The completed Route unlocks its destination.
+
+00:00:37.300 --> 00:00:42.300
+Load the saved map and route.
+The HUD shows the Route restored and Landmark locked.
+
+00:00:42.300 --> 00:00:46.300
+Save the restored state, then exit Play Mode.
+The captured runtime flow is complete.

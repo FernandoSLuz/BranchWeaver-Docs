@@ -2,12 +2,11 @@
   "use strict";
 
   function bindStudioVideo() {
-    var video = document.getElementById("studio-authoring-video");
-    if (!video) return;
-
     document.querySelectorAll("[data-studio-time]").forEach(function (button) {
-      if (button.dataset.studioVideoBound === "true") return;
-      button.dataset.studioVideoBound = "true";
+      var videoId = button.getAttribute("data-studio-video") || "studio-authoring-video";
+      var video = document.getElementById(videoId);
+      if (!video || button.dataset.studioVideoBound === videoId) return;
+      button.dataset.studioVideoBound = videoId;
       button.addEventListener("click", function () {
         video.currentTime = Number(button.getAttribute("data-studio-time"));
         video.scrollIntoView({ block: "center", behavior: "auto" });

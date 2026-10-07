@@ -9,6 +9,122 @@ This is the fastest route from an empty scene to a map you can click.
 [4. Add a map to your scene](add-a-map-to-your-scene.md) covers the other direction: fitting a
 map into a scene you have already built.
 
+## Starter walkthroughs
+
+These two English recordings cover the starter Canvas path in Unity `6000.3.25f1`: six nodes,
+seven edges, and seed `4242`. They use real mouse and keyboard actions on an isolated desktop;
+pauses are trimmed, and the English captions are included in the picture. Optional caption
+files and transcripts are available below. This is the starter flow,
+not Experience Studio and not the optional concept art demos.
+
+<figure class="studio-video">
+  <video id="starter-authoring-video" aria-label="Create and configure a starter map" controls preload="metadata" playsinline muted poster="../../assets/images/branchweaver-authoring-neutral-720p.poster.png" aria-describedby="starter-authoring-transcript">
+    <source src="../../assets/videos/branchweaver-authoring-neutral-720p.mp4" type="video/mp4">
+    <track kind="captions" src="../../assets/videos/branchweaver-authoring-neutral-720p.en.vtt" srclang="en" label="English captions">
+    Your browser does not support HTML video. Use the transcript below.
+  </video>
+  <figcaption>Author the starter map, set seed 4242, adjust the preview, and save the authored scene.</figcaption>
+</figure>
+
+Use fullscreen to read the Unity controls. Chapter buttons work with a mouse or keyboard.
+
+<details>
+  <summary>Choose an authoring step</summary>
+<div class="studio-video-controls" aria-label="Starter authoring video chapters">
+  <button type="button" data-studio-video="starter-authoring-video" data-studio-time="0">0:00 BranchWeaver Map Authoring</button>
+  <button type="button" data-studio-video="starter-authoring-video" data-studio-time="2">0:02 Create the starter map</button>
+  <button type="button" data-studio-video="starter-authoring-video" data-studio-time="10">0:10 Configure the slot and validate</button>
+  <button type="button" data-studio-video="starter-authoring-video" data-studio-time="13.467">0:13 Save the authored scene</button>
+  <button type="button" data-studio-video="starter-authoring-video" data-studio-time="38.067">0:38 Reopen the saved scene</button>
+  <button type="button" data-studio-video="starter-authoring-video" data-studio-time="75.5">1:15 Open Map Studio</button>
+  <button type="button" data-studio-video="starter-authoring-video" data-studio-time="109.033">1:49 Select Starter Blueprint</button>
+  <button type="button" data-studio-video="starter-authoring-video" data-studio-time="129.033">2:09 Set seed 4242 and regenerate</button>
+  <button type="button" data-studio-video="starter-authoring-video" data-studio-time="133.48">2:13 Select Starter Theme</button>
+  <button type="button" data-studio-video="starter-authoring-video" data-studio-time="148.713">2:28 Adjust preview zoom and pan</button>
+  <button type="button" data-studio-video="starter-authoring-video" data-studio-time="158.38">2:38 Apply and save</button>
+  <button type="button" data-studio-video="starter-authoring-video" data-studio-time="163.813">2:43 Authoring flow complete</button>
+</div>
+</details>
+
+<details id="starter-authoring-transcript">
+  <summary>Authoring transcript and chapters</summary>
+  <ol>
+    <li><button type="button" data-studio-video="starter-authoring-video" data-studio-time="0">0:00</button> BranchWeaver Map Authoring.</li>
+    <li><button type="button" data-studio-video="starter-authoring-video" data-studio-time="2">0:02</button> Click Create Complete Starter Map. The wizard builds the scene and starter assets.</li>
+    <li><button type="button" data-studio-video="starter-authoring-video" data-studio-time="10">0:10</button> Configure the slot and validate. Validation catches setup errors early.</li>
+    <li><button type="button" data-studio-video="starter-authoring-video" data-studio-time="13.467">0:13</button> Save the authored scene. The scene becomes the editable handoff.</li>
+    <li><button type="button" data-studio-video="starter-authoring-video" data-studio-time="38.067">0:38</button> Reopen the saved scene. This confirms the authoring result persists.</li>
+    <li><button type="button" data-studio-video="starter-authoring-video" data-studio-time="75.5">1:15</button> Open Map Studio. The editor exposes the map controls.</li>
+    <li><button type="button" data-studio-video="starter-authoring-video" data-studio-time="109.033">1:49</button> Select Starter Blueprint. The picker connects the demo to its source asset.</li>
+    <li><button type="button" data-studio-video="starter-authoring-video" data-studio-time="129.033">2:09</button> Set seed 4242 and regenerate. A fixed seed makes the result repeatable.</li>
+    <li><button type="button" data-studio-video="starter-authoring-video" data-studio-time="133.48">2:13</button> Select Starter Theme. The theme applies the demo look consistently.</li>
+    <li><button type="button" data-studio-video="starter-authoring-video" data-studio-time="148.713">2:28</button> Adjust the preview zoom, then pan the graph. The overview checks the generated layout.</li>
+    <li><button type="button" data-studio-video="starter-authoring-video" data-studio-time="158.38">2:38</button> Apply and save. This records the authored map for reuse.</li>
+    <li><button type="button" data-studio-video="starter-authoring-video" data-studio-time="163.813">2:43</button> Authoring flow complete.</li>
+  </ol>
+</details>
+
+<figure class="studio-video">
+  <video id="starter-runtime-video" aria-label="Save and restore a route" controls preload="metadata" playsinline muted poster="../../assets/images/branchweaver-runtime-neutral-720p.poster.png" aria-describedby="starter-runtime-transcript">
+    <source src="../../assets/videos/branchweaver-runtime-neutral-720p.mp4" type="video/mp4">
+    <track kind="captions" src="../../assets/videos/branchweaver-runtime-neutral-720p.en.vtt" srclang="en" label="English captions">
+    Your browser does not support HTML video. Use the transcript below.
+  </video>
+  <figcaption>Run the starter map, save checkpoints, restore the route, and exit Play Mode.</figcaption>
+</figure>
+
+<details>
+  <summary>Choose a runtime step</summary>
+<div class="studio-video-controls" aria-label="Starter runtime video chapters">
+  <button type="button" data-studio-video="starter-runtime-video" data-studio-time="0">0:00 BranchWeaver Runtime Flow</button>
+  <button type="button" data-studio-video="starter-runtime-video" data-studio-time="2">0:02 Start a run and enter the Gateway</button>
+  <button type="button" data-studio-video="starter-runtime-video" data-studio-time="8">0:08 Save and complete the Gateway</button>
+  <button type="button" data-studio-video="starter-runtime-video" data-studio-time="14">0:14 Focus the available Route</button>
+  <button type="button" data-studio-video="starter-runtime-video" data-studio-time="24">0:24 Enter the selected Route</button>
+  <button type="button" data-studio-video="starter-runtime-video" data-studio-time="30.5">0:30 Save and complete the Route</button>
+  <button type="button" data-studio-video="starter-runtime-video" data-studio-time="34.3">0:34 Enter the Landmark</button>
+  <button type="button" data-studio-video="starter-runtime-video" data-studio-time="37.3">0:37 Load the restored state</button>
+  <button type="button" data-studio-video="starter-runtime-video" data-studio-time="42.3">0:42 Save the restored state and exit</button>
+  <button type="button" data-studio-video="starter-runtime-video" data-studio-time="46.3">0:46 Runtime flow complete</button>
+</div>
+</details>
+
+<details id="starter-runtime-transcript">
+  <summary>Runtime transcript and chapters</summary>
+  <ol>
+    <li><button type="button" data-studio-video="starter-runtime-video" data-studio-time="0">0:00</button> BranchWeaver Runtime Flow.</li>
+    <li><button type="button" data-studio-video="starter-runtime-video" data-studio-time="2">0:02</button> Start a fresh run and enter the Gateway. This creates the first playable state.</li>
+    <li><button type="button" data-studio-video="starter-runtime-video" data-studio-time="8">0:08</button> Save the Gateway, then complete it. Saving records progress before traversal continues.</li>
+    <li><button type="button" data-studio-video="starter-runtime-video" data-studio-time="14">0:14</button> Focus the Game view and press Up. Keyboard focus moves to the available Route.</li>
+    <li><button type="button" data-studio-video="starter-runtime-video" data-studio-time="24">0:24</button> Press Return to enter the Route. The selected node becomes the current content.</li>
+    <li><button type="button" data-studio-video="starter-runtime-video" data-studio-time="30.5">0:30</button> Save the Route checkpoint, then complete it. The checkpoint preserves the new progress.</li>
+    <li><button type="button" data-studio-video="starter-runtime-video" data-studio-time="34.3">0:34</button> Enter the Landmark. The completed Route unlocks its destination.</li>
+    <li><button type="button" data-studio-video="starter-runtime-video" data-studio-time="37.3">0:37</button> Load the saved map and route. The HUD shows Route pending, Gateway completed, and Landmark locked.</li>
+    <li><button type="button" data-studio-video="starter-runtime-video" data-studio-time="42.3">0:42</button> Save the restored state, then exit Play Mode. The captured runtime flow is complete.</li>
+    <li><button type="button" data-studio-video="starter-runtime-video" data-studio-time="46.3">0:46</button> Runtime flow complete.</li>
+  </ol>
+</details>
+
+<details markdown="1">
+<summary>Video files and captions</summary>
+
+- Authoring: [MP4](../assets/videos/branchweaver-authoring-neutral-720p.mp4),
+  [English captions](../assets/videos/branchweaver-authoring-neutral-720p.en.vtt),
+  [capture receipt](../assets/videos/branchweaver-authoring-neutral-720p.receipt.json).
+- Runtime: [MP4](../assets/videos/branchweaver-runtime-neutral-720p.mp4),
+  [English captions](../assets/videos/branchweaver-runtime-neutral-720p.en.vtt),
+  [capture receipt](../assets/videos/branchweaver-runtime-neutral-720p.receipt.json).
+
+</details>
+
+These recordings use the Canvas starter. The wizard creates its own camera with a neutral
+solid-color background; existing camera components keep their settings. The World2D starter
+uses its own orthographic camera. Switching the presentation does not change the map graph.
+
+The soundtrack is **Exploration Theme** by Cleyton Kauffman, released under CC0 on
+[OpenGameArt](https://opengameart.org/content/exploration-theme), under
+[CC0](https://creativecommons.org/publicdomain/zero/1.0/).
+
 ## 1. Open the Setup Wizard
 
 **Tools > BranchWeaver > Setup Wizard**. Nothing has to be selected in the Hierarchy, and the
@@ -70,6 +186,7 @@ The new **BranchWeaver Playable Map** object is selected for you.
 
     ```text
     BranchWeaver Canvas                     Canvas, CanvasScaler, GraphicRaycaster
+      BranchWeaver Canvas Background Camera  neutral solid-color clear
       BranchWeaver Playable Map             the five components below
         BranchWeaver Safe Area              MapSafeAreaController
           BranchWeaver Map Content          CanvasMapPresenter
@@ -84,7 +201,7 @@ The new **BranchWeaver Playable Map** object is selected for you.
 
     ```text
     BranchWeaver Playable Map               the five components below
-      BranchWeaver Camera                   orthographic, only when the scene has no camera
+      BranchWeaver Camera                   owned orthographic camera, neutral solid-color background
       BranchWeaver World Content            WorldMapPresenter
       BranchWeaver Controls Canvas          Canvas, CanvasScaler, GraphicRaycaster
         BranchWeaver Starter Controls       MapHostStarterPanel

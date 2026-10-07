@@ -19,16 +19,16 @@ are listed in the [technical media receipt](../assets/videos/studio-authoring-na
     <track kind="captions" src="../../assets/videos/studio-authoring-native.vtt" srclang="en" label="English captions" default>
     Your browser does not support HTML video. Use the transcript below.
   </video>
-  <figcaption>Native Studio capture: Caminhos (Paths), a draft curve edit, Aplicar ao preset (Apply), World2D, and Integra&ccedil;&atilde;o (Integration).</figcaption>
+  <figcaption>Native Studio capture: Paths, a draft curve edit, Apply to preset, World2D, and Integration.</figcaption>
 </figure>
 
 <div class="studio-video-controls" aria-label="Video timestamps">
-  <button type="button" data-studio-time="0">0:00 source preset / preset de origem</button>
-  <button type="button" data-studio-time="2.1">0:02 paths / Caminhos</button>
+  <button type="button" data-studio-time="0">0:00 source preset</button>
+  <button type="button" data-studio-time="2.1">0:02 Paths</button>
   <button type="button" data-studio-time="5.1">0:05 draft</button>
-  <button type="button" data-studio-time="8.6">0:09 apply / Aplicar ao preset</button>
+  <button type="button" data-studio-time="8.6">0:09 Apply to preset</button>
   <button type="button" data-studio-time="10.1">0:10 World2D</button>
-  <button type="button" data-studio-time="13.1">0:13 Integration / Integra&ccedil;&atilde;o</button>
+  <button type="button" data-studio-time="13.1">0:13 Integration</button>
 </div>
 
 <p class="studio-video-help">Use fullscreen when reading small labels in the recording.</p>
@@ -38,18 +38,17 @@ are listed in the [technical media receipt](../assets/videos/studio-authoring-na
   <ol>
     <li><button type="button" data-studio-time="0">0:00</button> The source preset is shown with no pending edit.</li>
     <li><button type="button" data-studio-time="2.1">0:02</button> The Paths controls are visible for the inherited route.</li>
-    <li><button type="button" data-studio-time="5.1">0:05</button> A gentle curve edit is visible in the temporary draft.</li>
+    <li><button type="button" data-studio-time="5.1">0:05</button> A smooth curve edit is visible in the temporary draft.</li>
     <li><button type="button" data-studio-time="8.6">0:09</button> Apply commits the edit and clears the draft state.</li>
     <li><button type="button" data-studio-time="10.1">0:10</button> The presentation backend changes to World2D in the draft.</li>
     <li><button type="button" data-studio-time="13.1">0:13</button> Integration shows the saved-backend scene action.</li>
   </ol>
 </details>
 
-The capture shows action labels such as `Aplicar ao preset` (Apply to preset), `Recarregar fonte`
-(Reload source), and <code>Integra&ccedil;&atilde;o</code> (Integration); these labels are shown exactly
-as captured. The Studio uses Portuguese labels for the task tabs too: <code>Visual</code> (Visual),
-<code>Intera&ccedil;&atilde;o</code> (Interaction), <code>Mec&acirc;nica</code> (Mechanics), and
-<code>Integra&ccedil;&atilde;o</code> (Integration).
+The current Studio uses the English action labels **Apply to preset**, **Reload source**, and
+**Integration**. Its task tabs are **Visual**, **Interaction**, **Mechanics**, and **Integration**.
+The archived capture above predates the English label pass; use the current labels in the steps
+below when working in the Editor.
 
 ## 1. Open the Studio and choose a preset
 
@@ -58,14 +57,13 @@ The window is divided into four task tabs:
 
 | Tab | Use it for |
 | --- | --- |
-| **Visual** (Visual) | Appearance, templates, node art, positions, and route geometry |
-| **Intera&ccedil;&atilde;o** (Interaction) | Input and focus behaviour |
-| **Mec&acirc;nica** (Mechanics) | Progression policy and repeat completion |
-| **Integra&ccedil;&atilde;o** (Integration) | Host, renderer, camera, light, EventSystem, and optional demo HUD |
+| **Visual** | Appearance, templates, node art, positions, and route geometry |
+| **Interaction** | Input and focus behaviour |
+| **Mechanics** | Progression policy and repeat completion |
+| **Integration** | Host, renderer, camera, light, EventSystem, and optional demo HUD |
 
-Visual authoring is grouped into the <code>Apar&ecirc;ncia</code> (Appearance),
-<code>Templates</code> (Templates), <code>Arte</code> (Art), <code>Posi&ccedil;&atilde;o</code>
-(Position), and <code>Caminhos</code> (Paths) subtabs.
+Visual authoring is grouped into the <code>Appearance</code>, <code>Templates</code>,
+<code>Art</code>, <code>Position</code>, and <code>Paths</code> subtabs.
 This keeps the controls discoverable without putting every field in one scrolling inspector.
 Changes update the preview as you edit. Dragging a visible node changes its presentation offset
 only; it does not change topology, stable IDs, or save data. Hold Ctrl while dragging to edit
@@ -115,9 +113,9 @@ The image hashes, renderer names, and graph counts are recorded in the [preset g
 ### Make a project-specific preset copy
 
 Select the `.asset` preset in Unity's **Project** window, then choose **Edit > Duplicate**
-(or Ctrl+D). Rename the new asset and assign that copy to **Preset de mapa** in the Studio.
-The copy has its own GUID. Use **Visual > Caminhos** to enable a route override, choose
-**Curvas suaves**, adjust its strength, and select **Aplicar ao preset**. Applying the draft
+(or Ctrl+D). Rename the new asset and assign that copy to **Map preset** in the Studio.
+The copy has its own GUID. Use **Visual > Paths** to enable a route override, choose
+**Smooth curves**, adjust its strength, and select **Apply to preset**. Applying the draft
 updates only the preset assigned to the Studio.
 
 Duplicating a preset preserves its references to the blueprint, theme, style and artwork.
@@ -125,28 +123,26 @@ Those referenced assets remain shared. If you plan to edit a theme, style or blu
 duplicate that asset too and assign the new reference before editing it. Presentation
 settings and route overrides on the preset can be customized without changing shared assets.
 
-To choose World2D on another preset, open it in the Studio, set **Visual > Apar&ecirc;ncia >
-Apresenta&ccedil;&atilde;o** to `World2D`, let the preview rebuild, then choose **Aplicar ao preset**
-(Apply to preset). In **Integra&ccedil;&atilde;o** (Integration), **Criar demonstra&ccedil;&atilde;o na cena atual**
-(Create demo in current scene) uses that saved backend. The factory's World Trail preset is the
+To choose World2D on another preset, open it in the Studio, set **Visual > Appearance >
+Presentation** to `World2D`, let the preview rebuild, then choose **Apply to preset**. In
+**Integration**, **Create demo in current scene** uses that saved backend. The factory's World Trail preset is the
 ready-made World2D route; a generated demo scene is created from the selected saved preset.
 
 ## 3. Apply or undo authoring changes
 
-The preview is detached from the source preset. Use **Aplicar ao preset** (Apply to preset) to
-persist visual and interaction authoring changes with Unity Undo support. Use **Recarregar fonte**
-(Reload source) to discard the working copy and reload the asset on disk. Undo and Redo update
+The preview is detached from the source preset. Use **Apply to preset** to persist visual and
+interaction authoring changes with Unity Undo support. Use **Reload source** to discard the
+working copy and reload the asset on disk. Undo and Redo update
 both the preview and manual art and position fields.
 
-If the source changed outside the Studio, **Aplicar ao preset** (Apply to preset) refuses to
-overwrite it. Choose **Recarregar fonte** (Reload source) first. When switching a changed preset,
-choose **Aplicar e trocar** (Apply and switch), **Descartar e trocar** (Discard and switch), or
-**Continuar editando** (Continue editing). Closing follows Unity's normal save/discard flow.
+If the source changed outside the Studio, **Apply to preset** refuses to overwrite it. Choose
+**Reload source** first. When switching a changed preset, choose **Apply and switch**, **Discard
+and switch**, or **Keep editing**. Closing follows Unity's normal save/discard flow.
 
 ![Experience Studio with a temporary curve edit and draft state](../assets/images/studio-curves-draft.png){ .shot }
 
-The draft preview is still temporary here. The captured Portuguese labels include
-`Curvas suaves` and `Aplicar ao preset`.
+The draft preview is still temporary here. The current labels are **Smooth curves** and
+**Apply to preset**.
 
 ![Experience Studio after applying the curve edit](../assets/images/studio-curves-applied.png){ .shot }
 
@@ -154,8 +150,8 @@ After Apply, the preview reports the edit as applied while the graph identity re
 
 ## 4. Create a demo scene from the saved preset
 
-Apply the preset before creating a scene. In **Integra&ccedil;&atilde;o** (Integration), choose
-**Criar demonstra&ccedil;&atilde;o na cena atual** (Create demo in current scene). The command creates the
+Apply the preset before creating a scene. In **Integration**, choose **Create demo in current
+scene**. The command creates the
 host, the selected renderer, camera and light when needed,
 an EventSystem, and the optional demo HUD. The action stays disabled while the preset has
 unapplied changes, because scene creation reads the saved source rather than the temporary copy.
@@ -201,7 +197,7 @@ events. Direct controller commands update the host snapshot and invalidate old t
 raising a second host content event.
 
 To test the pending-content state in the isolated preview, select an available location and
-choose **Enter** (`Entrar`). **Complete visit** (`Concluir visita`) becomes available while
+choose **Enter**. **Complete visit** becomes available while
 the simulation waits for content. This preview action completes its own visit only.
 
 ![Studio preview waiting for the selected location's content](../assets/images/studio-visit-pending.png){ .shot }
@@ -219,9 +215,8 @@ default; enable repeat completion only when returning should execute its content
 This is a separate progression
 contract, so it does not initialize a parallel legacy forward run.
 
-In **Mec&acirc;nica** (Mechanics), choose `Revisitable`, leave **Permitir repetir conte&uacute;do**
-(Allow repeat content) off for one execution per location, then choose **Reiniciar simula&ccedil;&atilde;o**
-(Restart simulation) to try the new policy. Choose **Aplicar ao preset** (Apply to preset) when
+In **Mechanics**, choose `Revisitable`, leave **Allow repeat content** off for one execution per
+location, then choose **Restart simulation** to try the new policy. Choose **Apply to preset** when
 you are ready to save the authoring settings. Changing policy starts a new session; an existing
 save keeps its original policy.
 
