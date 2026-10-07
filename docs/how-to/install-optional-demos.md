@@ -112,7 +112,10 @@ the optional package supplies the presentation and connects example content to t
 
 ### Replace art and presentation settings
 
-1. Duplicate the demo preset before making a project-specific variant.
+1. Select the demo preset in Unity's **Project** window and use **Edit > Duplicate** (Ctrl+D).
+   Assign the copy in Experience Studio before making a project-specific variant. The copy
+   retains shared asset references; duplicate a theme, style or blueprint separately before
+   changing that referenced asset. See the [preset-copy walkthrough](../tutorials/experience-studio.md#make-a-project-specific-preset-copy).
 2. In the preset's **Style** and **Asset Mappings**, replace node icons and node prefabs. In your
    copy of the demo prefab, replace background sprites, actor prefabs, materials, Animator clips,
    and state effects with project-owned assets.

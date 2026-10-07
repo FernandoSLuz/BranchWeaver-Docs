@@ -111,6 +111,20 @@ because the presets use different authored graphs.
 
 The image hashes, renderer names, and graph counts are recorded in the [preset gallery receipt](../assets/videos/experience-gallery.receipt.json).
 
+
+### Make a project-specific preset copy
+
+Select the `.asset` preset in Unity's **Project** window, then choose **Edit > Duplicate**
+(or Ctrl+D). Rename the new asset and assign that copy to **Preset de mapa** in the Studio.
+The copy has its own GUID. Use **Visual > Caminhos** to enable a route override, choose
+**Curvas suaves**, adjust its strength, and select **Aplicar ao preset**. Applying the draft
+updates only the preset assigned to the Studio.
+
+Duplicating a preset preserves its references to the blueprint, theme, style and artwork.
+Those referenced assets remain shared. If you plan to edit a theme, style or blueprint itself,
+duplicate that asset too and assign the new reference before editing it. Presentation
+settings and route overrides on the preset can be customized without changing shared assets.
+
 To choose World2D on another preset, open it in the Studio, set **Visual > Apar&ecirc;ncia >
 Apresenta&ccedil;&atilde;o** to `World2D`, let the preview rebuild, then choose **Aplicar ao preset**
 (Apply to preset). In **Integra&ccedil;&atilde;o** (Integration), **Criar demonstra&ccedil;&atilde;o na cena atual**
