@@ -37,10 +37,10 @@ tools are not required to consume these packages.
    2D `53067ce3b32d8f42a1042ad3ed07a0d63c6f54912b7d96e067c1c95596279cd9`, and 3D
    `7469904a553b8d72b3fd892280ed582029f74f2897a5ea9345b96c38fd110cf5`.
    The manifests are the source of the package names, versions, hashes, and owned paths.
-5. Open the scene for the package you imported:
+5. Open one of the scenes for the package you imported. The available scene paths are:
 
-   - `Assets/BranchWeaver/OptionalDemos/MarcosDaMare/Scenes/Marcos2D/Marcos da Mare 2D.unity`
-   - `Assets/BranchWeaver/OptionalDemos/MarcosDaMare/Scenes/Marcos3D/Marcos da Mare 3D.unity`
+    - `Assets/BranchWeaver/OptionalDemos/MarcosDaMare/Scenes/Marcos2D/Marcos da Mare 2D.unity`
+    - `Assets/BranchWeaver/OptionalDemos/MarcosDaMare/Scenes/Marcos3D/Marcos da Mare 3D.unity`
 
    Enter Play Mode, choose **Porto**, confirm travel, then confirm the visit. The shared runtime
    has no playable scene of its own; it is consumed by one or both presentation packages.
@@ -50,6 +50,60 @@ shared runtime, 2D, and 3D files and GUIDs matched their manifests, with no miss
 The native runtime checks passed for travel, visit confirmation, return and branch changes,
 save restoration, and delayed callbacks. Each optional module was then removed in the order
 below; the base remained intact and its runtime tests passed again.
+
+## Native scene preview
+
+These captures show the two optional presentation paths using the current candidate packages.
+The frames show GameView after the scene was opened and Play Mode started; those menu actions
+precede the recording. The preview documents technical flow and composition.
+
+<figure markdown id="optional-marcos-2d">
+  <img class="shot" src="../../assets/images/optional-marcos-2d-scene.png" alt="Native Marcos da Mare 2D optional demo scene in Play Mode">
+  <figcaption>The installed 2D scene after confirming the Porto visit, with adjacent destinations available.</figcaption>
+</figure>
+
+<figure markdown id="optional-marcos-3d">
+  <img class="shot" src="../../assets/images/optional-marcos-3d-scene.png" alt="Native Marcos da Mare 3D optional demo scene in Play Mode">
+  <figcaption>The installed 3D scene after confirming Porto, with Iara on its island and the actor anchor following the map.</figcaption>
+</figure>
+
+<figure class="studio-video" id="optional-marcos-video">
+  <video id="studio-authoring-video" controls preload="metadata" poster="../../assets/images/optional-marcos-2d-scene.png" aria-describedby="optional-marcos-video-transcript">
+    <source src="../../assets/videos/optional-marcos-scene-flow.mp4" type="video/mp4">
+    <track kind="captions" src="../../assets/videos/optional-marcos-scene-flow.en.vtt" srclang="en" label="English captions" default>
+    Your browser does not support HTML video. Use the transcript below.
+  </video>
+  <div class="studio-video-controls" aria-label="Video timestamps">
+    <button type="button" data-studio-time="0.000">2D scene</button>
+    <button type="button" data-studio-time="4.363">2D confirm</button>
+    <button type="button" data-studio-time="8.327">2D return</button>
+    <button type="button" data-studio-time="9.543">3D scene</button>
+    <button type="button" data-studio-time="13.900">3D confirm</button>
+    <button type="button" data-studio-time="18.040">3D return</button>
+  </div>
+  <p class="studio-video-help">Use the player controls or fullscreen view to inspect the native
+  scene flow. The recording uses the Submit command for confirmation; it does not demonstrate
+  physical touch or gamepad input.</p>
+  <details id="optional-marcos-video-transcript">
+    <summary>Accessible transcript and chapters</summary>
+    <ol>
+      <li>0:00 — 2D: The installed scene has auto-started in Play Mode with Porto focused.</li>
+      <li>0:01 — 2D: Porto is entered through the visible Submit button; the actor plays its skill and effect.</li>
+      <li>0:04 — 2D: The visit is confirmed and adjacent destinations remain available.</li>
+      <li>0:05 — 2D: Travel to a neighbouring location; the actor plays its skill there.</li>
+      <li>0:08 — 2D: Return to Porto along the existing link. Its completed content does not repeat.</li>
+      <li>0:09 — 3D: The installed scene has auto-started in Play Mode with Porto focused.</li>
+      <li>0:10 — 3D: Porto is entered through the visible Submit button; the actor plays its skill and effect.</li>
+      <li>0:13 — 3D: The visit is confirmed and adjacent destinations remain available.</li>
+      <li>0:14 — 3D: Travel to a neighbouring location; the actor plays its skill there.</li>
+      <li>0:18 — 3D: Return to Porto along the existing link. Its completed content does not repeat.</li>
+    </ol>
+  </details>
+</figure>
+
+The silent recording uses native GameView frames and measured frame timestamps. Captions describe
+the visible actions. See the [technical media receipt](../assets/videos/optional-marcos-scene-flow.receipt.json)
+for capture scope and hashes.
 
 ## Adapt the presentation without editing package code
 
@@ -91,6 +145,22 @@ node in the current run, so record any reward in your game's save. The optional 
 grant rewards, own the save, or change progression. For a revisitable map, the host still decides
 whether content repeats and how resume state is stored; the visual layer only reports the
 presentation and confirmation result.
+
+### Optional runtime API
+
+The candidate runtime exposes five public types for this presentation module. They are documented
+here rather than in the base API reference because the module is versioned and optional.
+
+| Type | Contract used by a host |
+| --- | --- |
+| `MarcosVisitDemo` | Presentation component. Use `Configure(MapExperienceHost, Animator, Animator, string, string, string, float, bool, string)`, `ConfigureFeedback(AudioSource, AudioClip, float)`, `CompletePendingVisit()`, `IsPending`, `Status`, `PendingToken`, `DemoCompletion`, and `DemoCompletionEvent`. Completion accepts only the captured visit token. |
+| `MarcosVisitDemoStatus` | Status values: `Idle`, `PlayingSkill`, `AwaitingConfirmation`, and `Completed`. |
+| `MarcosVisitDemoCompletionEvent` | Serializable parameterless `UnityEvent` exposed through `DemoCompletionEvent` for Inspector callbacks. |
+| `OptionalMarcosActorAnchor` | Follows the current or `fixedNodeId` node. `Configure(MapExperienceHost, Transform, float, bool, string, Vector3, float)` sets the presentation root, 2D/3D projection, node pin, offset, and smoothing. |
+| `MarcosParticleFeedback` | Token-gated particle burst. `Configure(MapExperienceHost, ParticleSystem, string)` assigns the host, particle system, and optional node filter. |
+
+These components own presentation feedback only. `MapExperienceHost` remains responsible for graph,
+progression, save, and content completion. The game remains responsible for its rewards.
 
 ## Remove an optional demo
 

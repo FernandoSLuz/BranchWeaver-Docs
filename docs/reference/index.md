@@ -2,6 +2,8 @@
 
 The types you are meant to use in BranchWeaver, grouped by what they are for rather than by namespace. **248 types.**
 
+This generated reference covers the base package. Separately versioned optional modules, including `OptionalDemos`, are documented by their own installation guides.
+
 !!! info "What is not listed here"
     65 further types are public in the source but left out of this reference. They are public only because `internal` is per-assembly in C# and the package spans several assemblies -- plumbing, not API. They carry `[EditorBrowsable(Never)]` in the source to say so. Nothing you need is hidden: if a documented type exposes it, it is documented too.
 

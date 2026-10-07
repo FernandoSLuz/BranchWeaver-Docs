@@ -45,10 +45,13 @@ DOC_LINE = re.compile(r'^\s*///\s?(.*)$')
 DIRECTIVE = re.compile(r'^\s*#\s*(if|else|elif|endif|region|endregion|pragma|nullable|define|undef|line|warning|error)\b')
 
 EXCLUDE_DIR_PARTS = ('Tests', 'InternalTools', 'Internal', 'Library', 'obj', 'Temp')
-# Samples are optional shipped examples; the Unity 6-only UIToolkit assembly remains
-# in the reference because it is part of the current backend surface. Its support
-# guard is visible in the source and is not silently presented as a 2022.3 feature.
+# Samples are optional shipped examples; OptionalDemos is a separately versioned
+# candidate module documented by its own installation guide. Neither belongs in the
+# base product API reference. The Unity 6-only UIToolkit assembly remains in the
+# reference because it is part of the current backend surface; its support guard is
+# visible in the source and is not silently presented as a 2022.3 feature.
 EXCLUDE_DIR_PARTS += ('Samples',)
+EXCLUDE_DIR_PARTS += ('OptionalDemos',)
 EXCLUDE_TYPE_NAMES = {
     'IMapDevelopmentHost', 'MapDevelopmentCommandResult', 'MapDevelopmentFailureKind',
 }

@@ -1,0 +1,41 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:01.086
+2D: Scene ready; Porto is focused.
+
+2
+00:00:01.086 --> 00:00:04.363
+2D: Porto visit: the actor plays its skill and effect, awaiting confirmation.
+
+3
+00:00:04.363 --> 00:00:05.079
+2D: The visit is confirmed; adjacent destinations remain available.
+
+4
+00:00:05.079 --> 00:00:08.327
+2D: Travel to a neighbouring location; the actor skill plays there.
+
+5
+00:00:08.327 --> 00:00:09.543
+2D: Return to Porto along the existing link. Completed content does not repeat.
+
+6
+00:00:09.543 --> 00:00:10.649
+3D: Scene ready; Porto is focused.
+
+7
+00:00:10.649 --> 00:00:13.900
+3D: Porto visit: the actor plays its skill and effect, awaiting confirmation.
+
+8
+00:00:13.900 --> 00:00:14.697
+3D: The visit is confirmed; adjacent destinations remain available.
+
+9
+00:00:14.697 --> 00:00:18.040
+3D: Travel to a neighbouring location; the actor skill plays there.
+
+10
+00:00:18.040 --> 00:00:19.320
+3D: Return to Porto along the existing link. Completed content does not repeat.

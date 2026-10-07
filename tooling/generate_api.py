@@ -61,6 +61,9 @@ def render_index(groups, order, product, total_types, tiers=None, excluded=0):
     out.append('The types you are meant to use in %s, grouped by what they are for '
                'rather than by namespace. **%d types.**' % (product, total_types))
     out.append('')
+    out.append('This generated reference covers the base package. Separately versioned optional '
+               'modules, including `OptionalDemos`, are documented by their own installation guides.')
+    out.append('')
 
     if excluded:
         out.append('!!! info "What is not listed here"')
@@ -246,6 +249,9 @@ def render_coverage(groups, order, product, api, excluded=0):
     out.append('Generated from source alongside the reference itself, so it cannot '
                'quietly drift. This page exists because a reference that hides its own '
                'gaps is worse than one that admits them.')
+    out.append('')
+    out.append('The counts below cover the base package only; separately versioned optional '
+               'module APIs are documented in their module guides.')
     out.append('')
     out.append('| Scope | Documented | Total | Coverage |')
     out.append('| --- | --- | --- | --- |')

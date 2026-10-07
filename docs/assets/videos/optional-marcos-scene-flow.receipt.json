@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "source": "Native Unity GameView frames from the installed serialized optional scenes",
+  "unityVersion": "6000.3.25f1",
+  "durationSeconds": 19.32,
+  "resolution": [
+    1920,
+    1080
+  ],
+  "audio": false,
+  "capture": "ScreenCapture.CaptureScreenshotAsTexture, measured frame timestamps; encoded H.264 without interpolation",
+  "scope": {
+    "validated": [
+      "Scene auto-start, visible UI Submit, first visit, save restoration and stale token rejection",
+      "Native actor skill, confirmation, adjacent travel and reverse traversal"
+    ],
+    "notDemonstrated": [
+      "Physical mouse, touch or gamepad input",
+      "Human usability study, artistic approval or commercial source clearance",
+      "Other Unity versions, platforms or performance measurements"
+    ]
+  },
+  "chapters": [
+    {
+      "backend": "2D",
+      "phase": "initial",
+      "atSeconds": 0.0
+    },
+    {
+      "backend": "2D",
+      "phase": "skill-pending",
+      "atSeconds": 1.0858583450317383
+    },
+    {
+      "backend": "2D",
+      "phase": "completed",
+      "atSeconds": 4.363190174102783
+    },
+    {
+      "backend": "2D",
+      "phase": "move-skill-pending",
+      "atSeconds": 5.07873010635376
+    },
+    {
+      "backend": "2D",
+      "phase": "returned",
+      "atSeconds": 8.327063083648682
+    },
+    {
+      "backend": "3D",
+      "phase": "initial",
+      "atSeconds": 9.543337917327882
+    },
+    {
+      "backend": "3D",
+      "phase": "skill-pending",
+      "atSeconds": 10.64878854751587
+    },
+    {
+      "backend": "3D",
+      "phase": "completed",
+      "atSeconds": 13.89999876022339
+    },
+    {
+      "backend": "3D",
+      "phase": "move-skill-pending",
+      "atSeconds": 14.696782207489015
+    },
+    {
+      "backend": "3D",
+      "phase": "returned",
+      "atSeconds": 18.03980932235718
+    }
+  ],
+  "sourceFrameSets": [
+    {
+      "backend": "2D",
+      "sourceFrames": 92,
+      "measuredDuration": 9.54333791732788,
+      "manifestSha256": "524cc7bf8e7b4583e263df2553d441f73e139790a511b87ebfe9cb446592ab56"
+    },
+    {
+      "backend": "3D",
+      "sourceFrames": 91,
+      "measuredDuration": 9.740230178833007,
+      "manifestSha256": "77fde049da3433c38291192bfefd8756449751b219539a56a4b71910bd01d618"
+    }
+  ],
+  "media": [
+    {
+      "name": "optional-marcos-scene-flow.mp4",
+      "bytes": 954925,
+      "sha256": "fdafdf13e5dc4f4df79194f4d254c5f7b3dd87777b76488a0c2d36ee0c5f34dd"
+    },
+    {
+      "name": "optional-marcos-scene-flow.en.vtt",
+      "bytes": 996,
+      "sha256": "ccedda0b57ac30c32c02c01121c1ac19a907d92727f4d43e67db72f831ad5528"
+    },
+    {
+      "name": "optional-marcos-2d-scene.png",
+      "bytes": 1863988,
+      "sha256": "d83b82a388f34aca4f319ab492e6313a9bf9b58de1ce0243018aee471dd9a7e8"
+    },
+    {
+      "name": "optional-marcos-3d-scene.png",
+      "bytes": 246936,
+      "sha256": "f0c936ce46950a86e9e636bdc81854cb320004ef4cf4545e3112f282f0dec65e"
+    }
+  ]
+}

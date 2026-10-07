@@ -2,6 +2,8 @@
 
 Generated from source alongside the reference itself, so it cannot quietly drift. This page exists because a reference that hides its own gaps is worse than one that admits them.
 
+The counts below cover the base package only; separately versioned optional module APIs are documented in their module guides.
+
 | Scope | Documented | Total | Coverage |
 | --- | --- | --- | --- |
 | Public types | 248 | 248 | 100% |

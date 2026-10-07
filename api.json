@@ -46224,7 +46224,7 @@
    "params": [],
    "remarks": "",
    "returns": "",
-   "summary": "Generates and caches anti-aliased white rounded-rectangle sprites for fallback node views.",
+   "summary": "Generates and caches anti-aliased white sprites for fallback node views.",
    "value": ""
   },
   "enum_values": [],
@@ -46254,6 +46254,35 @@
     "modifiers": "static",
     "name": "GetRounded",
     "signature": "public static Sprite GetRounded(int sizePx, float cornerRadiusFraction)",
+    "type": "Sprite"
+   },
+   {
+    "doc": {
+     "_inheritdoc": false,
+     "exceptions": [],
+     "params": [
+      {
+       "name": "sizePx",
+       "text": "Square texture dimension clamped between four and 512 pixels."
+      },
+      {
+       "name": "shape",
+       "text": "Map node silhouette; unknown values fail closed to rounded rectangle."
+      },
+      {
+       "name": "cornerRadiusFraction",
+       "text": "Rounded-rectangle corner radius as a fraction of size."
+      }
+     ],
+     "remarks": "",
+     "returns": "The cached sprite; radius is ignored for shapes without rounded corners.",
+     "summary": "Returns the cached procedural silhouette for a map node shape.",
+     "value": ""
+    },
+    "kind": "method",
+    "modifiers": "static",
+    "name": "GetShape",
+    "signature": "public static Sprite GetShape(int sizePx, MapNodeShape shape, float cornerRadiusFraction)",
     "type": "Sprite"
    }
   ],
