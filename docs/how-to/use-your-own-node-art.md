@@ -5,6 +5,13 @@ covers the two prefab fields on a node type, what the built-in factories do with
 you write before a prefab reacts to state, fog, and transitions. You need a Node Type asset, a
 prefab, and one C# script.
 
+![Diagram of the authored prefab path for Canvas and World2D](../assets/images/custom-node-art-prefab-path.svg){ .diagram }
+
+This is an original implementation diagram, not a screenshot. The built-in factories instantiate
+the assigned prefab under the presenter's node root. A prefab without an `IMapNodeView` receives
+the matching built-in view component; a null field uses the factory's fallback root and components.
+The resulting view is then bound to the node state and presented by Canvas or World2D.
+
 ## Assign a prefab to a node type
 
 Both fields sit under **Presentation** on a Node Type asset, beside **Icon**. `CanvasMapPresenter`
@@ -13,7 +20,7 @@ other: a Canvas map with only a **World Prefab** assigned still draws the built-
 
 | Field | What the factory does |
 | --- | --- |
-| Null, Canvas | Builds a `GameObject` named `BranchWeaver Canvas Node` carrying a `RectTransform`, a `CanvasRenderer`, an `Image`, and a `CanvasMapNodeView`. |
+| Null, Canvas | Builds a `GameObject` named `BranchWeaver Canvas Node` carrying a `RectTransform`, a `CanvasRenderer`, a `MapSurfaceGraphic` (an `Image` subclass), and a `CanvasMapNodeView`. |
 | Null, World2D | Builds a `GameObject` named `BranchWeaver World Node` carrying a `SpriteRenderer` and a `WorldMapNodeView`. |
 | Set | Calls `Object.Instantiate(prefab)`, parents the instance under the presenter's node root, then asks it for a component implementing `IMapNodeView`. |
 
@@ -119,10 +126,11 @@ node is yours too, since the presenter activates a node view after every bind, f
 | --- | --- | --- |
 | Node root | `RectTransform`, sized in presentation pixels | `Transform`, scaled by `NodeSize * 0.01` |
 | Labels | uGUI `Text` with the style's font, size, colour, and outline | `TextMesh` plus a shadow, always white |
-| Style in the built-in view | `IMapStyledView` implemented | **Not implemented** |
+| Style in the built-in view | `IMapStyledView` implemented | `IMapStyledView` implemented |
 
-Pick Canvas when the map is interface: the styling work went into that presentation. Pick World2D
-when the map must sit in the scene with other 2D content, and budget for writing your own view.
+Pick Canvas when the map is interface and you want uGUI typography. Pick World2D when the map must
+sit in the scene with other 2D content; its built-in view also implements `IMapStyledView`, while
+custom behaviour still belongs in your own view.
 
 ## What the compiled style reaches, and what it does not
 
@@ -135,7 +143,7 @@ view on unscaled time while **Advance Style Automatically** is on.
 | --- | --- |
 | `CanvasMapNodeView`, no root `Image` | Everything: shape, fill, stroke, glow, shadow, ring, per-state scale, brightness and opacity, icon inset and tint, label typography, motion. |
 | `CanvasMapNodeView`, plain root `Image` | Per-state **Scale**, label font, size, colour, offset and outline, focus easing, colour transitions. **Not** shape, corner radius, fill mode, stroke, glow, shadow, ring, icon inset, icon tint, **Fill Brightness**, or **Opacity**, all of which are computed into a surface request a plain `Image` never receives. |
-| `WorldMapNodeView` | Nothing. The class does not implement `IMapStyledView`, so a world node gets the node type's state colour and the 0.75 fog multiplier, and a fixed 1.15 focus scale. |
+| `WorldMapNodeView` | `ApplyStyle` updates the `WorldMapSurface` and current-node pulse; `Bind` applies state colour and fog to the root `SpriteRenderer`; focus scales the root by 1.15. The node type icon remains on that renderer; labels use `TextMesh` plus a shadow. |
 | Your own `IMapNodeView` | Nothing, unless you implement `IMapStyledView` and read the tokens yourself. |
 
 A style is numbers handed to whoever reads them, not a post-process over your art: no change to a Map
