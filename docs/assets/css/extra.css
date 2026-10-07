@@ -147,6 +147,12 @@
   outline-offset: 2px;
 }
 
+.studio-video-status {
+  color: var(--md-default-fg-color--light);
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
 /* Side-by-side comparison, collapsing on narrow screens. */
 .grid-2 {
   display: grid;

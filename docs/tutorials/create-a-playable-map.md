@@ -26,41 +26,48 @@ not Experience Studio and not the optional concept art demos.
   <figcaption>Author the starter map, set seed 4242, adjust the preview, and save the authored scene.</figcaption>
 </figure>
 
-Use fullscreen to read the Unity controls. Chapter buttons work with a mouse or keyboard.
+<div class="studio-video-controls" aria-label="Authoring playback">
+  <button type="button" data-studio-continue="starter-authoring-video" aria-controls="starter-authoring-video">Play full tutorial</button>
+</div>
+<p class="studio-video-status" data-studio-status="starter-authoring-video" role="status">Choose a step below to watch it on its own, or play the full tutorial.</p>
+
+Use fullscreen to read the Unity controls. Choose a chapter with a mouse or keyboard to
+play that step and pause at its end. Use **Continue full tutorial** to keep watching from
+that point. The transcript timestamps work the same way.
 
 <details>
   <summary>Choose an authoring step</summary>
 <div class="studio-video-controls" aria-label="Starter authoring video chapters">
-  <button type="button" data-studio-video="starter-authoring-video" data-studio-time="0">0:00 BranchWeaver Map Authoring</button>
-  <button type="button" data-studio-video="starter-authoring-video" data-studio-time="2">0:02 Create the starter map</button>
-  <button type="button" data-studio-video="starter-authoring-video" data-studio-time="10">0:10 Configure the slot and validate</button>
-  <button type="button" data-studio-video="starter-authoring-video" data-studio-time="13.467">0:13 Save the authored scene</button>
-  <button type="button" data-studio-video="starter-authoring-video" data-studio-time="38.067">0:38 Reopen the saved scene</button>
-  <button type="button" data-studio-video="starter-authoring-video" data-studio-time="75.5">1:15 Open Map Studio</button>
-  <button type="button" data-studio-video="starter-authoring-video" data-studio-time="109.033">1:49 Select Starter Blueprint</button>
-  <button type="button" data-studio-video="starter-authoring-video" data-studio-time="129.033">2:09 Set seed 4242 and regenerate</button>
-  <button type="button" data-studio-video="starter-authoring-video" data-studio-time="133.48">2:13 Select Starter Theme</button>
-  <button type="button" data-studio-video="starter-authoring-video" data-studio-time="148.713">2:28 Adjust preview zoom and pan</button>
-  <button type="button" data-studio-video="starter-authoring-video" data-studio-time="158.38">2:38 Apply and save</button>
-  <button type="button" data-studio-video="starter-authoring-video" data-studio-time="163.813">2:43 Authoring flow complete</button>
+  <button type="button" data-studio-video="starter-authoring-video" data-studio-time="0" data-studio-end="2" data-studio-title="BranchWeaver Map Authoring" aria-controls="starter-authoring-video">0:00 BranchWeaver Map Authoring</button>
+  <button type="button" data-studio-video="starter-authoring-video" data-studio-time="2" data-studio-end="10" data-studio-title="Create the starter map" aria-controls="starter-authoring-video">0:02 Create the starter map</button>
+  <button type="button" data-studio-video="starter-authoring-video" data-studio-time="10" data-studio-end="13.467" data-studio-title="Configure the slot and validate" aria-controls="starter-authoring-video">0:10 Configure the slot and validate</button>
+  <button type="button" data-studio-video="starter-authoring-video" data-studio-time="13.467" data-studio-end="38.067" data-studio-title="Save the authored scene" aria-controls="starter-authoring-video">0:13 Save the authored scene</button>
+  <button type="button" data-studio-video="starter-authoring-video" data-studio-time="38.067" data-studio-end="75.5" data-studio-title="Reopen the saved scene" aria-controls="starter-authoring-video">0:38 Reopen the saved scene</button>
+  <button type="button" data-studio-video="starter-authoring-video" data-studio-time="75.5" data-studio-end="109.033" data-studio-title="Open Map Studio" aria-controls="starter-authoring-video">1:15 Open Map Studio</button>
+  <button type="button" data-studio-video="starter-authoring-video" data-studio-time="109.033" data-studio-end="129.033" data-studio-title="Select Starter Blueprint" aria-controls="starter-authoring-video">1:49 Select Starter Blueprint</button>
+  <button type="button" data-studio-video="starter-authoring-video" data-studio-time="129.033" data-studio-end="133.48" data-studio-title="Set seed 4242 and regenerate" aria-controls="starter-authoring-video">2:09 Set seed 4242 and regenerate</button>
+  <button type="button" data-studio-video="starter-authoring-video" data-studio-time="133.48" data-studio-end="148.713" data-studio-title="Select Starter Theme" aria-controls="starter-authoring-video">2:13 Select Starter Theme</button>
+  <button type="button" data-studio-video="starter-authoring-video" data-studio-time="148.713" data-studio-end="158.38" data-studio-title="Adjust the preview zoom and pan the graph" aria-controls="starter-authoring-video">2:28 Adjust preview zoom and pan</button>
+  <button type="button" data-studio-video="starter-authoring-video" data-studio-time="158.38" data-studio-end="163.813" data-studio-title="Apply and save" aria-controls="starter-authoring-video">2:38 Apply and save</button>
+  <button type="button" data-studio-video="starter-authoring-video" data-studio-time="163.813" data-studio-end="167.8" data-studio-title="Authoring flow complete" aria-controls="starter-authoring-video">2:43 Authoring flow complete</button>
 </div>
 </details>
 
 <details id="starter-authoring-transcript">
   <summary>Authoring transcript and chapters</summary>
   <ol>
-    <li><button type="button" data-studio-video="starter-authoring-video" data-studio-time="0">0:00</button> BranchWeaver Map Authoring.</li>
-    <li><button type="button" data-studio-video="starter-authoring-video" data-studio-time="2">0:02</button> Click Create Complete Starter Map. The wizard builds the scene and starter assets.</li>
-    <li><button type="button" data-studio-video="starter-authoring-video" data-studio-time="10">0:10</button> Configure the slot and validate. Validation catches setup errors early.</li>
-    <li><button type="button" data-studio-video="starter-authoring-video" data-studio-time="13.467">0:13</button> Save the authored scene. The scene becomes the editable handoff.</li>
-    <li><button type="button" data-studio-video="starter-authoring-video" data-studio-time="38.067">0:38</button> Reopen the saved scene. This confirms the authoring result persists.</li>
-    <li><button type="button" data-studio-video="starter-authoring-video" data-studio-time="75.5">1:15</button> Open Map Studio. The editor exposes the map controls.</li>
-    <li><button type="button" data-studio-video="starter-authoring-video" data-studio-time="109.033">1:49</button> Select Starter Blueprint. The picker connects the demo to its source asset.</li>
-    <li><button type="button" data-studio-video="starter-authoring-video" data-studio-time="129.033">2:09</button> Set seed 4242 and regenerate. A fixed seed makes the result repeatable.</li>
-    <li><button type="button" data-studio-video="starter-authoring-video" data-studio-time="133.48">2:13</button> Select Starter Theme. The theme applies the demo look consistently.</li>
-    <li><button type="button" data-studio-video="starter-authoring-video" data-studio-time="148.713">2:28</button> Adjust the preview zoom, then pan the graph. The overview checks the generated layout.</li>
-    <li><button type="button" data-studio-video="starter-authoring-video" data-studio-time="158.38">2:38</button> Apply and save. This records the authored map for reuse.</li>
-    <li><button type="button" data-studio-video="starter-authoring-video" data-studio-time="163.813">2:43</button> Authoring flow complete.</li>
+    <li><button type="button" data-studio-video="starter-authoring-video" data-studio-time="0" data-studio-end="2" data-studio-title="BranchWeaver Map Authoring" aria-controls="starter-authoring-video">0:00</button> BranchWeaver Map Authoring.</li>
+    <li><button type="button" data-studio-video="starter-authoring-video" data-studio-time="2" data-studio-end="10" data-studio-title="Create the starter map" aria-controls="starter-authoring-video">0:02</button> Click Create Complete Starter Map. The wizard builds the scene and starter assets.</li>
+    <li><button type="button" data-studio-video="starter-authoring-video" data-studio-time="10" data-studio-end="13.467" data-studio-title="Configure the slot and validate" aria-controls="starter-authoring-video">0:10</button> Configure the slot and validate. Validation catches setup errors early.</li>
+    <li><button type="button" data-studio-video="starter-authoring-video" data-studio-time="13.467" data-studio-end="38.067" data-studio-title="Save the authored scene" aria-controls="starter-authoring-video">0:13</button> Save the authored scene. The scene becomes the editable handoff.</li>
+    <li><button type="button" data-studio-video="starter-authoring-video" data-studio-time="38.067" data-studio-end="75.5" data-studio-title="Reopen the saved scene" aria-controls="starter-authoring-video">0:38</button> Reopen the saved scene. This confirms the authoring result persists.</li>
+    <li><button type="button" data-studio-video="starter-authoring-video" data-studio-time="75.5" data-studio-end="109.033" data-studio-title="Open Map Studio" aria-controls="starter-authoring-video">1:15</button> Open Map Studio. The editor exposes the map controls.</li>
+    <li><button type="button" data-studio-video="starter-authoring-video" data-studio-time="109.033" data-studio-end="129.033" data-studio-title="Select Starter Blueprint" aria-controls="starter-authoring-video">1:49</button> Select Starter Blueprint. The picker connects the demo to its source asset.</li>
+    <li><button type="button" data-studio-video="starter-authoring-video" data-studio-time="129.033" data-studio-end="133.48" data-studio-title="Set seed 4242 and regenerate" aria-controls="starter-authoring-video">2:09</button> Set seed 4242 and regenerate. A fixed seed makes the result repeatable.</li>
+    <li><button type="button" data-studio-video="starter-authoring-video" data-studio-time="133.48" data-studio-end="148.713" data-studio-title="Select Starter Theme" aria-controls="starter-authoring-video">2:13</button> Select Starter Theme. The theme applies the demo look consistently.</li>
+    <li><button type="button" data-studio-video="starter-authoring-video" data-studio-time="148.713" data-studio-end="158.38" data-studio-title="Adjust the preview zoom and pan the graph" aria-controls="starter-authoring-video">2:28</button> Adjust the preview zoom, then pan the graph. The overview checks the generated layout.</li>
+    <li><button type="button" data-studio-video="starter-authoring-video" data-studio-time="158.38" data-studio-end="163.813" data-studio-title="Apply and save" aria-controls="starter-authoring-video">2:38</button> Apply and save. This records the authored map for reuse.</li>
+    <li><button type="button" data-studio-video="starter-authoring-video" data-studio-time="163.813" data-studio-end="167.8" data-studio-title="Authoring flow complete" aria-controls="starter-authoring-video">2:43</button> Authoring flow complete.</li>
   </ol>
 </details>
 
@@ -73,35 +80,40 @@ Use fullscreen to read the Unity controls. Chapter buttons work with a mouse or 
   <figcaption>Run the starter map, save checkpoints, restore the route, and exit Play Mode.</figcaption>
 </figure>
 
+<div class="studio-video-controls" aria-label="Runtime playback">
+  <button type="button" data-studio-continue="starter-runtime-video" aria-controls="starter-runtime-video">Play full tutorial</button>
+</div>
+<p class="studio-video-status" data-studio-status="starter-runtime-video" role="status">Choose a step below to watch it on its own, or play the full tutorial.</p>
+
 <details>
   <summary>Choose a runtime step</summary>
 <div class="studio-video-controls" aria-label="Starter runtime video chapters">
-  <button type="button" data-studio-video="starter-runtime-video" data-studio-time="0">0:00 BranchWeaver Runtime Flow</button>
-  <button type="button" data-studio-video="starter-runtime-video" data-studio-time="2">0:02 Start a run and enter the Gateway</button>
-  <button type="button" data-studio-video="starter-runtime-video" data-studio-time="8">0:08 Save and complete the Gateway</button>
-  <button type="button" data-studio-video="starter-runtime-video" data-studio-time="14">0:14 Focus the available Route</button>
-  <button type="button" data-studio-video="starter-runtime-video" data-studio-time="24">0:24 Enter the selected Route</button>
-  <button type="button" data-studio-video="starter-runtime-video" data-studio-time="30.5">0:30 Save and complete the Route</button>
-  <button type="button" data-studio-video="starter-runtime-video" data-studio-time="34.3">0:34 Enter the Landmark</button>
-  <button type="button" data-studio-video="starter-runtime-video" data-studio-time="37.3">0:37 Load the restored state</button>
-  <button type="button" data-studio-video="starter-runtime-video" data-studio-time="42.3">0:42 Save the restored state and exit</button>
-  <button type="button" data-studio-video="starter-runtime-video" data-studio-time="46.3">0:46 Runtime flow complete</button>
+  <button type="button" data-studio-video="starter-runtime-video" data-studio-time="0" data-studio-end="2" data-studio-title="BranchWeaver Runtime Flow" aria-controls="starter-runtime-video">0:00 BranchWeaver Runtime Flow</button>
+  <button type="button" data-studio-video="starter-runtime-video" data-studio-time="2" data-studio-end="8" data-studio-title="Start a run and enter the Gateway" aria-controls="starter-runtime-video">0:02 Start a run and enter the Gateway</button>
+  <button type="button" data-studio-video="starter-runtime-video" data-studio-time="8" data-studio-end="14" data-studio-title="Save and complete the Gateway" aria-controls="starter-runtime-video">0:08 Save and complete the Gateway</button>
+  <button type="button" data-studio-video="starter-runtime-video" data-studio-time="14" data-studio-end="24" data-studio-title="Focus the available Route" aria-controls="starter-runtime-video">0:14 Focus the available Route</button>
+  <button type="button" data-studio-video="starter-runtime-video" data-studio-time="24" data-studio-end="30.5" data-studio-title="Enter the selected Route" aria-controls="starter-runtime-video">0:24 Enter the selected Route</button>
+  <button type="button" data-studio-video="starter-runtime-video" data-studio-time="30.5" data-studio-end="34.3" data-studio-title="Save and complete the Route" aria-controls="starter-runtime-video">0:30 Save and complete the Route</button>
+  <button type="button" data-studio-video="starter-runtime-video" data-studio-time="34.3" data-studio-end="37.3" data-studio-title="Enter the Landmark" aria-controls="starter-runtime-video">0:34 Enter the Landmark</button>
+  <button type="button" data-studio-video="starter-runtime-video" data-studio-time="37.3" data-studio-end="42.3" data-studio-title="Load the restored state" aria-controls="starter-runtime-video">0:37 Load the restored state</button>
+  <button type="button" data-studio-video="starter-runtime-video" data-studio-time="42.3" data-studio-end="46.3" data-studio-title="Save the restored state and exit" aria-controls="starter-runtime-video">0:42 Save the restored state and exit</button>
+  <button type="button" data-studio-video="starter-runtime-video" data-studio-time="46.3" data-studio-end="50.3" data-studio-title="Runtime flow complete" aria-controls="starter-runtime-video">0:46 Runtime flow complete</button>
 </div>
 </details>
 
 <details id="starter-runtime-transcript">
   <summary>Runtime transcript and chapters</summary>
   <ol>
-    <li><button type="button" data-studio-video="starter-runtime-video" data-studio-time="0">0:00</button> BranchWeaver Runtime Flow.</li>
-    <li><button type="button" data-studio-video="starter-runtime-video" data-studio-time="2">0:02</button> Start a fresh run and enter the Gateway. This creates the first playable state.</li>
-    <li><button type="button" data-studio-video="starter-runtime-video" data-studio-time="8">0:08</button> Save the Gateway, then complete it. Saving records progress before traversal continues.</li>
-    <li><button type="button" data-studio-video="starter-runtime-video" data-studio-time="14">0:14</button> Focus the Game view and press Up. Keyboard focus moves to the available Route.</li>
-    <li><button type="button" data-studio-video="starter-runtime-video" data-studio-time="24">0:24</button> Press Return to enter the Route. The selected node becomes the current content.</li>
-    <li><button type="button" data-studio-video="starter-runtime-video" data-studio-time="30.5">0:30</button> Save the Route checkpoint, then complete it. The checkpoint preserves the new progress.</li>
-    <li><button type="button" data-studio-video="starter-runtime-video" data-studio-time="34.3">0:34</button> Enter the Landmark. The completed Route unlocks its destination.</li>
-    <li><button type="button" data-studio-video="starter-runtime-video" data-studio-time="37.3">0:37</button> Load the saved map and route. The HUD shows Route pending, Gateway completed, and Landmark locked.</li>
-    <li><button type="button" data-studio-video="starter-runtime-video" data-studio-time="42.3">0:42</button> Save the restored state, then exit Play Mode. The captured runtime flow is complete.</li>
-    <li><button type="button" data-studio-video="starter-runtime-video" data-studio-time="46.3">0:46</button> Runtime flow complete.</li>
+    <li><button type="button" data-studio-video="starter-runtime-video" data-studio-time="0" data-studio-end="2" data-studio-title="BranchWeaver Runtime Flow" aria-controls="starter-runtime-video">0:00</button> BranchWeaver Runtime Flow.</li>
+    <li><button type="button" data-studio-video="starter-runtime-video" data-studio-time="2" data-studio-end="8" data-studio-title="Start a run and enter the Gateway" aria-controls="starter-runtime-video">0:02</button> Start a fresh run and enter the Gateway. This creates the first playable state.</li>
+    <li><button type="button" data-studio-video="starter-runtime-video" data-studio-time="8" data-studio-end="14" data-studio-title="Save and complete the Gateway" aria-controls="starter-runtime-video">0:08</button> Save the Gateway, then complete it. Saving records progress before traversal continues.</li>
+    <li><button type="button" data-studio-video="starter-runtime-video" data-studio-time="14" data-studio-end="24" data-studio-title="Focus the available Route" aria-controls="starter-runtime-video">0:14</button> Focus the Game view and press Up. Keyboard focus moves to the available Route.</li>
+    <li><button type="button" data-studio-video="starter-runtime-video" data-studio-time="24" data-studio-end="30.5" data-studio-title="Enter the selected Route" aria-controls="starter-runtime-video">0:24</button> Press Return to enter the Route. The selected node becomes the current content.</li>
+    <li><button type="button" data-studio-video="starter-runtime-video" data-studio-time="30.5" data-studio-end="34.3" data-studio-title="Save and complete the Route" aria-controls="starter-runtime-video">0:30</button> Save the Route checkpoint, then complete it. The checkpoint preserves the new progress.</li>
+    <li><button type="button" data-studio-video="starter-runtime-video" data-studio-time="34.3" data-studio-end="37.3" data-studio-title="Enter the Landmark" aria-controls="starter-runtime-video">0:34</button> Enter the Landmark. The completed Route unlocks its destination.</li>
+    <li><button type="button" data-studio-video="starter-runtime-video" data-studio-time="37.3" data-studio-end="42.3" data-studio-title="Load the restored state" aria-controls="starter-runtime-video">0:37</button> Load the saved map and route. The HUD shows Route pending, Gateway completed, and Landmark locked.</li>
+    <li><button type="button" data-studio-video="starter-runtime-video" data-studio-time="42.3" data-studio-end="46.3" data-studio-title="Save the restored state and exit" aria-controls="starter-runtime-video">0:42</button> Save the restored state, then exit Play Mode. The captured runtime flow is complete.</li>
+    <li><button type="button" data-studio-video="starter-runtime-video" data-studio-time="46.3" data-studio-end="50.3" data-studio-title="Runtime flow complete" aria-controls="starter-runtime-video">0:46</button> Runtime flow complete.</li>
   </ol>
 </details>
 
