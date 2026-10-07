@@ -132,6 +132,30 @@ Pick Canvas when the map is interface and you want uGUI typography. Pick World2D
 sit in the scene with other 2D content; its built-in view also implements `IMapStyledView`, while
 custom behaviour still belongs in your own view.
 
+### Experience Studio World2D generated shapes
+
+This section describes the Experience Studio `World2DExperienceRenderer`, not the legacy
+`WorldMapPresenter` and `WorldMapNodeView` flow above. In an Experience preset, choose **Shape** in
+the style to set a generated node body to a rounded rectangle, circle, hexagon, diamond, or capsule.
+**Corner Radius** is used for rounded rectangles. With no compiled style, the generated fallback is a rounded
+rectangle. Changing the shape is presentation-only and preserves node IDs, edges, and saves.
+
+Use the preset's **Asset Mappings** to replace node art by type. Generated nodes can display a type
+icon over their shaped body. Authored prefabs use the Experience renderer's mapping contract;
+`WorldMapNodeView.Bind` belongs to the separate legacy presenter flow described above.
+
+### Experience Studio World3D route width
+
+This section describes the Experience Studio `World3DExperienceRenderer`. It converts the style's
+**Edge Width** from presentation pixels into world units using `MapScale` and the compiled map
+layout extent. An available route is multiplied by **Available Width Scale**; default and locked
+routes use the base width. The resulting value is assigned to the route `LineRenderer` before its
+endpoints are clipped to the node bounds.
+
+Changing Edge Width changes only stroke thickness and endpoint clipping. It does not alter route
+snapshot points, curve sampling, graph identity, or saves. The same edge style can therefore be
+shared by a custom World3D node prefab without editing the prefab's source materials.
+
 ## What the compiled style reaches, and what it does not
 
 The presenter casts each view to `IMapStyledView` and skips the ones that are not. It calls `ApplyStyle`
